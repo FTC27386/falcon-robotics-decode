@@ -32,13 +32,16 @@ import static android.os.SystemClock.sleep;
 
 import android.util.Size;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.seattlesolvers.solverslib.controller.PIDController;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -65,9 +68,17 @@ import java.util.concurrent.TimeUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  */
-@TeleOp(name = "Camera Teleop", group = "Robot")
+@TeleOp(name = "Camera Teleop Goon Mode", group = "Robot")
+@Config
+public class CameraGrowingRobotTeleopMecanumFieldRelativeDrive extends OpMode {
 
-public class CameraRobotTeleopMecanumFieldRelativeDrive extends OpMode {
+
+    public static double  kP = 0;
+    public static double kI = 0;
+    public static double kD = 0;
+    public static double ll = 0;
+
+    PIDController cameraControl = new PIDController(0, 0 ,0);
     private static final boolean USE_WEBCAM = true;
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
@@ -78,20 +89,20 @@ public class CameraRobotTeleopMecanumFieldRelativeDrive extends OpMode {
     DcMotor frontRightDrive;
     DcMotor backLeftDrive;
     DcMotor backRightDrive;
-    Servo camera;
+    CRServo cameraServo;
     private double angle = 0;
 
     // This declares the IMU needed to get the current direction the robot is facing
     IMU imu;
+    double camPower;
 
     @Override
     public void init() {
 
         initAprilTag();
-
-        camera = hardwareMap.get(Servo.class, "camera");
-        camera.setPosition(0.5);
-
+        cameraControl.setPID(kP, kI, kD);
+        cameraServo = hardwareMap.get(CRServo.class, "cameraServo");
+        cameraServo.setDirection(DcMotorSimple.Direction.FORWARD);
         intakeRunning = false;
         intake = hardwareMap.get(DcMotor.class, "intake");
         frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
@@ -127,11 +138,7 @@ public class CameraRobotTeleopMecanumFieldRelativeDrive extends OpMode {
 
     @Override
     public void loop() {
-        telemetry.addLine("Press A to reset Yaw");
-        telemetry.addLine("Hold left bumper to drive in robot relative");
-        telemetry.addLine("The left joystick sets the robot direction");
-        telemetry.addLine("Moving the right joystick left and right turns the robot");
-
+        cameraControl.setPID(kP, kI, kD);
         // If you press the A button, then you reset the Yaw to be zero from the way
         // the robot is currently pointing
         if (gamepad1.a) {
@@ -147,16 +154,20 @@ public class CameraRobotTeleopMecanumFieldRelativeDrive extends OpMode {
         if (gamepad1.right_bumper) intake.setPower(1);
         else if (gamepad1.left_bumper) intake.setPower(-1);
         else intake.setPower(0);
-
+        camPower=cameraControl.calculate(angle, -30);
+        camPower += ll * Math.signum(camPower);
+        cameraServo.setPower(camPower);
         telemetryAprilTag();
-        if (gamepad1.leftStickButtonWasPressed()) {
+
+
+        /*if (gamepad1.leftStickButtonWasPressed()) {
             camera.setPosition(camera.getPosition() - angle / 300);
             angle = 0;
         }
         if (gamepad1.rightStickButtonWasPressed()) {
             camera.setPosition(0.5);
         }
-
+*/
     }
 
     // This routine drives the robot field relative
@@ -314,7 +325,12 @@ public class CameraRobotTeleopMecanumFieldRelativeDrive extends OpMode {
         telemetry.addLine("RBE = Range, Bearing & Elevation");
         telemetry.addLine(String.format("Angle: %f", angle));
         telemetry.addLine(String.format("Servo: %f", angle/300));
-        telemetry.addLine(String.format("Camera Position: %f", camera.getPosition()));
+        telemetry.addData("cam power", camPower);
+        telemetry.addData("right stick down", gamepad1.right_stick_x);
+        telemetry.addData("servo port", cameraServo.getPortNumber());
+        telemetry.addData("servo controller", cameraServo.getController());
+        telemetry.addData("servo power", cameraServo.getPower());
+        //telemetry.addLine(String.format("Camera Position: %f", camera.getPosition()));
 
     }   // end method telemetryAprilTag()
 

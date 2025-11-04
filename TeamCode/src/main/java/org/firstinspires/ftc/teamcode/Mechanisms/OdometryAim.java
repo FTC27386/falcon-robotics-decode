@@ -31,14 +31,18 @@ package org.firstinspires.ftc.teamcode.Mechanisms;
 import static androidx.core.math.MathUtils.clamp;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
 
+import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 /*
  * This OpMode illustrates how to program your robot to drive field relative.  This means
@@ -54,13 +58,17 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  */
-@TeleOp(name = "Turret Drive", group = "Robot")
+@Config
+@TeleOp(name = "Extremely Temporary OpMode", group = "Robot")
 
-public class TurretBase extends OpMode {
+public class OdometryAim extends OpMode {
     // This declares the four motors needed
-    Servo turretServo;
+    DcMotor[] flywheel = new DcMotor[2];
+    GoBildaPinpointDriver localizer;
+    Servo leftTurretServo;
+    Servo rightTurretServo;
     DcMotor intake;
-    DcMotor flywheel;
+    // DcMotor flywheel;
     DcMotor frontLeftDrive;
     DcMotor frontRightDrive;
     DcMotor backLeftDrive;
@@ -70,16 +78,33 @@ public class TurretBase extends OpMode {
     // This declares the IMU needed to get the current direction the robot is facing
     IMU imu;
 
-    double FLYWHEEL_SPEED;
+    public static double offsetRadians;
+    double field_relative_angle;
+    public static double FLYWHEEL_SPEED;
     double HOOD_ANGLE;
     double MAX_FLYWHEEL_SPEED;
     double MIN_FLYWHEEL_SPEED;
     double MAX_ANGLE;
     double MIN_ANGLE;
     double turret_angle;
+    public static double targetX;
+    public static double targetY;
+    public static double yawMultiplier = 1;
+    double pinpointX;
+    double distanceX;
+    double pinpointY;
+    double distanceY;
+    double robot_relative_angle;
+    double odo_turretservo_angle;
 
     @Override
     public void init() {
+
+        localizer = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        localizer.setOffsets(45.5, -26.251, DistanceUnit.MM );
+        localizer.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        localizer.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        localizer.resetPosAndIMU();
         turret_angle = 0;
         FLYWHEEL_SPEED = 1;
         HOOD_ANGLE = 0.5;
@@ -88,9 +113,13 @@ public class TurretBase extends OpMode {
         MAX_ANGLE = 1;
         MIN_ANGLE = 0;
 
-        turretServo = hardwareMap.get(Servo.class, "turretServo");
+
+        leftTurretServo = hardwareMap.get(Servo.class, "turretServo1");
+        rightTurretServo = hardwareMap.get(Servo.class, "turretServo2");
         intake = hardwareMap.get(DcMotor.class, "intake");
-        flywheel = hardwareMap.get(DcMotor.class, "flywheel1");
+        intake.setDirection(DcMotorSimple.Direction.REVERSE);
+        flywheel[0] = hardwareMap.get(DcMotor.class, "flywheel1");
+        flywheel[1] = hardwareMap.get(DcMotor.class, "flywheel2");
         frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
         frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
         backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
@@ -109,10 +138,10 @@ public class TurretBase extends OpMode {
         frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        intake.setDirection(DcMotor.Direction.REVERSE);
-        flywheel.setZeroPowerBehavior(FLOAT); //Makes the flywheel1 not turn itself off
+        //intake.setDirection(DcMotor.Direction.REVERSE);
+        //flywheel.setZeroPowerBehavior(FLOAT); //Makes the flywheel1 not turn itself off
 
-        imu = hardwareMap.get(IMU.class, "imu");
+        //imu = hardwareMap.get(IMU.class, "imu");
         // This needs to be changed to match the orientation on your robot
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
                 RevHubOrientationOnRobot.LogoFacingDirection.UP;
@@ -121,11 +150,22 @@ public class TurretBase extends OpMode {
 
         RevHubOrientationOnRobot orientationOnRobot = new
                 RevHubOrientationOnRobot(logoDirection, usbDirection);
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
+       // imu.initialize(new IMU.Parameters(orientationOnRobot));
     }
 
     @Override
     public void loop() {
+        localizer.update();
+        pinpointX = localizer.getPosX(DistanceUnit.INCH);
+        pinpointY = localizer.getPosY(DistanceUnit.INCH);
+        distanceX = pinpointX - targetX;
+        distanceY = pinpointY - targetY;
+        field_relative_angle = Math.atan2(distanceX, distanceY); //Inverted here because X is actually the vertical axis
+        robot_relative_angle = (field_relative_angle + offsetRadians) - ((yawMultiplier* localizer.getHeading(AngleUnit.RADIANS)));
+        odo_turretservo_angle = Math.toDegrees(robot_relative_angle) * ((double) 1 /355) * ((double) 170 /60) * ((double) 1 /5);
+
+        //radians of robot-relative angle * conv. to degrees * conv. to servo ticks * GR2 * GR1
+
         telemetry.addLine("Press A to reset Yaw");
         telemetry.addLine("The left joystick sets the robot direction");
         telemetry.addLine("Moving the right joystick left and right turns the robot");
@@ -134,13 +174,22 @@ public class TurretBase extends OpMode {
         telemetry.addLine("Dpad up increases flywheel1 speed, dpad down decreases flywheel1 speed");
         telemetry.addLine("Dpad left/right controls hood angle");
         telemetry.addLine("Using dpad while holding down left bumper allows finer control");
+        telemetry.addData("turret attempted", odo_turretservo_angle);
+        telemetry.addData("angle of deviation", Math.toDegrees(robot_relative_angle));
+        telemetry.addData("turrServo1", leftTurretServo.getPosition());
+        telemetry.addData("turrServo2", rightTurretServo.getPosition());
 
+        if (gamepad1.options)
+        {
+            localizer.resetPosAndIMU();
+        }
         // If you press the A button, then you reset the Yaw to be zero from the way
         // the robot is currently pointing
         if (gamepad1.a) {
             imu.resetYaw();
         }
-        driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        /*
         if(gamepad1.right_trigger > 0) {
             intake.setPower(1);
         }
@@ -150,6 +199,7 @@ public class TurretBase extends OpMode {
         else {
             intake.setPower(0);
         }
+         */
         if(gamepad1.crossWasPressed())
         {
             turret_angle += .05;
@@ -196,32 +246,15 @@ public class TurretBase extends OpMode {
         HOOD_ANGLE = clamp(HOOD_ANGLE, MIN_ANGLE, MAX_ANGLE);
         turret_angle = clamp(turret_angle, 0, 1);
         if(gamepad1.left_trigger > 0) {
-            turret(FLYWHEEL_SPEED, HOOD_ANGLE, turret_angle);
+            turret(FLYWHEEL_SPEED, HOOD_ANGLE, Math.abs(odo_turretservo_angle));
         }
         else {
-            turret(0, HOOD_ANGLE, turret_angle);
+            turret(0, HOOD_ANGLE, Math.abs(odo_turretservo_angle));
         }
+
+        intake.setPower(gamepad1.right_trigger);
     }
 
-    // This routine drives the robot field relative
-    private void driveFieldRelative(double forward, double right, double rotate) {
-        // First, convert direction being asked to drive to polar coordinates
-        double theta = Math.atan2(forward, right);
-        double r = Math.hypot(right, forward);
-
-        // Second, rotate angle by the angle the robot is pointing
-        theta = AngleUnit.normalizeRadians(theta -
-                imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
-
-        // Third, convert back to cartesian
-        double newForward = r * Math.sin(theta);
-        double newRight = r * Math.cos(theta);
-
-        // Finally, call the drive method with robot relative forward and right amounts
-        drive(newForward, newRight, rotate);
-    }
-
-    // Thanks to FTC16072 for sharing this code!!
     public void drive(double forward, double right, double rotate) {
         // This calculates the power needed for each wheel based on the amount of forward,
         // strafe right, and rotate
@@ -251,11 +284,13 @@ public class TurretBase extends OpMode {
     }
 
     private void turret(double speed, double angle, double turretAngle) {
-        flywheel.setPower(speed);
+        for (DcMotor motor : flywheel)
+        {
+            motor.setPower(speed);
+        }
         hood.setPosition(angle);
-        turretServo.setPosition(turretAngle);
-        telemetry.addData("Flywheel Target", "Speed %5.2f", flywheel.getTargetPosition());
-        telemetry.addData("Flywheel Current", "Speed %5.2f", flywheel.getCurrentPosition());
+        leftTurretServo.setPosition(turretAngle);
+        rightTurretServo.setPosition(turretAngle);
         telemetry.addData("Hood Angle", "Angle %5.2f", hood.getPosition());
         telemetry.addData("TurretAngle", hood.getPosition());
     }

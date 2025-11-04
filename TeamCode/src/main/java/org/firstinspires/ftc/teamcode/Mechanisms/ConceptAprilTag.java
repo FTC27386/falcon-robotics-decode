@@ -101,8 +101,8 @@ public class ConceptAprilTag extends LinearOpMode {
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-
                 telemetryAprilTag();
+
 
                 // Push telemetry to the Driver Station.
                 telemetry.update();
@@ -195,7 +195,16 @@ public class ConceptAprilTag extends LinearOpMode {
         // Disable or re-enable the aprilTag processor at any time.
         //visionPortal.setProcessorEnabled(aprilTag, true);
 
-        visionPortal.resumeStreaming();
+        // Wait for the camera to be open
+        if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
+            telemetry.addData("Camera", "Waiting");
+            telemetry.update();
+            while (!isStopRequested() && (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)) {
+                sleep(20);
+            }
+            telemetry.addData("Camera", "Ready");
+            telemetry.update();
+        }
 
         ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
         if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
