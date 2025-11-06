@@ -5,31 +5,28 @@ import com.bylazar.configurables.annotations.Configurable;
 
 @Configurable
 public class RobotConstants {
-    public static int armVerticalPos = -478;
-    public static double armP = 0.003;
-    public static double armI = 0;
-    public static double armD = 0.0003;
-    public static double armkG = .05;
-    public static double armL = .03;
-    public static double armHeight = 8.5;
-    public static double ticks_in_deg = 1725.1 / 360;
-    public static double armGearRatio = 3;
-    public static double ServoExtension = 8.000;
-    public static double armBaseLength = 14.75;
-    public static int armDefaultBottom = -1825;
-    public static double armMeasuredBottomAngle = 59.155;
-    public static double clawOpen = .24;
-    public static double clawClosed = .01;
-    //Lift
-    public static int liftSpecimen = 2700;
-    public static double liftP = 0.003;
-    public static double liftI = 0;
-    public static double liftD = 0.00005;
-    public static double liftkG = 0.06;
-    //drive
-    public static double lockP = .007;
-    public static double lockI = 0;
-    public static double lockD = 0;
-    public static double bridgeUpPos = .15;
-    public static double bridgeDownPos = .85;
+
+        public static String first_shooter_motor_name = "flywheel1";
+        public static String second_shooter_motor_name = "flywheel2";
+        public static String left_turret_servo_name = "turretServo1";
+        public static String right_turret_servo_name = "turretServo2";
+        public static String hood_servo_name = "hood";
+        public static String intake_motor_name = "intake";
+        public static String left_front_drive_motor_name = "left_front_drive";
+        public static String right_front_drive_motor_name = "right_front_drive";
+        public static String left_back_drive_motor_name = "left_back_drive";
+        public static String right_back_drive_motor_name = "right_back_drive";
+        public static String transfer_servo_name = "gate";
+
+        public static double shooterTolerance = 0.05;
+        public static double shooter_kP = 0.0;
+        public static double shooter_kD = 0.0;
+        public static double shooter_kFF = 0.0;
+        public static double shooter_kL = 0.0; //"lower limit" power
+        public static double offset_between_servos = 0;
+        public static double turret_conversion_factor_DEGREES = (double)(1/5) * (double)(170/60) * (double)(1/355);
+        public static double turret_conversion_factor_RADIANS = (double)(1/5) * (double)(170/60) * (double)(1/355) * (double)(360/(2*Math.PI)); // for mason's weird ahh
+        public static double transfer_closed_pos = 0; // temp
+        public static double transfer_open_pos = 1; // temp
+
 }
