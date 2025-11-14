@@ -29,7 +29,6 @@
 package org.firstinspires.ftc.teamcode.Mechanisms;
 
 import static androidx.core.math.MathUtils.clamp;
-
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -38,15 +37,18 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.seattlesolvers.solverslib.geometry.Pose2d;
+import com.seattlesolvers.solverslib.geometry.Rotation2d;
+import com.seattlesolvers.solverslib.geometry.Transform2d;
 import com.seattlesolvers.solverslib.geometry.Vector2d;
 import com.seattlesolvers.solverslib.util.InterpLUT;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.Misc.RobotConstants;
 
 /*
  * This OpMode illustrates how to program your robot to drive field relative.  This means
@@ -63,9 +65,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
  *
  */
 @Config
-@TeleOp(name = "InterpLUT Aim", group = "Robot")
+@TeleOp(name = "InterpLUT Aim Solvers", group = "Robot")
 
-public class InterpLUTAim extends OpMode {
+public class InterpLUTAimSolvers extends OpMode {
+
     public static InterpLUT lut;
     public static double offsetRadians;
     public static double FLYWHEEL_SPEED;
@@ -84,16 +87,17 @@ public class InterpLUTAim extends OpMode {
     Servo hood;
     // This declares the IMU needed to get the current direction the robot is facing
     IMU imu;
+    Pose2D pinpointPose_TEMP;
+    Pose2d currentPose;
+    Vector2d currentVector;
+    Vector2d targetVector;
+    Transform2d poseDelta;
+    Vector2d vectorDelta;
     double field_relative_angle,
             HOOD_ANGLE,
             MAX_ANGLE,
             MIN_ANGLE,
             turret_angle,
-            pinpointX,
-            distanceX,
-            distanceVector,
-            pinpointY,
-            distanceY,
             robot_relative_angle,
             odo_turretservo_angle;
 
@@ -140,38 +144,42 @@ public class InterpLUTAim extends OpMode {
         flywheel1.setZeroPowerBehavior(FLOAT); //Makes the flywheel1 not turn itself off
         flywheel2.setZeroPowerBehavior(FLOAT);
 
-        //imu = hardwareMap.get(IMU.class, "imu");
-        // This needs to be changed to match the orientation on your robot
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
-        RevHubOrientationOnRobot orientationOnRobot = new
-                RevHubOrientationOnRobot(logoDirection, usbDirection);
         // imu.initialize(new IMU.Parameters(orientationOnRobot));
     }
 
     @Override
     public void loop() {
         localizer.update();
-        pinpointX = localizer.getPosX(DistanceUnit.INCH);
-        pinpointY = localizer.getPosY(DistanceUnit.INCH);
-        distanceX = targetX - pinpointX;
-        distanceY = targetY - pinpointY;
-        distanceVector = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
-        field_relative_angle = Math.atan2(distanceX, distanceY); //Inverted here because X is actually the vertical axis
-        robot_relative_angle = ((Math.PI/2 - field_relative_angle) - ((yawMultiplier * localizer.getHeading(AngleUnit.RADIANS))));
-        odo_turretservo_angle = 0.5 -(-Math.toDegrees(robot_relative_angle) * ((double) 1 / 355) * ((double) 170 / 60) * ((double) 1 / 5));
+        pinpointPose_TEMP = localizer.getPosition();
+        currentPose = new Pose2d(
+                pinpointPose_TEMP.getX(DistanceUnit.INCH),
+                pinpointPose_TEMP.getY(DistanceUnit.INCH),
+                new Rotation2d(
+                        pinpointPose_TEMP.getHeading(AngleUnit.RADIANS)));
+
+        currentVector = new Vector2d(
+                currentPose.getX(),
+                currentPose.getY()
+        );
+
+
+        vectorDelta = currentVector.minus(targetVector);
+        robot_relative_angle = (Math.PI/2 - vectorDelta.angle()) //get complementary angle
+                + currentPose.getRotation().getRadians();
+
+        odo_turretservo_angle = 0.5
+                - (Math.toDegrees(robot_relative_angle)//change to plus if necessary
+                * RobotConstants.turret_conversion_factor_DEGREES);
         //radians of robot-relative angle * conv. to degrees * conv. to servo ticks * GR2 * GR1
 
         telemetry.addLine("Left trigger is shooter");
         telemetry.addLine("Dpad up/down controls hood angle");
-        telemetry.addData("Absolute X", pinpointX);
-        telemetry.addData("Absolute Y", pinpointY);
-        telemetry.addData("Distance X", distanceX);
-        telemetry.addData("Distance Y", distanceX);
-        telemetry.addData("Distance Vector", distanceVector);
+        telemetry.addData("Absolute X", currentPose.getX());
+        telemetry.addData("Absolute Y", currentPose.getY());
+        telemetry.addData("Distance X", vectorDelta.getX());
+        telemetry.addData("Distance Y", vectorDelta.getY());
+        telemetry.addData("Distance Vector", vectorDelta.magnitude());
         telemetry.addData("Odo Turret Angle", odo_turretservo_angle);
         telemetry.addData("Robot Relative Angle", Math.toDegrees(robot_relative_angle));
         telemetry.addData("InterpLUT", lut);
@@ -190,7 +198,7 @@ public class InterpLUTAim extends OpMode {
         if (gamepad1.left_trigger > 0)
             turret(FLYWHEEL_SPEED, HOOD_ANGLE, Math.abs(odo_turretservo_angle));
         else turret(0, HOOD_ANGLE, Math.abs(odo_turretservo_angle));
-        if (gamepad1.shareWasPressed()) lut.add(distanceVector, HOOD_ANGLE);
+        if (gamepad1.shareWasPressed()) lut.add(vectorDelta.magnitude(), HOOD_ANGLE);
         //intake.setPower(gamepad1.right_trigger);
     }
 
