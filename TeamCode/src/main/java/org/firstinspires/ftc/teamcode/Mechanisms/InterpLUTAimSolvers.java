@@ -166,8 +166,9 @@ public class InterpLUTAimSolvers extends OpMode {
 
 
         vectorDelta = currentVector.minus(targetVector);
-        robot_relative_angle = (Math.PI/2 - vectorDelta.angle()) //get complementary angle
-                + currentPose.getRotation().getRadians();
+        //robot_relative_angle = (Math.PI/2 - vectorDelta.angle()) //get complementary angle
+        //        + currentPose.getRotation().getRadians();
+        robot_relative_angle = (Math.PI/2 - vectorDelta.angle()); //get complementary angle
 
         odo_turretservo_angle = 0.5
                 - ((Math.toDegrees(robot_relative_angle)+313)/626);

@@ -162,10 +162,7 @@ public class InterpLUTAim extends OpMode {
         distanceX = targetX - pinpointX;
         distanceY = targetY - pinpointY;
         //turret_angle = gamepad1.right_trigger;
-
-        field_relative_angle
         turret_angle = 1-(-localizer.getHeading(AngleUnit.DEGREES)+313)/626;
-
 
         //distanceVector = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
         //distanceVector = Math.atan2(distanceX, distanceY);
