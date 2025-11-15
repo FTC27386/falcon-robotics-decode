@@ -183,6 +183,7 @@ public class InterpLUTAimSolvers extends OpMode {
         telemetry.addData("Distance Vector", vectorDelta.magnitude());
         telemetry.addData("Odo Turret Angle", odo_turretservo_angle);
         telemetry.addData("Robot Relative Angle", Math.toDegrees(robot_relative_angle));
+
         telemetry.addData("InterpLUT", lut);
         drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
