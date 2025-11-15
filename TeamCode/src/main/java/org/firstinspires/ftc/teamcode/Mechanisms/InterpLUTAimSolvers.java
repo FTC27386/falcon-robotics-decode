@@ -31,7 +31,9 @@ package org.firstinspires.ftc.teamcode.Mechanisms;
 import static androidx.core.math.MathUtils.clamp;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
 
+import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -45,6 +47,7 @@ import com.seattlesolvers.solverslib.geometry.Transform2d;
 import com.seattlesolvers.solverslib.geometry.Vector2d;
 import com.seattlesolvers.solverslib.util.InterpLUT;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
@@ -94,6 +97,8 @@ public class InterpLUTAimSolvers extends OpMode {
     Transform2d poseDelta;
     Vector2d vectorDelta;
     double field_relative_angle,
+            diff_x,
+            diff_y,
             HOOD_ANGLE,
             MAX_ANGLE,
             MIN_ANGLE,
@@ -150,6 +155,7 @@ public class InterpLUTAimSolvers extends OpMode {
 
     @Override
     public void loop() {
+        TelemetryPacket packet = new TelemetryPacket();
         targetVector = new Vector2d(targetX, targetY);
         localizer.update();
         pinpointPose_TEMP = localizer.getPosition();
@@ -163,6 +169,9 @@ public class InterpLUTAimSolvers extends OpMode {
                 currentPose.getX(),
                 currentPose.getY()
         );
+
+        Canvas c = packet.fieldOverlay();
+        Drawing.drawRobot(c, new com.acmerobotics.roadrunner.Pose2d(currentPose.getX(), currentPose.getY(), currentPose.getHeading()));
         
         vectorDelta = targetVector.minus(currentVector);
         //robot_relative_angle = (Math.PI/2 - vectorDelta.angle()) //get complementary angle
