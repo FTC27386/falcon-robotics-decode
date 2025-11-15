@@ -170,8 +170,7 @@ public class InterpLUTAimSolvers extends OpMode {
                 + currentPose.getRotation().getRadians();
 
         odo_turretservo_angle = 0.5
-                - (Math.toDegrees(robot_relative_angle)//change to plus if necessary
-                * RobotConstants.turret_conversion_factor_DEGREES);
+                - ((Math.toDegrees(robot_relative_angle)+313)/626);
         //radians of robot-relative angle * conv. to degrees * conv. to servo ticks * GR2 * GR1
 
         telemetry.addLine("Left trigger is shooter");

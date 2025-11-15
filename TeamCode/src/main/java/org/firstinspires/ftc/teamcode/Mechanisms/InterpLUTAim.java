@@ -114,6 +114,8 @@ public class InterpLUTAim extends OpMode {
 
         leftTurretServo = hardwareMap.get(Servo.class, "turretServo1");
         rightTurretServo = hardwareMap.get(Servo.class, "turretServo2");
+        leftTurretServo.setDirection(Servo.Direction.FORWARD);
+        rightTurretServo.setDirection(Servo.Direction.FORWARD);
         //intake = hardwareMap.get(DcMotor.class, "intake");
         //intake.setDirection(DcMotorSimple.Direction.REVERSE);
         flywheel1 = hardwareMap.get(DcMotor.class, "flywheel1");
@@ -159,22 +161,24 @@ public class InterpLUTAim extends OpMode {
         pinpointY = localizer.getPosY(DistanceUnit.INCH);
         distanceX = targetX - pinpointX;
         distanceY = targetY - pinpointY;
-        distanceVector = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
-        field_relative_angle = Math.atan2(distanceX, distanceY); //Inverted here because X is actually the vertical axis
-        robot_relative_angle = ((Math.PI/2 - field_relative_angle) - ((yawMultiplier * localizer.getHeading(AngleUnit.RADIANS))));
-        odo_turretservo_angle = 0.5 -(-Math.toDegrees(robot_relative_angle) * ((double) 1 / 355) * ((double) 170 / 60) * ((double) 1 / 5));
+        //turret_angle = gamepad1.right_trigger;
+
+        field_relative_angle
+        turret_angle = 1-(-localizer.getHeading(AngleUnit.DEGREES)+313)/626;
+
+
+        //distanceVector = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
+        //distanceVector = Math.atan2(distanceX, distanceY);
+        //odo_turretservo_angle = gamepad1.right_trigger;
+        //field_relative_angle = Math.atan2(distanceX, distanceY); //Inverted here because X is actually the vertical axis
+        //robot_relative_angle = ((Math.PI/2 - field_relative_angle) - ((yawMultiplier * localizer.getHeading(AngleUnit.RADIANS))));
+        //odo_turretservo_angle = 0.5 -(-Math.toDegrees(robot_relative_angle) * ((double) 1 / 355) * ((double) 170 / 60) * ((double) 1 / 5));
         //radians of robot-relative angle * conv. to degrees * conv. to servo ticks * GR2 * GR1
 
         telemetry.addLine("Left trigger is shooter");
         telemetry.addLine("Dpad up/down controls hood angle");
-        telemetry.addData("Absolute X", pinpointX);
-        telemetry.addData("Absolute Y", pinpointY);
-        telemetry.addData("Distance X", distanceX);
-        telemetry.addData("Distance Y", distanceX);
-        telemetry.addData("Distance Vector", distanceVector);
-        telemetry.addData("Odo Turret Angle", odo_turretservo_angle);
-        telemetry.addData("Robot Relative Angle", Math.toDegrees(robot_relative_angle));
-        telemetry.addData("InterpLUT", lut);
+        telemetry.addData("Attempted Position", turret_angle);
+        telemetry.addData("Heading", localizer.getHeading(AngleUnit.DEGREES));
         drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
         if (gamepad1.optionsWasPressed()) localizer.resetPosAndIMU();
@@ -187,8 +191,7 @@ public class InterpLUTAim extends OpMode {
         // Clamp both values between MIN and MAX.
         HOOD_ANGLE = clamp(HOOD_ANGLE, MIN_ANGLE, MAX_ANGLE);
         turret_angle = clamp(turret_angle, 0, 1);
-        if (gamepad1.left_trigger > 0)
-            turret(FLYWHEEL_SPEED, HOOD_ANGLE, Math.abs(odo_turretservo_angle));
+        if (gamepad1.left_trigger > 0) turret(FLYWHEEL_SPEED, HOOD_ANGLE, Math.abs(odo_turretservo_angle));
         else turret(0, HOOD_ANGLE, Math.abs(odo_turretservo_angle));
         if (gamepad1.shareWasPressed()) lut.add(distanceVector, HOOD_ANGLE);
         //intake.setPower(gamepad1.right_trigger);
@@ -226,8 +229,8 @@ public class InterpLUTAim extends OpMode {
         flywheel1.setPower(speed);
         flywheel2.setPower(speed);
         hood.setPosition(angle);
-        leftTurretServo.setPosition(turretAngle);
-        rightTurretServo.setPosition(turretAngle);
+        leftTurretServo.setPosition(turret_angle);
+        rightTurretServo.setPosition(turret_angle);
         telemetry.addData("Hood Angle", "Angle %5.2f", hood.getPosition());
         telemetry.addData("Turret Angle", leftTurretServo.getPosition());
     }
