@@ -90,7 +90,7 @@ public class InterpLUTAimSolvers extends OpMode {
     Pose2D pinpointPose_TEMP;
     Pose2d currentPose;
     Vector2d currentVector;
-    Vector2d targetVector;
+    Vector2d targetVector = new Vector2d();
     Transform2d poseDelta;
     Vector2d vectorDelta;
     double field_relative_angle,
@@ -150,6 +150,7 @@ public class InterpLUTAimSolvers extends OpMode {
 
     @Override
     public void loop() {
+        targetVector = new Vector2d(targetX, targetY);
         localizer.update();
         pinpointPose_TEMP = localizer.getPosition();
         currentPose = new Pose2d(
