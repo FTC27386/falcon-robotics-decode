@@ -163,9 +163,8 @@ public class InterpLUTAimSolvers extends OpMode {
                 currentPose.getX(),
                 currentPose.getY()
         );
-
-
-        vectorDelta = currentVector.minus(targetVector);
+        
+        vectorDelta = targetVector.minus(currentVector);
         //robot_relative_angle = (Math.PI/2 - vectorDelta.angle()) //get complementary angle
         //        + currentPose.getRotation().getRadians();
         robot_relative_angle = (Math.PI/2 - vectorDelta.angle()); //get complementary angle
@@ -185,6 +184,7 @@ public class InterpLUTAimSolvers extends OpMode {
         telemetry.addData("Robot Relative Angle", Math.toDegrees(robot_relative_angle));
 
         telemetry.addData("InterpLUT", lut);
+        telemetry.addData("Translational Deviation", vectorDelta.angle());
         drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
         if (gamepad1.optionsWasPressed()) localizer.resetPosAndIMU();
