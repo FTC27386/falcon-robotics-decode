@@ -170,8 +170,7 @@ public class InterpLUTAimSolvers extends OpMode {
                 currentPose.getY()
         );
 
-        Canvas c = packet.fieldOverlay();
-        Drawing.drawRobot(c, new com.acmerobotics.roadrunner.Pose2d(currentPose.getX(), currentPose.getY(), currentPose.getHeading()));
+
         
         vectorDelta = targetVector.minus(currentVector);
         //robot_relative_angle = (Math.PI/2 - vectorDelta.angle()) //get complementary angle

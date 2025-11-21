@@ -55,7 +55,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Config
 @TeleOp(name = "Game", group = "Robot")
 
-public class Game extends OpMode {
+public class Rezero extends OpMode {
     public static double flywheelPower = 0;
     public static double increment = 0.000;
     public static int swayinterval = 1500;
@@ -116,7 +116,6 @@ public class Game extends OpMode {
         telemetry.addLine("Right stick controls hood and turret angle");
 
         HOOD_ANGLE -= 0.001 * gamepad1.right_stick_y;
-        TURRET_ANGLE += increment * servodirection;
         FLYWHEEL_SPEED = (gamepad1.right_trigger > 0 ? 1 : 0);
 
         // Clamp both values between MIN and MAX.

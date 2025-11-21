@@ -32,6 +32,8 @@ import static androidx.core.math.MathUtils.clamp;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
 
+import static java.lang.Math.atan;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -69,8 +71,8 @@ public class InterpLUTAim extends OpMode {
     public static InterpLUT lut;
     public static double offsetRadians;
     public static double FLYWHEEL_SPEED;
-    public static double targetX,
-            targetY,
+    public static double targetX = -144,
+            targetY = 144,
             yawMultiplier = 1;
     // This declares the four motors needed
     DcMotor flywheel1, flywheel2;
@@ -84,7 +86,9 @@ public class InterpLUTAim extends OpMode {
     Servo hood;
     // This declares the IMU needed to get the current direction the robot is facing
     IMU imu;
-    double field_relative_angle,
+    double field_adjustment_angle,
+            trueX,
+    trueY,
             HOOD_ANGLE,
             MAX_ANGLE,
             MIN_ANGLE,
@@ -105,12 +109,10 @@ public class InterpLUTAim extends OpMode {
         localizer.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         localizer.resetPosAndIMU();
         turret_angle = 0;
-        FLYWHEEL_SPEED = 0.5;
+        FLYWHEEL_SPEED = 1;
         HOOD_ANGLE = 0.5;
         MAX_ANGLE = 1;
         MIN_ANGLE = 0;
-        targetX = 0;
-        targetY = 0;
 
         leftTurretServo = hardwareMap.get(Servo.class, "turretServo1");
         rightTurretServo = hardwareMap.get(Servo.class, "turretServo2");
@@ -139,6 +141,8 @@ public class InterpLUTAim extends OpMode {
         backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //intake.setDirection(DcMotor.Direction.REVERSE);
+        flywheel1.setDirection(DcMotor.Direction.FORWARD);
+        flywheel2.setDirection(DcMotor.Direction.REVERSE);
         flywheel1.setZeroPowerBehavior(FLOAT); //Makes the flywheel1 not turn itself off
         flywheel2.setZeroPowerBehavior(FLOAT);
 
@@ -157,13 +161,17 @@ public class InterpLUTAim extends OpMode {
     @Override
     public void loop() {
         localizer.update();
-        pinpointX = localizer.getPosX(DistanceUnit.INCH);
+        pinpointX = localizer.getPosX(DistanceUnit.INCH); //VARIABLES USE STANDARD CARTESIAN AXES!!!
+        trueY = pinpointX;
         pinpointY = localizer.getPosY(DistanceUnit.INCH);
-        distanceX = targetX - pinpointX;
-        distanceY = targetY - pinpointY;
-        //turret_angle = gamepad1.right_trigger;
-        field_relative_angle = Math.toRadians(-90)-Math.atan2(distanceX, distanceY);
-        turret_angle = 1-(-localizer.getHeading(AngleUnit.DEGREES)+313)/626;
+        trueX = -pinpointY;
+        distanceX = targetX - trueX;
+        distanceY = targetY - trueY;
+        field_adjustment_angle = (90 - Math.toDegrees(Math.atan2(distanceY,distanceX)));
+        odo_turretservo_angle = 1-(-localizer.getHeading(AngleUnit.RADIANS)+Math.toRadians(313))/Math.toRadians(626);
+        odo_turretservo_angle +=(Math.toRadians(field_adjustment_angle))/Math.toRadians(626);
+
+
 
         //distanceVector = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
         //distanceVector = Math.atan2(distanceX, distanceY);
@@ -177,6 +185,11 @@ public class InterpLUTAim extends OpMode {
         telemetry.addLine("Dpad up/down controls hood angle");
         telemetry.addData("Attempted Position", turret_angle);
         telemetry.addData("Heading", localizer.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("goal field angle", field_adjustment_angle);
+        telemetry.addData("x to goal", distanceX);
+        telemetry.addData("y to goal", distanceY);
+        telemetry.addData("PINPOINT Y (horiz axis)", pinpointY);
+        telemetry.addData("PINPOINT X (vert)", pinpointX);
         drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
         if (gamepad1.optionsWasPressed()) localizer.resetPosAndIMU();
@@ -227,9 +240,12 @@ public class InterpLUTAim extends OpMode {
         flywheel1.setPower(speed);
         flywheel2.setPower(speed);
         hood.setPosition(angle);
-        leftTurretServo.setPosition(turret_angle);
-        rightTurretServo.setPosition(turret_angle);
+        leftTurretServo.setPosition(turretAngle);
+        rightTurretServo.setPosition(turretAngle);
         telemetry.addData("Hood Angle", "Angle %5.2f", hood.getPosition());
-        telemetry.addData("Turret Angle", leftTurretServo.getPosition());
+        telemetry.addData("Turret Angle", rightTurretServo.getPosition());
+        telemetry.addData("turretleft", leftTurretServo.getPosition());
+        telemetry.addData("odo_correction_ticks",odo_turretservo_angle);
+        telemetry.addData("field_correction_ticks", (-Math.toRadians(field_adjustment_angle))/Math.toRadians(626));
     }
 }
