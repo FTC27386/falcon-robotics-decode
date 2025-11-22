@@ -14,7 +14,7 @@ public class updateShooter extends CommandBase
 
     @Override
     public void initialize() {
-        robot_shooter.update();
+        robot_shooter.periodic();
     }
     @Override
     public boolean isFinished()

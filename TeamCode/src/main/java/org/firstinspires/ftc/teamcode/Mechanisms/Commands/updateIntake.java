@@ -17,7 +17,7 @@ public class updateIntake extends CommandBase {
     @Override
     public void initialize()
     {
-        robot_intake.update();
+        robot_intake.periodic();
     }
     @Override
     public boolean isFinished()

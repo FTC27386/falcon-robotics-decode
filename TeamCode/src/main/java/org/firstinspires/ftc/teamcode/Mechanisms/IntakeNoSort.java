@@ -39,7 +39,7 @@ public class IntakeNoSort extends SubsystemBase {
     {
         targetpower = -1;
     }
-    public void update()
+    public void periodic()
     {
         intakeMotor.setPower(targetpower);
     }

@@ -36,7 +36,7 @@ public class turretShooter extends SubsystemBase
         hood = hMap.get(Servo.class, RobotConstants.hood_servo_name);
         speedControl = new PIDController(RobotConstants.shooter_kP, 0, RobotConstants.shooter_kD);
     }
-    public void update()
+    public void periodic()
     {
         currentSpeed = shooter1.getVelocity();
         rawCalcPower = speedControl.calculate(currentSpeed);

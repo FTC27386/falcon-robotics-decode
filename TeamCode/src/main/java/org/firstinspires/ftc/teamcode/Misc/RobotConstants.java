@@ -2,6 +2,7 @@
 package org.firstinspires.ftc.teamcode.Misc;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.pedropathing.geometry.Pose;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
@@ -31,5 +32,6 @@ public class RobotConstants {
         public static double turret_conversion_factor_RADIANS = (double)(1/5) * (double)(170/60) * (double)(1/355) * (double)(360/(2*Math.PI)); // for mason's weird ahh
         public static double transfer_closed_pos = 0; // temp
         public static double transfer_open_pos = 1; // temp
+        public static Pose autoLastPose;
 
 }
