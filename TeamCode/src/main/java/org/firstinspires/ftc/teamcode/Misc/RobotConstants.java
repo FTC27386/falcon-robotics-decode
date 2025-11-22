@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.Misc;
 
 import com.bylazar.configurables.annotations.Configurable;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+
 @Configurable
 public class RobotConstants {
 
@@ -17,6 +19,7 @@ public class RobotConstants {
         public static String left_back_drive_motor_name = "left_back_drive";
         public static String right_back_drive_motor_name = "right_back_drive";
         public static String transfer_servo_name = "gate";
+        public static String camera = "Webcam 1";
 
         public static double shooterTolerance = 0.05;
         public static double shooter_kP = 0.0;

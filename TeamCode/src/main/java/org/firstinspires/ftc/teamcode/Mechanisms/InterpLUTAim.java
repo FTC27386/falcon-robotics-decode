@@ -32,8 +32,6 @@ import static androidx.core.math.MathUtils.clamp;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
 
-import static java.lang.Math.atan;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -43,12 +41,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.seattlesolvers.solverslib.geometry.Vector2d;
 import com.seattlesolvers.solverslib.util.InterpLUT;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 /*
  * This OpMode illustrates how to program your robot to drive field relative.  This means
@@ -78,12 +74,14 @@ public class InterpLUTAim extends OpMode {
     DcMotor flywheel1, flywheel2;
     GoBildaPinpointDriver localizer;
     Servo leftTurretServo, rightTurretServo;
-    //DcMotor intake;
     DcMotor frontLeftDrive,
             frontRightDrive,
             backLeftDrive,
-            backRightDrive;
-    Servo hood;
+            backRightDrive,
+            intake;
+    Servo hood,
+            blockerServo,
+            pivotServo;
     // This declares the IMU needed to get the current direction the robot is facing
     IMU imu;
     double field_adjustment_angle,
@@ -92,7 +90,6 @@ public class InterpLUTAim extends OpMode {
             HOOD_ANGLE,
             MAX_ANGLE,
             MIN_ANGLE,
-            turret_angle,
             pinpointX,
             distanceX,
             distanceVector,
@@ -101,6 +98,9 @@ public class InterpLUTAim extends OpMode {
             robot_relative_angle,
             odo_turretservo_angle;
 
+    boolean block = true;
+    boolean pivot = false;
+
     @Override
     public void init() {
         localizer = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
@@ -108,7 +108,6 @@ public class InterpLUTAim extends OpMode {
         localizer.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         localizer.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         localizer.resetPosAndIMU();
-        turret_angle = 0;
         FLYWHEEL_SPEED = 1;
         HOOD_ANGLE = 0.5;
         MAX_ANGLE = 1;
@@ -116,10 +115,17 @@ public class InterpLUTAim extends OpMode {
 
         leftTurretServo = hardwareMap.get(Servo.class, "turretServo1");
         rightTurretServo = hardwareMap.get(Servo.class, "turretServo2");
+        blockerServo = hardwareMap.get(Servo.class, "blocker");
+        pivotServo = hardwareMap.get(Servo.class, "pivot");
+
         leftTurretServo.setDirection(Servo.Direction.FORWARD);
         rightTurretServo.setDirection(Servo.Direction.FORWARD);
-        //intake = hardwareMap.get(DcMotor.class, "intake");
-        //intake.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        blockerServo.setDirection(Servo.Direction.FORWARD);
+        pivotServo.setDirection(Servo.Direction.FORWARD);
+
+        intake = hardwareMap.get(DcMotor.class, "intake");
+        intake.setDirection(DcMotorSimple.Direction.REVERSE);
         flywheel1 = hardwareMap.get(DcMotor.class, "flywheel1");
         flywheel2 = hardwareMap.get(DcMotor.class, "flywheel2");
         frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
@@ -140,9 +146,9 @@ public class InterpLUTAim extends OpMode {
         frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //intake.setDirection(DcMotor.Direction.REVERSE);
-        flywheel1.setDirection(DcMotor.Direction.FORWARD);
-        flywheel2.setDirection(DcMotor.Direction.REVERSE);
+        intake.setDirection(DcMotor.Direction.REVERSE);
+        flywheel1.setDirection(DcMotor.Direction.REVERSE);
+        flywheel2.setDirection(DcMotor.Direction.FORWARD);
         flywheel1.setZeroPowerBehavior(FLOAT); //Makes the flywheel1 not turn itself off
         flywheel2.setZeroPowerBehavior(FLOAT);
 
@@ -171,8 +177,6 @@ public class InterpLUTAim extends OpMode {
         odo_turretservo_angle = 1-(-localizer.getHeading(AngleUnit.RADIANS)+Math.toRadians(313))/Math.toRadians(626);
         odo_turretservo_angle +=(Math.toRadians(field_adjustment_angle))/Math.toRadians(626);
 
-
-
         //distanceVector = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
         //distanceVector = Math.atan2(distanceX, distanceY);
         //odo_turretservo_angle = gamepad1.right_trigger;
@@ -183,7 +187,6 @@ public class InterpLUTAim extends OpMode {
 
         telemetry.addLine("Left trigger is shooter");
         telemetry.addLine("Dpad up/down controls hood angle");
-        telemetry.addData("Attempted Position", turret_angle);
         telemetry.addData("Heading", localizer.getHeading(AngleUnit.DEGREES));
         telemetry.addData("goal field angle", field_adjustment_angle);
         telemetry.addData("x to goal", distanceX);
@@ -192,20 +195,25 @@ public class InterpLUTAim extends OpMode {
         telemetry.addData("PINPOINT X (vert)", pinpointX);
         drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
-        if (gamepad1.optionsWasPressed()) localizer.resetPosAndIMU();
-        if (gamepad1.aWasPressed()) imu.resetYaw();
-        if (gamepad1.crossWasPressed()) turret_angle += .05;
-        if (gamepad1.triangleWasPressed()) turret_angle -= .05;
-        if (gamepad1.dpadUpWasPressed()) HOOD_ANGLE += 0.1;
-        if (gamepad1.dpadDownWasPressed()) HOOD_ANGLE -= 0.1;
+        //if (gamepad1.optionsWasPressed()) localizer.resetPosAndIMU();
+        //if (gamepad1.aWasPressed()) imu.resetYaw();
+        if (gamepad1.dpadUpWasPressed()) HOOD_ANGLE += 0.01;
+        if (gamepad1.dpadDownWasPressed()) HOOD_ANGLE -= 0.01;
 
         // Clamp both values between MIN and MAX.
         HOOD_ANGLE = clamp(HOOD_ANGLE, MIN_ANGLE, MAX_ANGLE);
-        turret_angle = clamp(turret_angle, 0, 1);
         if (gamepad1.left_trigger > 0) turret(FLYWHEEL_SPEED, HOOD_ANGLE, Math.abs(odo_turretservo_angle));
         else turret(0, HOOD_ANGLE, Math.abs(odo_turretservo_angle));
         if (gamepad1.shareWasPressed()) lut.add(distanceVector, HOOD_ANGLE);
-        //intake.setPower(gamepad1.right_trigger);
+        intake.setPower(gamepad1.right_trigger > 0 ? 1 : 0);
+        if (gamepad1.rightBumperWasPressed()) block = !block;
+        if (gamepad1.leftBumperWasPressed()) pivot = !pivot;
+
+        if (block) blockerServo.setPosition(0.5);
+        else blockerServo.setPosition(0.25);
+
+        if (pivot) pivotServo.setPosition(0.5);
+        else pivotServo.setPosition(0);
     }
 
     public void drive(double forward, double right, double rotate) {
