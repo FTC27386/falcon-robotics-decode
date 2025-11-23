@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Mechanisms;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -15,9 +16,10 @@ import org.firstinspires.ftc.teamcode.Misc.cachedMotor;
 
 public class turretShooter extends SubsystemBase
 {
+    PIDController headingControl;
     PIDController speedControl;
-    Servo turret1;
-    Servo turret2;
+    CRServo turret1;
+    CRServo turret2;
     Servo hood;
     DcMotorEx shooter1;
     DcMotorEx shooter2;
@@ -31,8 +33,8 @@ public class turretShooter extends SubsystemBase
     {
         shooter1 = hMap.get(DcMotorEx.class, RobotConstants.first_shooter_motor_name);
         shooter2 = hMap.get(DcMotorEx.class, RobotConstants.second_shooter_motor_name);
-        turret1 = hMap.get(Servo.class, RobotConstants.left_turret_servo_name);
-        turret2 = hMap.get(Servo.class, RobotConstants.right_turret_servo_name);
+        turret1 = hMap.get(CRServo.class, RobotConstants.left_turret_servo_name);
+        turret2 = hMap.get(CRServo.class, RobotConstants.right_turret_servo_name);
         hood = hMap.get(Servo.class, RobotConstants.hood_servo_name);
         speedControl = new PIDController(RobotConstants.shooter_kP, 0, RobotConstants.shooter_kD);
     }
