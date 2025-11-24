@@ -37,6 +37,15 @@ public class RobotConstants {
                 turret_conversion_factor_RADIANS = (double)(1/5) * (double)(170/60) * (double)(1/355) * (double)(360/(2*Math.PI)), // for mason's weird ahh
         transfer_closed_pos = 0.5, // temp
         transfer_open_pos = .25; // temp
-        public static Pose autoLastPose;
+        public static Pose autoEndPose;
+        public enum robotState
+        {
+                FAR_SHOOT,
+                CLOSE_SHOOT,
+                INTAKING,
+                IDLE
+        }
+
+
 
 }

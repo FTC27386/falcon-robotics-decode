@@ -30,7 +30,7 @@ public double
 public drive(HardwareMap hMap)
 {
     follower = Constants.createFollower(hMap);
-    follower.setStartingPose(RobotConstants.autoLastPose == null ? new Pose(0,0,0) : RobotConstants.autoLastPose);
+    follower.setStartingPose(RobotConstants.autoEndPose == null ? new Pose(0,0,0) : RobotConstants.autoEndPose);
 
 }
 public void update()
