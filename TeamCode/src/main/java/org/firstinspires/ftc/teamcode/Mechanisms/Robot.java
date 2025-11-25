@@ -2,14 +2,17 @@ package org.firstinspires.ftc.teamcode.Mechanisms;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
+import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.teamcode.Misc.RobotConstants;
 import org.firstinspires.ftc.teamcode.Misc.closeLUT;
 import org.firstinspires.ftc.teamcode.Misc.farLUT;
 
 import java.sql.Driver;
+import java.util.function.DoubleSupplier;
 
 public class Robot extends SubsystemBase {
+    GamepadEx gp;
 
     turretShooter s;
     IntakeNoSort i;

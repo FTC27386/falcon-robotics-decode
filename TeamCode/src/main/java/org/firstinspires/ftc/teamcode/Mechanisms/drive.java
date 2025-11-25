@@ -8,6 +8,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.command.button.Button;
+import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.teamcode.Misc.RobotConstants;
 import org.firstinspires.ftc.teamcode.pedroCalibration.Constants;
@@ -33,8 +34,7 @@ public drive(HardwareMap hMap)
     follower.setStartingPose(RobotConstants.autoEndPose == null ? new Pose(0,0,0) : RobotConstants.autoEndPose);
 
 }
-public void update()
-{
+public void update(){
     follower.update();
     currentPose = follower.getPose();
     x = currentPose.getX();
@@ -61,12 +61,12 @@ public double yoCalcAim()  //calculate adjusted turret angle in rad
     return -heading - field_angle;
 }
 
-public void teleOpDrive(double axial, double lateral, double rot)
+public void teleOpDrive(GamepadEx gamepad)
 {
     follower.setTeleOpDrive(
-            -axial,
-            -lateral,
-            -rot,
+            -gamepad.getLeftY(),
+            -gamepad.getLeftX(),
+            -gamepad.getRightX(),
             true);
 }
 public void reloc(Pose reloc)

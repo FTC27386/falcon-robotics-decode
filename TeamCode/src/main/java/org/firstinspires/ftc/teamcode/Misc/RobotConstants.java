@@ -25,6 +25,7 @@ public class RobotConstants {
 
         public static double
                 shooterTolerance = 0.05,
+                vera_coefficient = .4167,
                 shooter_kP = 0.0,
                 shooter_kD = 0.0,
                 shooter_kFF = 0.0,
