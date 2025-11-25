@@ -29,7 +29,12 @@
 package org.firstinspires.ftc.teamcode.Mechanisms;
 
 import static androidx.core.math.MathUtils.clamp;
+import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
+
+import static java.lang.Thread.sleep;
+
+import android.util.Size;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
@@ -41,12 +46,21 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.controller.PIDController;
-import com.seattlesolvers.solverslib.util.InterpLUT;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /*
  * This OpMode illustrates how to program your robot to drive field relative.  This means
@@ -75,53 +89,68 @@ public class InterpLUTAimAnalog extends OpMode {
     public static double kL = 0;
 
     private AnalogInput turretEnc;
-    public static InterpLUT lut;
     public static double offsetRadians;
     public static double FLYWHEEL_SPEED;
     public static double targetX = -144,
             targetY = 144,
             yawMultiplier = 1;
-    // This declares the four motors needed
+    // This declares the motors needed
     DcMotor flywheel1, flywheel2;
     GoBildaPinpointDriver localizer;
     CRServo leftTurretServo, rightTurretServo;
-    //DcMotor intake;
-    DcMotor frontLeftDrive,
-            frontRightDrive,
-            backLeftDrive,
-            backRightDrive;
+    DcMotor intake;
+    DcMotor frontLeftDrive;
+    DcMotor frontRightDrive;
+    DcMotor backLeftDrive;
+    DcMotor backRightDrive;
     Servo hood;
+    Servo blocker;
     // This declares the IMU needed to get the current direction the robot is facing
     IMU imu;
-    double field_adjustment_angle,
-            trueX,
-    trueY,
-            HOOD_ANGLE,
-            MAX_ANGLE,
-            MIN_ANGLE,
-            turret_angle,
-            pinpointX,
-            distanceX,
-    turretDeg,
-            distanceVector,
-            pinpointY,
-            distanceY,
-    error,
-            robot_relative_angle,
-            previousread,
-    signal,
-    axonRead,
-    degreeRead,
-    deltaRead,
-            odo_turretservo_angle;
+    double field_adjustment_angle;
+    double trueX;
+    double trueY;
+    double HOOD_ANGLE;
+    double MAX_ANGLE;
+    double MIN_ANGLE;
+    double pinpointX;
+    double distanceX;
+    double turretDeg;
+    double distanceVector;
+    double pinpointY;
+    double distanceY;
+    double error;
+    double previousRead;
+    double signal;
+    double axonRead;
+    double degreeRead;
+    double deltaRead;
+    double odo_turretservo_angle;
     double degreestravelled = 0;
     int rotations=0;
     Pose2D pose;
-
     PIDController turretPDFL;
+    boolean block = true;
+    ElapsedTime shoot = new ElapsedTime();
+    private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
+    public static AprilTagProcessor aprilTag;
+    public static VisionPortal visionPortal;
+    public static void stateAprilTag(boolean state) {
+        visionPortal.setProcessorEnabled(aprilTag, state);
+    }
+    public static double[][] lut = new double[5][2];
+    public static int lutNum;
+    public static int obelisk;
 
     @Override
     public void init() {
+        lutNum = 0;
+        obelisk = 0;
+        try {
+            initAprilTag();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         turretPDFL = new PIDController(kP, 0, kD);
         turretEnc = hardwareMap.get(AnalogInput.class, "turret_encoder");
         localizer = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
@@ -129,18 +158,17 @@ public class InterpLUTAimAnalog extends OpMode {
         localizer.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         localizer.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         localizer.resetPosAndIMU();
-        turret_angle = 0;
         FLYWHEEL_SPEED = 1;
-        HOOD_ANGLE = 0.5;
+        HOOD_ANGLE = 0;
         MAX_ANGLE = 1;
         MIN_ANGLE = 0;
 
-        leftTurretServo = hardwareMap.get(CRServo.class, "turretServo1");
-        rightTurretServo = hardwareMap.get(CRServo.class, "turretServo2");
-        //intake = hardwareMap.get(DcMotor.class, "intake");
-        //intake.setDirection(DcMotorSimple.Direction.REVERSE);
-        flywheel1 = hardwareMap.get(DcMotor.class, "flywheel1");
-        flywheel2 = hardwareMap.get(DcMotor.class, "flywheel2");
+        leftTurretServo = hardwareMap.get(CRServo.class, "left_turret_servo");
+        rightTurretServo = hardwareMap.get(CRServo.class, "right_turret_servo");
+        intake = hardwareMap.get(DcMotor.class, "intake");
+        blocker = hardwareMap.get(Servo.class, "blocker");
+        flywheel1 = hardwareMap.get(DcMotor.class, "flywheel_top");
+        flywheel2 = hardwareMap.get(DcMotor.class, "flywheel_bottom");
         frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
         frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
         backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
@@ -159,11 +187,12 @@ public class InterpLUTAimAnalog extends OpMode {
         frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //intake.setDirection(DcMotor.Direction.REVERSE);
+        intake.setDirection(DcMotor.Direction.REVERSE);
         flywheel1.setDirection(DcMotor.Direction.FORWARD);
         flywheel2.setDirection(DcMotor.Direction.REVERSE);
         flywheel1.setZeroPowerBehavior(FLOAT); //Makes the flywheel1 not turn itself off
         flywheel2.setZeroPowerBehavior(FLOAT);
+        intake.setZeroPowerBehavior(BRAKE);
 
         //imu = hardwareMap.get(IMU.class, "imu");
         // This needs to be changed to match the orientation on your robot
@@ -179,13 +208,13 @@ public class InterpLUTAimAnalog extends OpMode {
 
     @Override
     public void loop() {
-
+        getAprilTag();
         //encoder test
 
         turretPDFL.setPID(kP, 0, kD);
         axonRead = turretEnc.getVoltage();
         degreeRead = axonRead * (360/3.3);
-        deltaRead = degreeRead - previousread;
+        deltaRead = degreeRead - previousRead;
         if (deltaRead > 180)
         {
             rotations -= 1;
@@ -199,11 +228,6 @@ public class InterpLUTAimAnalog extends OpMode {
         error = UtilMethods.AngleDifference(odo_turretservo_angle, turretDeg) ;
         signal = turretPDFL.calculate(-error, 0);
         signal += Math.signum(signal) * kL;
-
-
-
-
-
 
         localizer.update();
         pose = localizer.getPosition();
@@ -219,9 +243,7 @@ public class InterpLUTAimAnalog extends OpMode {
        // odo_turretservo_angle *= 360;
         odo_turretservo_angle = -pose.getHeading(AngleUnit.DEGREES) - field_adjustment_angle;
 
-
-
-        //distanceVector = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
+        distanceVector = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
         //distanceVector = Math.atan2(distanceX, distanceY);
         //odo_turretservo_angle = gamepad1.right_trigger;
         //field_relative_angle = Math.atan2(distanceX, distanceY); //Inverted here because X is actually the vertical axis
@@ -229,9 +251,10 @@ public class InterpLUTAimAnalog extends OpMode {
         //odo_turretservo_angle = 0.5 -(-Math.toDegrees(robot_relative_angle) * ((double) 1 / 355) * ((double) 170 / 60) * ((double) 1 / 5));
         //radians of robot-relative angle * conv. to degrees * conv. to servo ticks * GR2 * GR1
 
-        telemetry.addLine("Left trigger is shooter");
+        telemetry.addLine("Right trigger is shoot");
+        telemetry.addLine("Left trigger is intake in");
+        telemetry.addLine("Left bumper is intake out");
         telemetry.addLine("Dpad up/down controls hood angle");
-        telemetry.addData("Attempted Position", turret_angle);
         telemetry.addData("Heading", localizer.getHeading(AngleUnit.DEGREES));
         telemetry.addData("goal field angle", field_adjustment_angle);
         telemetry.addData("odo ang",odo_turretservo_angle);
@@ -239,29 +262,54 @@ public class InterpLUTAimAnalog extends OpMode {
         telemetry.addData("y to goal", distanceY);
         telemetry.addData("PINPOINT Y (horiz axis)", pinpointY);
         telemetry.addData("PINPOINT X (vert)", pinpointX);
+        telemetry.addData("Hood Angle", HOOD_ANGLE);
+        telemetry.addData("Obelisk", obelisk);
+        telemetry.addData("Lut #", lutNum);
+        for(int i = 0; i < lut.length; i++) {
+            telemetry.addData("InterpLUT Value " + i, String.format("%.2f, %.2f", lut[i][0], lut[i][1]));
+        }
         drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
         if (gamepad1.optionsWasPressed()) localizer.resetPosAndIMU();
-        if (gamepad1.aWasPressed()) imu.resetYaw();
-        if (gamepad1.crossWasPressed()) turret_angle += .05;
-        if (gamepad1.triangleWasPressed()) turret_angle -= .05;
-        if (gamepad1.dpadUpWasPressed()) HOOD_ANGLE += 0.1;
-        if (gamepad1.dpadDownWasPressed()) HOOD_ANGLE -= 0.1;
-
-        // Clamp both values between MIN and MAX.
+        if (gamepad1.dpadUpWasPressed()) HOOD_ANGLE += 0.01;
+        if (gamepad1.dpadDownWasPressed()) HOOD_ANGLE -= 0.01;
         HOOD_ANGLE = clamp(HOOD_ANGLE, MIN_ANGLE, MAX_ANGLE);
-        turret_angle = clamp(turret_angle, 0, 1);
-        if (gamepad1.left_trigger > 0) turret(FLYWHEEL_SPEED, HOOD_ANGLE, gamepad1.left_trigger);
-        else if (gamepad1.right_trigger >0)
-        {
-            turret(0,0,-gamepad1.right_trigger);
+
+        if (gamepad1.aWasPressed()) {
+            shoot.reset();
+            block = false;
         }
-         else {
-            turret(0, HOOD_ANGLE, signal);
+        if (shoot.milliseconds() > 100) {
+            block = true;
         }
-        if (gamepad1.shareWasPressed()) lut.add(distanceVector, HOOD_ANGLE);
-        //intake.setPower(gamepad1.right_trigger);
-        previousread = degreeRead;
+
+        blocker.setPosition(block ? 0.5 : 0.25);
+        // Clamp both values between MIN and MAX.
+
+        // Shooter control
+        turret(gamepad1.right_trigger > 0 ? 1 : 0, HOOD_ANGLE, gamepad1.right_trigger > 0 ? 0 : signal);
+
+        // Intake control
+        if (gamepad1.left_trigger > 0) {
+            intake.setPower(1);
+        }
+        else if (gamepad1.left_bumper) {
+            intake.setPower(-1);
+        }
+        else {
+            intake.setPower(0);
+        }
+        previousRead = degreeRead;
+
+        // Set LUT values
+        if (gamepad1.shareWasPressed() && lutNum <= lut.length) {
+            lut[lutNum][0] = distanceVector;
+            lut[lutNum][1] = HOOD_ANGLE;
+            lutNum++;
+        }
+        else {
+            telemetry.addLine("No more values.");
+        }
     }
 
     public void drive(double forward, double right, double rotate) {
@@ -298,6 +346,7 @@ public class InterpLUTAimAnalog extends OpMode {
         leftTurretServo.setPower(turretPower);
         rightTurretServo.setPower(turretPower);
         hood.setPosition(angle);
+        telemetry.addData("power set", flywheel1.getPower());
         telemetry.addData("degrees Travelled", degreestravelled);
         telemetry.addData("current servo pos", degreeRead);
         telemetry.addData("pose_rotation", pose.getHeading(AngleUnit.DEGREES));
@@ -307,4 +356,103 @@ public class InterpLUTAimAnalog extends OpMode {
         telemetry.addData("rotations", rotations);
         telemetry.addData("turretDeg", turretDeg);
     }
+
+    private void getAprilTag() {
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        telemetry.addData("# AprilTags Detected", currentDetections.size());
+
+        // Step through the list of detections and display info for each one.
+        for (AprilTagDetection detection : currentDetections) {
+            if (detection.metadata != null) {
+                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
+                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
+                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
+                if (detection.id == 21 || detection.id == 22 || detection.id == 23) {
+                    obelisk = detection.id;
+                }
+            } else {
+                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
+                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
+            }
+        }   // end for() loop
+    }
+    private void initAprilTag() throws InterruptedException {
+        // Create the AprilTag processor.
+        aprilTag = new AprilTagProcessor.Builder()
+
+                // The following default settings are available to un-comment and edit as needed.
+                .setDrawAxes(true)
+                .setDrawCubeProjection(true)
+                .setDrawTagOutline(true)
+                .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
+                .setTagLibrary(AprilTagGameDatabase.getDecodeTagLibrary())
+                .setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
+
+                // == CAMERA CALIBRATION ==
+                // If you do not manually specify calibration parameters, the SDK will attempt
+                // to load a predefined calibration for your camera.
+                //.setLensIntrinsics(578.272, 578.272, 402.145, 221.506)
+                // ... these parameters are fx, fy, cx, cy.
+
+                .build();
+
+        // Adjust Image Decimation to trade-off detection-range for detection-rate.
+        // eg: Some typical detection data using a Logitech C920 WebCam
+        // Decimation = 1 ..  Detect 2" Tag from 10 feet away at 10 Frames per second
+        // Decimation = 2 ..  Detect 2" Tag from 6  feet away at 22 Frames per second
+        // Decimation = 3 ..  Detect 2" Tag from 4  feet away at 30 Frames Per Second (default)
+        // Decimation = 3 ..  Detect 5" Tag from 10 feet away at 30 Frames Per Second (default)
+        // Note: Decimation can be changed on-the-fly to adapt during a match.
+        aprilTag.setDecimation(3);
+
+        // Create the vision portal by using a builder.
+        VisionPortal.Builder builder = new VisionPortal.Builder();
+
+        // Set the camera (webcam vs. built-in RC phone camera).
+        builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
+
+        // Choose a camera resolution. Not all cameras support all resolutions.
+        builder.setCameraResolution(new Size(1920, 1080));
+
+        // Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
+        builder.enableLiveView(true);
+
+        // Set the stream format; MJPEG uses less bandwidth than default YUY2.
+        builder.setStreamFormat(VisionPortal.StreamFormat.MJPEG);
+
+        // Choose whether or not LiveView stops if no processors are enabled.
+        // If set "true", monitor shows solid orange screen if no processors enabled.
+        // If set "false", monitor shows camera view without annotations.
+        //builder.setAutoStopLiveView(false);
+
+        // Set and enable the processor.
+        builder.addProcessor(aprilTag);
+
+        // Build the Vision Portal, using the above settings.
+        visionPortal = builder.build();
+
+        // Disable or re-enable the aprilTag processor at any time.
+        //visionPortal.setProcessorEnabled(aprilTag, true);
+
+        // Wait for the camera to be open
+        if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
+            telemetry.addData("Camera", "Waiting");
+            telemetry.update();
+            while (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
+                sleep(20);
+            }
+            telemetry.addData("Camera", "Ready");
+            telemetry.update();
+        }
+
+        ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
+        if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
+            exposureControl.setMode(ExposureControl.Mode.Manual);
+            sleep(50);
+        }
+        exposureControl.setExposure((long)2, TimeUnit.MILLISECONDS);
+        sleep(20);
+
+    }   // end method initAprilTag()
 }

@@ -45,8 +45,8 @@ public class turretShooter extends SubsystemBase
         powerToSet = rawCalcPower + (Math.signum(rawCalcPower) * RobotConstants.shooter_kL) + RobotConstants.shooter_kFF;
         shooter1.setPower(powerToSet);
         shooter2.setPower(powerToSet);
-        turret1.setPosition(turretPosition * RobotConstants.turret_conversion_factor_DEGREES);
-        turret2.setPosition(turretPosition * RobotConstants.turret_conversion_factor_DEGREES + RobotConstants.offset_between_servos);
+        //turret1.setPosition(turretPosition * RobotConstants.turret_conversion_factor_DEGREES);
+        //turret2.setPosition(turretPosition * RobotConstants.turret_conversion_factor_DEGREES + RobotConstants.offset_between_servos);
         hood.setPosition(hoodPosition);
     }
     public void setSpeed(double speed)

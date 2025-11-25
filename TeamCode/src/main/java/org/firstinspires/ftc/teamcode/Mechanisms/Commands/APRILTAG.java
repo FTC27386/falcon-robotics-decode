@@ -25,7 +25,7 @@ public class APRILTAG{
     public static void stateAprilTag(boolean state) {
         visionPortal.setProcessorEnabled(aprilTag, state);
     }
-    public void getAprilTag() {
+    public static void getAprilTag() {
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
         telemetry.addData("# AprilTags Detected", currentDetections.size());
 
@@ -42,7 +42,7 @@ public class APRILTAG{
             }
         }   // end for() loop
     }
-    public void initAprilTag() throws InterruptedException {
+    public static void initAprilTag() throws InterruptedException {
         // Create the AprilTag processor.
         aprilTag = new AprilTagProcessor.Builder()
 
