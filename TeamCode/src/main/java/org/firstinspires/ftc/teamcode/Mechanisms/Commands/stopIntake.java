@@ -12,6 +12,7 @@ public class stopIntake extends CommandBase {
     public stopIntake(Robot robot)
     {
         this.robot = robot;
+        addRequirements(robot.getI());
     }
     @Override
     public void initialize()

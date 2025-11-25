@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
+import com.seattlesolvers.solverslib.command.Subsystem;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDController;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
@@ -15,7 +16,7 @@ import com.seattlesolvers.solverslib.hardware.motors.MotorGroup;
 import org.firstinspires.ftc.teamcode.Misc.RobotConstants;
 import org.firstinspires.ftc.teamcode.Misc.cachedMotor;
 
-public class turretShooter
+public class turretShooter extends SubsystemBase
 {
     AnalogInput turretEnc;
     PIDController headingControl,speedControl;
@@ -33,7 +34,6 @@ public class turretShooter
     degreestravelled,
     turretDeg,
     error,
-    odo_turretservo_angle,
     signal;
     double powerToSet;
     double turretPosition = 0;
@@ -51,7 +51,8 @@ public class turretShooter
         speedControl = new PIDController(RobotConstants.shooter_kP, 0, RobotConstants.shooter_kD);
         headingControl = new PIDController(RobotConstants.turret_kP, 0, RobotConstants.turret_kD);
     }
-    public void update()
+    @Override
+    public void periodic()
     {
         speedControl.setPID(RobotConstants.shooter_kP, 0, RobotConstants.shooter_kD);
         headingControl.setPID(RobotConstants.turret_kP, 0, RobotConstants.turret_kD);
@@ -68,7 +69,7 @@ public class turretShooter
         }
         degreestravelled = rotations*360.0 + degreeRead;
         turretDeg = degreestravelled*(5.0)*(60/170.0);
-        error = UtilMethods.AngleDifference(odo_turretservo_angle, turretDeg) ;
+        error = UtilMethods.AngleDifference(turretPosition, turretDeg) ;
         signal = headingControl.calculate(-error, 0);
         signal += Math.signum(signal) * RobotConstants.turret_kL;
         currentSpeed = shooter1.getVelocity();
@@ -80,6 +81,7 @@ public class turretShooter
         turret1.setPower(signal);
         turret2.setPower(signal);
         hood.setPosition(hoodPosition);
+        previousread = degreeRead;
     }
     public void setSpeed(double speed)
     {

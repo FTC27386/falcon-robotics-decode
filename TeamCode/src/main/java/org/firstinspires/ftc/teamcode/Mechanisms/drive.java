@@ -13,7 +13,9 @@ import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import org.firstinspires.ftc.teamcode.Misc.RobotConstants;
 import org.firstinspires.ftc.teamcode.pedroCalibration.Constants;
 
-public class drive {
+import java.util.function.Supplier;
+
+public class drive extends SubsystemBase {
 private Follower follower;
 public static Pose
         currentPose,
@@ -27,6 +29,8 @@ public double
         distanceY,
     heading;
 
+public Supplier<Pose> poseSupplier = this::getCurrentPose;
+
 
 public drive(HardwareMap hMap)
 {
@@ -34,7 +38,8 @@ public drive(HardwareMap hMap)
     follower.setStartingPose(RobotConstants.autoEndPose == null ? new Pose(0,0,0) : RobotConstants.autoEndPose);
 
 }
-public void update(){
+    @Override
+public void periodic(){
     follower.update();
     currentPose = follower.getPose();
     x = currentPose.getX();
@@ -75,7 +80,7 @@ public void reloc(Pose reloc)
 }
 public Pose getCurrentPose()
 {
-    return follower.getPose();
+    return currentPose;
 }
 
 

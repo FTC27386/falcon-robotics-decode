@@ -26,9 +26,10 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.firstinspires.ftc.teamcode.Mechanisms;
+package org.firstinspires.ftc.teamcode.temp;
 
 import static androidx.core.math.MathUtils.clamp;
+
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -36,17 +37,14 @@ import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.seattlesolvers.solverslib.controller.PIDController;
 import com.seattlesolvers.solverslib.util.InterpLUT;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 /*
  * This OpMode illustrates how to program your robot to drive field relative.  This means
@@ -62,19 +60,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  */
-
-
 @Config
-@TeleOp(name = "InterpLUT Aim Analog", group = "Robot")
+@TeleOp(name = "InterpLUT Aim", group = "Robot")
 
-
-public class InterpLUTAimAnalog extends OpMode {
-    public static double kP = 0;
-    public static double kD = 0;
-    public static double kF = 0;
-    public static double kL = 0;
-
-    private AnalogInput turretEnc;
+public class InterpLUTAim extends OpMode {
     public static InterpLUT lut;
     public static double offsetRadians;
     public static double FLYWHEEL_SPEED;
@@ -84,13 +73,15 @@ public class InterpLUTAimAnalog extends OpMode {
     // This declares the four motors needed
     DcMotor flywheel1, flywheel2;
     GoBildaPinpointDriver localizer;
-    CRServo leftTurretServo, rightTurretServo;
-    //DcMotor intake;
+    Servo leftTurretServo, rightTurretServo;
     DcMotor frontLeftDrive,
             frontRightDrive,
             backLeftDrive,
-            backRightDrive;
-    Servo hood;
+            backRightDrive,
+            intake;
+    Servo hood,
+            blockerServo,
+            pivotServo;
     // This declares the IMU needed to get the current direction the robot is facing
     IMU imu;
     double field_adjustment_angle,
@@ -99,46 +90,42 @@ public class InterpLUTAimAnalog extends OpMode {
             HOOD_ANGLE,
             MAX_ANGLE,
             MIN_ANGLE,
-            turret_angle,
             pinpointX,
             distanceX,
-    turretDeg,
             distanceVector,
             pinpointY,
             distanceY,
-    error,
             robot_relative_angle,
-            previousread,
-    signal,
-    axonRead,
-    degreeRead,
-    deltaRead,
             odo_turretservo_angle;
-    double degreestravelled = 0;
-    int rotations=0;
-    Pose2D pose;
 
-    PIDController turretPDFL;
+    boolean block = true;
+    boolean pivot = false;
 
     @Override
     public void init() {
-        turretPDFL = new PIDController(kP, 0, kD);
-        turretEnc = hardwareMap.get(AnalogInput.class, "turret_encoder");
         localizer = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         localizer.setOffsets(-116, -91.751, DistanceUnit.MM);
         localizer.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         localizer.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         localizer.resetPosAndIMU();
-        turret_angle = 0;
         FLYWHEEL_SPEED = 1;
         HOOD_ANGLE = 0.5;
         MAX_ANGLE = 1;
         MIN_ANGLE = 0;
 
-        leftTurretServo = hardwareMap.get(CRServo.class, "turretServo1");
-        rightTurretServo = hardwareMap.get(CRServo.class, "turretServo2");
-        //intake = hardwareMap.get(DcMotor.class, "intake");
-        //intake.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftTurretServo = hardwareMap.get(Servo.class, "turretServo1");
+        rightTurretServo = hardwareMap.get(Servo.class, "turretServo2");
+        blockerServo = hardwareMap.get(Servo.class, "blocker");
+        pivotServo = hardwareMap.get(Servo.class, "pivot");
+
+        leftTurretServo.setDirection(Servo.Direction.FORWARD);
+        rightTurretServo.setDirection(Servo.Direction.FORWARD);
+
+        blockerServo.setDirection(Servo.Direction.FORWARD);
+        pivotServo.setDirection(Servo.Direction.FORWARD);
+
+        intake = hardwareMap.get(DcMotor.class, "intake");
+        intake.setDirection(DcMotorSimple.Direction.REVERSE);
         flywheel1 = hardwareMap.get(DcMotor.class, "flywheel1");
         flywheel2 = hardwareMap.get(DcMotor.class, "flywheel2");
         frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
@@ -159,9 +146,9 @@ public class InterpLUTAimAnalog extends OpMode {
         frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //intake.setDirection(DcMotor.Direction.REVERSE);
-        flywheel1.setDirection(DcMotor.Direction.FORWARD);
-        flywheel2.setDirection(DcMotor.Direction.REVERSE);
+        intake.setDirection(DcMotor.Direction.REVERSE);
+        flywheel1.setDirection(DcMotor.Direction.REVERSE);
+        flywheel2.setDirection(DcMotor.Direction.FORWARD);
         flywheel1.setZeroPowerBehavior(FLOAT); //Makes the flywheel1 not turn itself off
         flywheel2.setZeroPowerBehavior(FLOAT);
 
@@ -179,47 +166,17 @@ public class InterpLUTAimAnalog extends OpMode {
 
     @Override
     public void loop() {
-
-        //encoder test
-
-        turretPDFL.setPID(kP, 0, kD);
-        axonRead = turretEnc.getVoltage();
-        degreeRead = axonRead * (360/3.3);
-        deltaRead = degreeRead - previousread;
-        if (deltaRead > 180)
-        {
-            rotations -= 1;
-        }
-        if (deltaRead < -180)
-        {
-            rotations += 1;
-        }
-        degreestravelled = rotations*360.0 + degreeRead;
-        turretDeg = degreestravelled*(5.0)*(60/170.0);
-        error = UtilMethods.AngleDifference(odo_turretservo_angle, turretDeg) ;
-        signal = turretPDFL.calculate(-error, 0);
-        signal += Math.signum(signal) * kL;
-
-
-
-
-
-
         localizer.update();
-        pose = localizer.getPosition();
-        pinpointX = pose.getX(DistanceUnit.INCH); //VARIABLES USE STANDARD CARTESIAN AXES!!!
+        pinpointX = localizer.getPosX(DistanceUnit.INCH); //VARIABLES USE STANDARD CARTESIAN AXES!!!
         trueY = pinpointX;
-        pinpointY = pose.getY(DistanceUnit.INCH);
         trueX = -pinpointY;
+        pinpointY = localizer.getPosY(DistanceUnit.INCH);
+
         distanceX = targetX - trueX;
         distanceY = targetY - trueY;
         field_adjustment_angle = (90 - Math.toDegrees(Math.atan2(distanceY,distanceX)));
-       // odo_turretservo_angle = 1-(localizer.getHeading(AngleUnit.RADIANS)+Math.toRadians(313))/Math.toRadians(626);
-        //odo_turretservo_angle +=(Math.toRadians(field_adjustment_angle))/Math.toRadians(626);
-       // odo_turretservo_angle *= 360;
-        odo_turretservo_angle = -pose.getHeading(AngleUnit.DEGREES) - field_adjustment_angle;
-
-
+        odo_turretservo_angle = 1-(-localizer.getHeading(AngleUnit.RADIANS)+Math.toRadians(313))/Math.toRadians(626);
+        odo_turretservo_angle +=(Math.toRadians(field_adjustment_angle))/Math.toRadians(626);
 
         //distanceVector = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
         //distanceVector = Math.atan2(distanceX, distanceY);
@@ -231,37 +188,33 @@ public class InterpLUTAimAnalog extends OpMode {
 
         telemetry.addLine("Left trigger is shooter");
         telemetry.addLine("Dpad up/down controls hood angle");
-        telemetry.addData("Attempted Position", turret_angle);
         telemetry.addData("Heading", localizer.getHeading(AngleUnit.DEGREES));
         telemetry.addData("goal field angle", field_adjustment_angle);
-        telemetry.addData("odo ang",odo_turretservo_angle);
         telemetry.addData("x to goal", distanceX);
         telemetry.addData("y to goal", distanceY);
         telemetry.addData("PINPOINT Y (horiz axis)", pinpointY);
         telemetry.addData("PINPOINT X (vert)", pinpointX);
         drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
-        if (gamepad1.optionsWasPressed()) localizer.resetPosAndIMU();
-        if (gamepad1.aWasPressed()) imu.resetYaw();
-        if (gamepad1.crossWasPressed()) turret_angle += .05;
-        if (gamepad1.triangleWasPressed()) turret_angle -= .05;
-        if (gamepad1.dpadUpWasPressed()) HOOD_ANGLE += 0.1;
-        if (gamepad1.dpadDownWasPressed()) HOOD_ANGLE -= 0.1;
+        //if (gamepad1.optionsWasPressed()) localizer.resetPosAndIMU();
+        //if (gamepad1.aWasPressed()) imu.resetYaw();
+        if (gamepad1.dpadUpWasPressed()) HOOD_ANGLE += 0.01;
+        if (gamepad1.dpadDownWasPressed()) HOOD_ANGLE -= 0.01;
 
         // Clamp both values between MIN and MAX.
         HOOD_ANGLE = clamp(HOOD_ANGLE, MIN_ANGLE, MAX_ANGLE);
-        turret_angle = clamp(turret_angle, 0, 1);
-        if (gamepad1.left_trigger > 0) turret(FLYWHEEL_SPEED, HOOD_ANGLE, gamepad1.left_trigger);
-        else if (gamepad1.right_trigger >0)
-        {
-            turret(0,0,-gamepad1.right_trigger);
-        }
-         else {
-            turret(0, HOOD_ANGLE, signal);
-        }
+        if (gamepad1.left_trigger > 0) turret(FLYWHEEL_SPEED, HOOD_ANGLE, Math.abs(odo_turretservo_angle));
+        else turret(0, HOOD_ANGLE, Math.abs(odo_turretservo_angle));
         if (gamepad1.shareWasPressed()) lut.add(distanceVector, HOOD_ANGLE);
-        //intake.setPower(gamepad1.right_trigger);
-        previousread = degreeRead;
+        intake.setPower(gamepad1.right_trigger > 0 ? 1 : 0);
+        if (gamepad1.rightBumperWasPressed()) block = !block;
+        if (gamepad1.leftBumperWasPressed()) pivot = !pivot;
+
+        if (block) blockerServo.setPosition(0.5);
+        else blockerServo.setPosition(0.25);
+
+        if (pivot) pivotServo.setPosition(0.5);
+        else pivotServo.setPosition(0);
     }
 
     public void drive(double forward, double right, double rotate) {
@@ -292,19 +245,16 @@ public class InterpLUTAimAnalog extends OpMode {
         backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
     }
 
-    private void turret(double speed, double angle, double turretPower) {
+    private void turret(double speed, double angle, double turretAngle) {
         flywheel1.setPower(speed);
         flywheel2.setPower(speed);
-        leftTurretServo.setPower(turretPower);
-        rightTurretServo.setPower(turretPower);
         hood.setPosition(angle);
-        telemetry.addData("degrees Travelled", degreestravelled);
-        telemetry.addData("current servo pos", degreeRead);
-        telemetry.addData("pose_rotation", pose.getHeading(AngleUnit.DEGREES));
-        telemetry.addData("error", error);
+        leftTurretServo.setPosition(turretAngle);
+        rightTurretServo.setPosition(turretAngle);
+        telemetry.addData("Hood Angle", "Angle %5.2f", hood.getPosition());
+        telemetry.addData("Turret Angle", rightTurretServo.getPosition());
+        telemetry.addData("turretleft", leftTurretServo.getPosition());
         telemetry.addData("odo_correction_ticks",odo_turretservo_angle);
         telemetry.addData("field_correction_ticks", (-Math.toRadians(field_adjustment_angle))/Math.toRadians(626));
-        telemetry.addData("rotations", rotations);
-        telemetry.addData("turretDeg", turretDeg);
     }
 }

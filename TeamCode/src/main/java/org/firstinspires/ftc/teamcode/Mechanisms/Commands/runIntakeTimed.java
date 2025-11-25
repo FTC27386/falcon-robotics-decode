@@ -18,5 +18,6 @@ public class runIntakeTimed extends SequentialCommandGroup {
                 new WaitCommand(time),
                 new stopIntake(robot)
         );
+        addRequirements(robot.getI());
     }
 }

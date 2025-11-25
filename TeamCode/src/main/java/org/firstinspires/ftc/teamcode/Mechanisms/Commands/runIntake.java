@@ -18,6 +18,7 @@ public class runIntake extends CommandBase {
     {
         robot.getI().close();
         robot.getI().intake();
+        addRequirements(robot.getI());
     }
     @Override
     public boolean isFinished()

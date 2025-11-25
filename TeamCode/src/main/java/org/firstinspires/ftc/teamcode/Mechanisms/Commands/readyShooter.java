@@ -16,6 +16,7 @@ public class readyShooter extends CommandBase{
     {
         this.robot = robot;
         this.state = state;
+        addRequirements(robot.getS());
     }
     @Override
     public void initialize()

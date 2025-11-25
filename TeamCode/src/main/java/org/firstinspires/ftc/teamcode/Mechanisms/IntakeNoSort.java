@@ -7,7 +7,7 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 import org.firstinspires.ftc.teamcode.Misc.RobotConstants;
 
-public class IntakeNoSort{
+public class IntakeNoSort extends  SubsystemBase{
     DcMotor intakeMotor;
     Servo gate;
     double targetpower,
@@ -41,7 +41,8 @@ public class IntakeNoSort{
     {
         targetpower = -1;
     }
-    public void update()
+    @Override
+    public void periodic()
     {
         intakeMotor.setPower(targetpower);
         gate.setPosition(gatePosition);

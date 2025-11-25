@@ -9,13 +9,17 @@ import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
 public class defaultDrive extends CommandBase {
 
     Robot r;
-    public defaultDrive(Robot r)
+    GamepadEx gp;
+
+    public defaultDrive(Robot r, GamepadEx gp)
         {
             this.r = r;
         }
+
         @Override
-    public void initalize()
+    public void execute()
         {
-            
+            r.getD().teleOpDrive(gp);
         }
+
 }
