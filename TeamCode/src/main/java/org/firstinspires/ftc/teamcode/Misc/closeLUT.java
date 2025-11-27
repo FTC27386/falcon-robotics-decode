@@ -10,7 +10,7 @@ public class closeLUT
                     {0, 0},
                     {1,1},
                     {2,2},
-                    {3.3}
+                    {300,3}
             };
 
     public InterpLUT lut;
@@ -22,8 +22,9 @@ public class closeLUT
     {
         lut = new InterpLUT();
         for (double[] point : hoodData) {
-            this.addPoint(point[0], point[1]);
+            addPoint(point[0], point[1]);
         }
+        lut.createLUT();
     }
 
 }

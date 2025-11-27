@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.Misc.cachedMotor;
 
 public class turretShooter extends SubsystemBase
 {
+    boolean isWoundUp = false;
     AnalogInput turretEnc;
     PIDController headingControl,speedControl;
     CRServo turret1;
@@ -34,12 +35,12 @@ public class turretShooter extends SubsystemBase
     degreestravelled,
     turretDeg,
     error,
-    signal;
-    double powerToSet;
-    double turretPosition = 0;
-    double hoodPosition = 0;
-    double currentSpeed;
-    double nominalVoltage = 12.00; //voltage at which the shooter was tuned
+    signal,
+    powerToSet,
+    turretPosition = 0,
+    hoodPosition = 0,
+    currentSpeed,
+            nominalVoltage = 12.00; //voltage at which the shooter was tuned
     public turretShooter(final HardwareMap hMap)
     {
         turretEnc = hMap.get(AnalogInput.class, RobotConstants.turret_encoder_name);
@@ -54,6 +55,7 @@ public class turretShooter extends SubsystemBase
     @Override
     public void periodic()
     {
+
         speedControl.setPID(RobotConstants.shooter_kP, 0, RobotConstants.shooter_kD);
         headingControl.setPID(RobotConstants.turret_kP, 0, RobotConstants.turret_kD);
         axonRead = turretEnc.getVoltage();
@@ -69,8 +71,17 @@ public class turretShooter extends SubsystemBase
         }
         degreestravelled = rotations*360.0 + degreeRead;
         turretDeg = degreestravelled*(5.0)*(60/170.0);
-        error = UtilMethods.AngleDifference(turretPosition, turretDeg) ;
-        signal = headingControl.calculate(-error, 0);
+        error = UtilMethods.AngleDifference(turretPosition, turretDeg);
+        if(turretDeg + degreestravelled > 310)
+        {
+            isWoundUp = true;
+        }
+        else
+        {
+            isWoundUp = false;
+        }
+
+        signal = isWoundUp? 0 : headingControl.calculate(-error, 0);
         signal += Math.signum(signal) * RobotConstants.turret_kL;
         currentSpeed = shooter1.getVelocity();
         rawCalcPower = speedControl.calculate(currentSpeed);

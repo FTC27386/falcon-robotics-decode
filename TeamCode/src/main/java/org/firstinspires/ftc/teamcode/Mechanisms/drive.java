@@ -7,20 +7,18 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
-import com.seattlesolvers.solverslib.command.button.Button;
-import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.teamcode.Misc.RobotConstants;
-import org.firstinspires.ftc.teamcode.pedroCalibration.Constants;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.function.Supplier;
 
 public class drive extends SubsystemBase {
-private Follower follower;
+public Follower follower;
 public static Pose
-        currentPose,
+        currentPose = new Pose(0,0,0),
         startPose,
-    targ;
+    targ = new Pose(0,0,0);
 boolean robotCentricDrive = false;
 public double
         x,
@@ -36,7 +34,7 @@ public drive(HardwareMap hMap)
 {
     follower = Constants.createFollower(hMap);
     follower.setStartingPose(RobotConstants.autoEndPose == null ? new Pose(0,0,0) : RobotConstants.autoEndPose);
-
+    follower.update();
 }
     @Override
 public void periodic(){
@@ -66,12 +64,12 @@ public double yoCalcAim()  //calculate adjusted turret angle in rad
     return -heading - field_angle;
 }
 
-public void teleOpDrive(GamepadEx gamepad)
+public void teleOpDrive(double axial, double lateral, double yaw)
 {
     follower.setTeleOpDrive(
-            -gamepad.getLeftY(),
-            -gamepad.getLeftX(),
-            -gamepad.getRightX(),
+            -axial,
+            -lateral,
+            -yaw,
             true);
 }
 public void reloc(Pose reloc)

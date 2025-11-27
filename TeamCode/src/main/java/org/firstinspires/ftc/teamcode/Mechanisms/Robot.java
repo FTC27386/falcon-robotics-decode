@@ -64,12 +64,12 @@ public class Robot {
         if(state == RobotConstants.robotState.FAR_SHOOT)
         {
             hood_pos = ftable.lut.get(dist);
-            speed = 2;
+            speed = RobotConstants.far_flywheel_speed * RobotConstants.rpm_conversion_factor;
         }
         if(state == RobotConstants.robotState.CLOSE_SHOOT)
         {
             hood_pos = ctable.lut.get(dist);
-            speed = 1;
+            speed = RobotConstants.close_flywheel_speed * RobotConstants.rpm_conversion_factor;
         }
         double ang = d.yoCalcAim();
         s.setSpeed(speed);

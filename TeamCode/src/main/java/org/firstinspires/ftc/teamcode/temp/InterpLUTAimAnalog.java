@@ -31,7 +31,7 @@ package org.firstinspires.ftc.teamcode.temp;
 import static androidx.core.math.MathUtils.clamp;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
 
-import com.acmerobotics.dashboard.config.Config;
+
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -65,7 +65,6 @@ import org.firstinspires.ftc.teamcode.Mechanisms.UtilMethods;
  */
 
 
-@Config
 @TeleOp(name = "InterpLUT Aim Analog", group = "Robot")
 
 
@@ -136,12 +135,12 @@ public class InterpLUTAimAnalog extends OpMode {
         MAX_ANGLE = 1;
         MIN_ANGLE = 0;
 
-        leftTurretServo = hardwareMap.get(CRServo.class, "turretServo1");
-        rightTurretServo = hardwareMap.get(CRServo.class, "turretServo2");
+        leftTurretServo = hardwareMap.get(CRServo.class, "left_turret_servo");
+        rightTurretServo = hardwareMap.get(CRServo.class, "right_turret_servo");
         //intake = hardwareMap.get(DcMotor.class, "intake");
         //intake.setDirection(DcMotorSimple.Direction.REVERSE);
-        flywheel1 = hardwareMap.get(DcMotor.class, "flywheel1");
-        flywheel2 = hardwareMap.get(DcMotor.class, "flywheel2");
+        flywheel1 = hardwareMap.get(DcMotor.class, "flywheel_top");
+        flywheel2 = hardwareMap.get(DcMotor.class, "flywheel_bottom");
         frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
         frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
         backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");

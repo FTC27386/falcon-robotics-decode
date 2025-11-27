@@ -31,8 +31,7 @@ package org.firstinspires.ftc.teamcode.temp;
 import static androidx.core.math.MathUtils.clamp;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
 
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -63,7 +62,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  */
-@Config
+
 @TeleOp(name = "InterpLUT Aim Solvers", group = "Robot")
 
 public class InterpLUTAimSolvers extends OpMode {
@@ -151,7 +150,6 @@ public class InterpLUTAimSolvers extends OpMode {
 
     @Override
     public void loop() {
-        TelemetryPacket packet = new TelemetryPacket();
         targetVector = new Vector2d(targetX, targetY);
         localizer.update();
         pinpointPose_TEMP = localizer.getPosition();
