@@ -9,29 +9,47 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 @Configurable
 public class RobotConstants {
 
-        public static String first_shooter_motor_name = "flywheel1";
-        public static String second_shooter_motor_name = "flywheel2";
-        public static String left_turret_servo_name = "turretServo1";
-        public static String right_turret_servo_name = "turretServo2";
-        public static String hood_servo_name = "hood";
-        public static String intake_motor_name = "intake";
-        public static String left_front_drive_motor_name = "left_front_drive";
-        public static String right_front_drive_motor_name = "right_front_drive";
-        public static String left_back_drive_motor_name = "left_back_drive";
-        public static String right_back_drive_motor_name = "right_back_drive";
-        public static String transfer_servo_name = "gate";
-        public static String camera = "Webcam 1";
+        public static String first_shooter_motor_name = "flywheel_top",
+                second_shooter_motor_name = "flywheel_bottom",
+                left_turret_servo_name = "left_turret_servo",
+                right_turret_servo_name = "right_turret_servo",
+                hood_servo_name = "hood",
+                intake_motor_name = "intake",
+                left_front_drive_motor_name = "front_left_drive",
+                right_front_drive_motor_name = "front_right_drive",
+                left_back_drive_motor_name = "back_left_drive",
+                right_back_drive_motor_name = "back_right_drive",
+                transfer_servo_name = "blocker",
+                camera = "Webcam 1",
+                turret_encoder_name = "turret_encoder";
 
-        public static double shooterTolerance = 0.05;
-        public static double shooter_kP = 0.0;
-        public static double shooter_kD = 0.0;
-        public static double shooter_kFF = 0.0;
-        public static double shooter_kL = 0.0; //"lower limit" power
-        public static double offset_between_servos = 0;
-        public static double turret_conversion_factor_DEGREES = (double)(1/5) * (double)(170/60) * (double)(1/355);
-        public static double turret_conversion_factor_RADIANS = (double)(1/5) * (double)(170/60) * (double)(1/355) * (double)(360/(2*Math.PI)); // for mason's weird ahh
-        public static double transfer_closed_pos = 0; // temp
-        public static double transfer_open_pos = 1; // temp
-        public static Pose autoLastPose;
+        public static double
+                shooterTolerance = 0.05,
+                vera_coefficient = .4167,
+                shooter_kP = 0.0,
+                shooter_kD = 0.0,
+                shooter_kFF = 0.0,
+                shooter_kL = 0.0, //"lower limit" power
+                turret_kP = 0.0,
+                turret_kD = 0.0,
+                turret_kL = 0.0,
+                offset_between_servos = 0,
+                turret_conversion_factor_DEGREES = (double)(1/5) * (double)(170/60) * (double)(1/355),
+                turret_conversion_factor_RADIANS = (double)(1/5) * (double)(170/60) * (double)(1/355) * (double)(360/(2*Math.PI)), // for mason's weird ahh
+                rpm_conversion_factor = (double)(Math.PI * 2) * (double)(1/60),
+                far_flywheel_speed = (double)(5750),
+                close_flywheel_speed = (double)(2500),
+        transfer_closed_pos = 0.5, // temp
+        transfer_open_pos = .25; // temp
+        public static Pose autoEndPose;
+        public enum robotState
+        {
+                FAR_SHOOT,
+                CLOSE_SHOOT,
+                INTAKING,
+                IDLE
+        }
+
+
 
 }

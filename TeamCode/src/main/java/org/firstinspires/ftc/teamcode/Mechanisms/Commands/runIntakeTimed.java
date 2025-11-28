@@ -5,18 +5,19 @@ import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.Mechanisms.IntakeNoSort;
+import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
 
 public class runIntakeTimed extends SequentialCommandGroup {
 
     public ElapsedTime timer;
 
-    public runIntakeTimed(IntakeNoSort intake, int time)
+    public runIntakeTimed(Robot robot, int time)
     {
         addCommands(
-                new runIntake(intake),
+                new runIntake(robot),
                 new WaitCommand(time),
-                new stopIntake(intake)
+                new stopIntake(robot)
         );
-        addRequirements(intake);
+        addRequirements(robot.getI());
     }
 }

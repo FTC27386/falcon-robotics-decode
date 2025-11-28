@@ -3,20 +3,22 @@ package org.firstinspires.ftc.teamcode.Mechanisms.Commands;
 import com.seattlesolvers.solverslib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.Mechanisms.IntakeNoSort;
+import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
 
 public class runIntake extends CommandBase {
 
-    private final IntakeNoSort robot_intake;
+    private final Robot robot;
 
-    public runIntake(IntakeNoSort intake)
+    public runIntake(Robot robot)
     {
-        robot_intake = intake;
-        addRequirements(robot_intake);
+        this.robot = robot;
     }
     @Override
     public void initialize()
     {
-        robot_intake.intake();
+        robot.getI().close();
+        robot.getI().intake();
+        addRequirements(robot.getI());
     }
     @Override
     public boolean isFinished()

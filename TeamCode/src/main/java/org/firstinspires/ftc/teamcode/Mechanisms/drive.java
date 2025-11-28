@@ -7,17 +7,18 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
-import com.seattlesolvers.solverslib.command.button.Button;
 
 import org.firstinspires.ftc.teamcode.Misc.RobotConstants;
-import org.firstinspires.ftc.teamcode.pedroCalibration.Constants;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+
+import java.util.function.Supplier;
 
 public class drive extends SubsystemBase {
-private Follower follower;
+public Follower follower;
 public static Pose
-        currentPose,
+        currentPose = new Pose(0,0,0),
         startPose,
-    targ;
+    targ = new Pose(0,0,0);
 boolean robotCentricDrive = false;
 public double
         x,
@@ -26,15 +27,17 @@ public double
         distanceY,
     heading;
 
+public Supplier<Pose> poseSupplier = this::getCurrentPose;
+
 
 public drive(HardwareMap hMap)
 {
     follower = Constants.createFollower(hMap);
-    follower.setStartingPose(RobotConstants.autoLastPose == null ? new Pose(0,0,0) : RobotConstants.autoLastPose);
-
+    follower.setStartingPose(RobotConstants.autoEndPose == null ? new Pose(0,0,0) : RobotConstants.autoEndPose);
+    follower.update();
 }
-public void update()
-{
+    @Override
+public void periodic(){
     follower.update();
     currentPose = follower.getPose();
     x = currentPose.getX();
@@ -61,12 +64,12 @@ public double yoCalcAim()  //calculate adjusted turret angle in rad
     return -heading - field_angle;
 }
 
-public void teleOpDrive(double axial, double lateral, double rot)
+public void teleOpDrive(double axial, double lateral, double yaw)
 {
     follower.setTeleOpDrive(
             -axial,
             -lateral,
-            -rot,
+            -yaw,
             true);
 }
 public void reloc(Pose reloc)
@@ -75,7 +78,7 @@ public void reloc(Pose reloc)
 }
 public Pose getCurrentPose()
 {
-    return follower.getPose();
+    return currentPose;
 }
 
 
