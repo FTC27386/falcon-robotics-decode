@@ -146,11 +146,13 @@ public class InterpLUTAimAnalog extends OpMode {
     public void init() {
         lutNum = 0;
         obelisk = 0;
+        /*
         try {
             initAprilTag();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+         */
         turretPDFL = new PIDController(kP, 0, kD);
         turretEnc = hardwareMap.get(AnalogInput.class, "turret_encoder");
         localizer = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
@@ -208,7 +210,7 @@ public class InterpLUTAimAnalog extends OpMode {
 
     @Override
     public void loop() {
-        getAprilTag();
+        //getAprilTag();
         //encoder test
 
         turretPDFL.setPID(kP, 0, kD);
