@@ -26,7 +26,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.firstinspires.ftc.teamcode.Mechanisms;
+package org.firstinspires.ftc.teamcode.temp;
 
 import static androidx.core.math.MathUtils.clamp;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
@@ -44,16 +44,19 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.controller.PIDController;
+import com.seattlesolvers.solverslib.util.InterpLUT;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.Mechanisms.UtilMethods;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
@@ -83,19 +86,20 @@ import java.util.concurrent.TimeUnit;
 
 
 public class InterpLUTAimAnalog extends OpMode {
-    public static double kP = 0;
+    public static double flywheel_kP = -0.02, flywheel_kD = 0.000000002, flywheelkF = 0.25;
+    public static double kP = 0.012;
     public static double kD = 0;
     public static double kF = 0;
-    public static double kL = 0;
+    public static double kL = 0.05;
 
     private AnalogInput turretEnc;
     public static double offsetRadians;
     public static double FLYWHEEL_SPEED;
     public static double targetX = -144,
-            targetY = 144,
+            targetY = 130,
             yawMultiplier = 1;
     // This declares the motors needed
-    DcMotor flywheel1, flywheel2;
+    DcMotorEx flywheel1, flywheel2;
     GoBildaPinpointDriver localizer;
     CRServo leftTurretServo, rightTurretServo;
     DcMotor intake;
@@ -110,7 +114,7 @@ public class InterpLUTAimAnalog extends OpMode {
     double field_adjustment_angle;
     double trueX;
     double trueY;
-    double HOOD_ANGLE;
+    public static double HOOD_ANGLE;
     double MAX_ANGLE;
     double MIN_ANGLE;
     double pinpointX;
@@ -126,10 +130,14 @@ public class InterpLUTAimAnalog extends OpMode {
     double degreeRead;
     double deltaRead;
     double odo_turretservo_angle;
-    double degreestravelled = 0;
+    double degreestravelled = 0,flywheelsignal;
     int rotations=0;
     Pose2D pose;
+    public static Pose2D bottom_right_pose = new Pose2D(DistanceUnit.INCH, 63, -64.5, AngleUnit.DEGREES, 90);
     PIDController turretPDFL;
+    PIDController flywheel_PDFL;
+    public static double flywheel_target = -250;
+
     boolean block = true;
     ElapsedTime shoot = new ElapsedTime();
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
@@ -138,13 +146,22 @@ public class InterpLUTAimAnalog extends OpMode {
     public static void stateAprilTag(boolean state) {
         visionPortal.setProcessorEnabled(aprilTag, state);
     }
-    public static double[][] lut = new double[5][2];
+    public InterpLUT lut = new InterpLUT();
+    public static double[][] lutArray = new double[5][2];
     public static int lutNum;
+    public static double lutMIN;
+    public static double lutMAX;
     public static int obelisk;
 
     @Override
     public void init() {
+        lut.add(60.57, 0.00);
+        lut.add(72.76, 0.01);
+        lut.add(92.92, 0.04);
+        lut.createLUT();
         lutNum = 0;
+        lutMIN = 60.57;
+        lutMAX = 92.92;
         obelisk = 0;
         /*
         try {
@@ -153,13 +170,16 @@ public class InterpLUTAimAnalog extends OpMode {
             throw new RuntimeException(e);
         }
          */
+        flywheel_PDFL = new PIDController(flywheel_kP, 0, flywheel_kD);
         turretPDFL = new PIDController(kP, 0, kD);
+
         turretEnc = hardwareMap.get(AnalogInput.class, "turret_encoder");
         localizer = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         localizer.setOffsets(-116, -91.751, DistanceUnit.MM);
         localizer.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         localizer.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         localizer.resetPosAndIMU();
+        localizer.setPosition(bottom_right_pose);
         FLYWHEEL_SPEED = 1;
         HOOD_ANGLE = 0;
         MAX_ANGLE = 1;
@@ -169,8 +189,8 @@ public class InterpLUTAimAnalog extends OpMode {
         rightTurretServo = hardwareMap.get(CRServo.class, "right_turret_servo");
         intake = hardwareMap.get(DcMotor.class, "intake");
         blocker = hardwareMap.get(Servo.class, "blocker");
-        flywheel1 = hardwareMap.get(DcMotor.class, "flywheel_top");
-        flywheel2 = hardwareMap.get(DcMotor.class, "flywheel_bottom");
+        flywheel1 = hardwareMap.get(DcMotorEx.class, "flywheel_top");
+        flywheel2 = hardwareMap.get(DcMotorEx.class, "flywheel_bottom");
         frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
         frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
         backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
@@ -212,7 +232,7 @@ public class InterpLUTAimAnalog extends OpMode {
     public void loop() {
         //getAprilTag();
         //encoder test
-
+        flywheel_PDFL.setPID(flywheel_kP,0,flywheel_kD);
         turretPDFL.setPID(kP, 0, kD);
         axonRead = turretEnc.getVoltage();
         degreeRead = axonRead * (360/3.3);
@@ -228,6 +248,16 @@ public class InterpLUTAimAnalog extends OpMode {
         degreestravelled = rotations*360.0 + degreeRead;
         turretDeg = degreestravelled*(5.0)*(60/170.0);
         error = UtilMethods.AngleDifference(odo_turretservo_angle, turretDeg) ;
+        if(gamepad1.right_trigger > 0)
+        {
+         flywheelsignal = flywheel_PDFL.calculate(flywheel1.getVelocity(AngleUnit.DEGREES), flywheel_target);
+         flywheelsignal += Math.signum(flywheelsignal) * flywheelkF;
+        }
+        else
+        {
+            flywheelsignal = 0;
+        }
+
         signal = turretPDFL.calculate(-error, 0);
         signal += Math.signum(signal) * kL;
 
@@ -266,22 +296,34 @@ public class InterpLUTAimAnalog extends OpMode {
         telemetry.addData("PINPOINT X (vert)", pinpointX);
         telemetry.addData("Hood Angle", HOOD_ANGLE);
         telemetry.addData("Obelisk", obelisk);
+        telemetry.addData("Distance Vector", distanceVector);
         telemetry.addData("Lut #", lutNum);
-        for(int i = 0; i < lut.length; i++) {
-            telemetry.addData("InterpLUT Value " + i, String.format("%.2f, %.2f", lut[i][0], lut[i][1]));
+        for(int i = 0; i < lutArray.length; i++) {
+            telemetry.addData("InterpLUT Value " + i, String.format("%.2f, %.2f", lutArray[i][0], lutArray[i][1]));
         }
         drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
+        // Set LUT values
+        if (gamepad1.shareWasPressed() && lutNum <= lutArray.length) {
+            lutArray[lutNum][0] = distanceVector;
+            lutArray[lutNum][1] = HOOD_ANGLE;
+        }
+        else {
+            telemetry.addLine("No more values.");
+        }
         if (gamepad1.optionsWasPressed()) localizer.resetPosAndIMU();
-        if (gamepad1.dpadUpWasPressed()) HOOD_ANGLE += 0.01;
-        if (gamepad1.dpadDownWasPressed()) HOOD_ANGLE -= 0.01;
+        if (gamepad1.dpadUpWasPressed()) HOOD_ANGLE += 0.001;
+        if (gamepad1.dpadDownWasPressed()) HOOD_ANGLE -= 0.001;
+        if (gamepad1.dpadLeftWasPressed()) lutNum -= 1;
+        if (gamepad1.dpadRightWasPressed()) lutNum += 1;
+        lutNum = clamp(lutNum, 0, lutArray.length);
         HOOD_ANGLE = clamp(HOOD_ANGLE, MIN_ANGLE, MAX_ANGLE);
 
         if (gamepad1.aWasPressed()) {
             shoot.reset();
             block = false;
         }
-        if (shoot.milliseconds() > 100) {
+        if (shoot.milliseconds() > 125) {
             block = true;
         }
 
@@ -289,7 +331,15 @@ public class InterpLUTAimAnalog extends OpMode {
         // Clamp both values between MIN and MAX.
 
         // Shooter control
-        turret(gamepad1.right_trigger > 0 ? 1 : 0, HOOD_ANGLE, gamepad1.right_trigger > 0 ? 0 : signal);
+        /*
+        if (distanceVector > lutMIN && distanceVector < lutMAX) {
+            HOOD_ANGLE = lut.get(distanceVector);
+        }
+        else {
+            HOOD_ANGLE = 0.08;
+        }
+         */
+        turret(flywheelsignal, HOOD_ANGLE, (gamepad1.right_trigger > 0 || gamepad1.left_trigger > 0) ? 0 : signal);
 
         // Intake control
         if (gamepad1.left_trigger > 0) {
@@ -302,16 +352,6 @@ public class InterpLUTAimAnalog extends OpMode {
             intake.setPower(0);
         }
         previousRead = degreeRead;
-
-        // Set LUT values
-        if (gamepad1.shareWasPressed() && lutNum <= lut.length) {
-            lut[lutNum][0] = distanceVector;
-            lut[lutNum][1] = HOOD_ANGLE;
-            lutNum++;
-        }
-        else {
-            telemetry.addLine("No more values.");
-        }
     }
 
     public void drive(double forward, double right, double rotate) {
@@ -357,6 +397,8 @@ public class InterpLUTAimAnalog extends OpMode {
         telemetry.addData("field_correction_ticks", (-Math.toRadians(field_adjustment_angle))/Math.toRadians(626));
         telemetry.addData("rotations", rotations);
         telemetry.addData("turretDeg", turretDeg);
+        telemetry.addData("flywheel_power", flywheelsignal);
+        telemetry.addData("angular velocity", flywheel1.getVelocity(AngleUnit.DEGREES));
     }
 
     private void getAprilTag() {
@@ -406,7 +448,7 @@ public class InterpLUTAimAnalog extends OpMode {
         // Decimation = 3 ..  Detect 2" Tag from 4  feet away at 30 Frames Per Second (default)
         // Decimation = 3 ..  Detect 5" Tag from 10 feet away at 30 Frames Per Second (default)
         // Note: Decimation can be changed on-the-fly to adapt during a match.
-        aprilTag.setDecimation(3);
+        //aprilTag.setDecimation(3);
 
         // Create the vision portal by using a builder.
         VisionPortal.Builder builder = new VisionPortal.Builder();
@@ -453,7 +495,7 @@ public class InterpLUTAimAnalog extends OpMode {
             exposureControl.setMode(ExposureControl.Mode.Manual);
             sleep(50);
         }
-        exposureControl.setExposure((long)2, TimeUnit.MILLISECONDS);
+        exposureControl.setExposure((long)5, TimeUnit.MILLISECONDS);
         sleep(20);
 
     }   // end method initAprilTag()
