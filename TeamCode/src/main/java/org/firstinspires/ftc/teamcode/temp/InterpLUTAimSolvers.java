@@ -67,7 +67,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 public class InterpLUTAimSolvers extends OpMode {
 
-    public static InterpLUT lut;
+    private InterpLUT lut;
     public static double offsetRadians;
     public static double FLYWHEEL_SPEED;
     public static double targetX,

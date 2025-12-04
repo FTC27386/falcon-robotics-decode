@@ -93,10 +93,9 @@ public class InterpLUTAimAnalog extends OpMode {
     public static double kL = 0.05;
 
     private AnalogInput turretEnc;
-    public static double offsetRadians;
-    public static double FLYWHEEL_SPEED;
+    public static double turretOffset;
     public static double targetX = -144,
-            targetY = 130,
+            targetY = 144,
             yawMultiplier = 1;
     // This declares the motors needed
     DcMotorEx flywheel1, flywheel2;
@@ -136,7 +135,7 @@ public class InterpLUTAimAnalog extends OpMode {
     public static Pose2D bottom_right_pose = new Pose2D(DistanceUnit.INCH, 63, -64.5, AngleUnit.DEGREES, 90);
     PIDController turretPDFL;
     PIDController flywheel_PDFL;
-    public static double flywheel_target = -250;
+    public static double flywheel_target = -270;
 
     boolean block = true;
     ElapsedTime shoot = new ElapsedTime();
@@ -146,22 +145,37 @@ public class InterpLUTAimAnalog extends OpMode {
     public static void stateAprilTag(boolean state) {
         visionPortal.setProcessorEnabled(aprilTag, state);
     }
-    public InterpLUT lut = new InterpLUT();
+    public InterpLUT lut1 = new InterpLUT();
+    public InterpLUT lut2 = new InterpLUT();
     public static double[][] lutArray = new double[5][2];
     public static int lutNum;
-    public static double lutMIN;
-    public static double lutMAX;
+    public static double lut1MIN;
+    public static double lut2MIN;
+    public static double lut1MAX;
+    public static double lut2MAX;
     public static int obelisk;
+    public static boolean interpLUTActive = true;
 
     @Override
     public void init() {
-        lut.add(60.57, 0.00);
-        lut.add(72.76, 0.01);
-        lut.add(92.92, 0.04);
-        lut.createLUT();
+        // Speed 225
+        lut1MIN = 69.674;
+        lut1.add(69.674,0.017);
+        lut1.add(81.521,0.029);
+        lut1.add(84.143, 0.036);
+        lut1MAX = 84.143;
+
+        // Speed 270
+        lut2MIN = 82.260;
+        lut2.add(82.260,0.084);
+        lut2.add(94.016, 0.080);
+        lut2.add(116.262,0.068);
+        lut2MAX = 116.262;
+
+        lut1.createLUT();
+        lut2.createLUT();
+
         lutNum = 0;
-        lutMIN = 60.57;
-        lutMAX = 92.92;
         obelisk = 0;
         /*
         try {
@@ -170,6 +184,7 @@ public class InterpLUTAimAnalog extends OpMode {
             throw new RuntimeException(e);
         }
          */
+        turretOffset = 0;
         flywheel_PDFL = new PIDController(flywheel_kP, 0, flywheel_kD);
         turretPDFL = new PIDController(kP, 0, kD);
 
@@ -180,7 +195,6 @@ public class InterpLUTAimAnalog extends OpMode {
         localizer.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         localizer.resetPosAndIMU();
         localizer.setPosition(bottom_right_pose);
-        FLYWHEEL_SPEED = 1;
         HOOD_ANGLE = 0;
         MAX_ANGLE = 1;
         MIN_ANGLE = 0;
@@ -273,7 +287,7 @@ public class InterpLUTAimAnalog extends OpMode {
        // odo_turretservo_angle = 1-(localizer.getHeading(AngleUnit.RADIANS)+Math.toRadians(313))/Math.toRadians(626);
         //odo_turretservo_angle +=(Math.toRadians(field_adjustment_angle))/Math.toRadians(626);
        // odo_turretservo_angle *= 360;
-        odo_turretservo_angle = -pose.getHeading(AngleUnit.DEGREES) - field_adjustment_angle;
+        odo_turretservo_angle = -pose.getHeading(AngleUnit.DEGREES) - field_adjustment_angle + turretOffset;
 
         distanceVector = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
         //distanceVector = Math.atan2(distanceX, distanceY);
@@ -297,12 +311,15 @@ public class InterpLUTAimAnalog extends OpMode {
         telemetry.addData("Hood Angle", HOOD_ANGLE);
         telemetry.addData("Obelisk", obelisk);
         telemetry.addData("Distance Vector", distanceVector);
+        /*
         telemetry.addData("Lut #", lutNum);
         for(int i = 0; i < lutArray.length; i++) {
-            telemetry.addData("InterpLUT Value " + i, String.format("%.2f, %.2f", lutArray[i][0], lutArray[i][1]));
+            telemetry.addData("InterpLUT Value " + i, String.format("%.3f, %.3f", lutArray[i][0], lutArray[i][1]));
         }
+        */
         drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
+        /*
         // Set LUT values
         if (gamepad1.shareWasPressed() && lutNum <= lutArray.length) {
             lutArray[lutNum][0] = distanceVector;
@@ -311,6 +328,9 @@ public class InterpLUTAimAnalog extends OpMode {
         else {
             telemetry.addLine("No more values.");
         }
+         */
+        if (gamepad1.shareWasPressed()) interpLUTActive = !interpLUTActive;
+
         if (gamepad1.optionsWasPressed()) localizer.resetPosAndIMU();
         if (gamepad1.dpadUpWasPressed()) HOOD_ANGLE += 0.001;
         if (gamepad1.dpadDownWasPressed()) HOOD_ANGLE -= 0.001;
@@ -331,14 +351,22 @@ public class InterpLUTAimAnalog extends OpMode {
         // Clamp both values between MIN and MAX.
 
         // Shooter control
-        /*
-        if (distanceVector > lutMIN && distanceVector < lutMAX) {
-            HOOD_ANGLE = lut.get(distanceVector);
+        telemetry.addLine("REGRESSION ACTIVE");
+        if (distanceVector > lut1MIN && distanceVector < lut2MIN) {
+            telemetry.addLine("Zone 1");
+            HOOD_ANGLE = 0.000114507 * Math.pow(distanceVector, 2)
+                       - 0.0163 * distanceVector
+                       + 0.596814;
+            flywheel_target = -225;
+        } else if (distanceVector > lut2MIN && distanceVector < lut2MAX) {
+            telemetry.addLine("Zone 2");
+            HOOD_ANGLE = -0.00000585763 * Math.pow(distanceVector, 2)
+                       + 0.000692307 * distanceVector
+                       + 0.0666877;
+            flywheel_target = -270;
+        } else {
+            flywheel_target = 300;
         }
-        else {
-            HOOD_ANGLE = 0.08;
-        }
-         */
         turret(flywheelsignal, HOOD_ANGLE, (gamepad1.right_trigger > 0 || gamepad1.left_trigger > 0) ? 0 : signal);
 
         // Intake control
