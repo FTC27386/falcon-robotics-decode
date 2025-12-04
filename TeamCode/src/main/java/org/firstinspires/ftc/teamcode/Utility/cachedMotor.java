@@ -1,6 +1,5 @@
-package org.firstinspires.ftc.teamcode.Misc;
+package org.firstinspires.ftc.teamcode.Utility;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 public class cachedMotor {

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Misc;
+package org.firstinspires.ftc.teamcode.Utility;
 
 import com.seattlesolvers.solverslib.util.InterpLUT;
 
@@ -6,10 +6,10 @@ public class farLUT
 {
     double[][] hoodData =
             {
-                    {0.0, 0.0},
-                    {1.0,1.0},
-                    {2.0,2},
-                    {300.3,2}
+                    {60.57, 0},
+                    {72.76,0.01},
+                    {92.92,0.04},
+                    {200,0.045}
             };
     public InterpLUT lut;
     public void addPoint(double in, double out)

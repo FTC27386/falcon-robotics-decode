@@ -5,11 +5,11 @@ import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 
 import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
 
-public class enterIntakeMode extends ParallelCommandGroup {
+public class toggleIntake extends ParallelCommandGroup {
 
     Robot r;
 
-    public enterIntakeMode(Robot r)
+    public toggleIntake(Robot r)
     {
         this.r = r;
         addRequirements(r.getI(), r.getS());

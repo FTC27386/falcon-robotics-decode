@@ -2,45 +2,43 @@ package org.firstinspires.ftc.teamcode.Mechanisms;
 
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 
-import org.firstinspires.ftc.teamcode.Misc.RobotConstants;
-import org.firstinspires.ftc.teamcode.Misc.closeLUT;
-import org.firstinspires.ftc.teamcode.Misc.farLUT;
-
-import java.sql.Driver;
-import java.util.function.DoubleSupplier;
+import org.firstinspires.ftc.teamcode.Utility.RobotConstants;
+import org.firstinspires.ftc.teamcode.Utility.closeLUT;
+import org.firstinspires.ftc.teamcode.Utility.farLUT;
 
 public class Robot {
     GamepadEx gp;
 
-    turretShooter s;
-    IntakeNoSort i;
-    drive d;
+    shooterSystem s;
+    intakeSystem i;
+    drivetrainSystem d;
+    liftSystem l;
     closeLUT ctable;
     farLUT ftable;
     RobotConstants.robotState currentState;
 
-    public turretShooter getS() {
+    public shooterSystem getS() {
         return s;
     }
 
-    public IntakeNoSort getI() {
+    public intakeSystem getI() {
 
         return i;
     }
 
-    public drive getD()
+    public drivetrainSystem getD()
     {
         return d;
     }
 
     public Robot(final HardwareMap hmap)
     {
-        s = new turretShooter(hmap);
-        i = new IntakeNoSort(hmap);
-        d = new drive(hmap);
+        s = new shooterSystem(hmap);
+        i = new intakeSystem(hmap);
+        d = new drivetrainSystem(hmap);
+        l = new liftSystem(hmap);
         ctable = new closeLUT();
         ftable = new farLUT();
         currentState = RobotConstants.robotState.IDLE;
@@ -54,6 +52,7 @@ public class Robot {
         i.periodic();
         s.periodic();
         d.periodic();
+        l.periodic();
     }
     public void prepShooter(RobotConstants.robotState state)
     {
@@ -76,4 +75,10 @@ public class Robot {
         s.setHoodPosition(hood_pos);
         s.setTurretPosition(ang);
     }
+    public void climb()
+    {
+        l.down();
+        l.unlatch();
+    }
+
 }

@@ -1,16 +1,14 @@
 package org.firstinspires.ftc.teamcode.Mechanisms.Commands;
 
-import com.seattlesolvers.solverslib.command.CommandBase;
-import com.seattlesolvers.solverslib.command.CommandGroupBase;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
-import org.firstinspires.ftc.teamcode.Misc.RobotConstants;
+import org.firstinspires.ftc.teamcode.Utility.RobotConstants;
 
 public class oneShot extends SequentialCommandGroup {
-    private  Robot r;
+    private Robot r;
     private RobotConstants.robotState shootingZone;
 
 
