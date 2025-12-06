@@ -89,8 +89,8 @@ public class shooterSystem extends SubsystemBase
         signal = isWoundUp? 0 : headingControl.calculate(-error, 0);
         signal += Math.signum(signal) * RobotConstants.turret_kL;
         currentSpeed = shooter1.getVelocity();
-        rawCalcPower = speedControl.calculate(currentSpeed);
-        //powerToSet = rawCalcPower + (RobotConstants.shooter_kL) + RobotConstants.shooter_kFF;
+        rawCalcPower = speedControl.calculate(-currentSpeed);
+        powerToSet = rawCalcPower + (RobotConstants.shooter_kL) + RobotConstants.shooter_kFF;
 
 
         shooter1.setPower(powerToSet);
