@@ -49,6 +49,10 @@ public class shooterSystem extends SubsystemBase
         speedControl = new PIDController(RobotConstants.shooter_kP, 0, RobotConstants.shooter_kD);
         headingControl = new PIDController(RobotConstants.turret_kP, 0, RobotConstants.turret_kD);
     }
+    public PIDController getSpeedControl()
+    {
+        return speedControl;
+    }
     @Override
     public void periodic()
     {

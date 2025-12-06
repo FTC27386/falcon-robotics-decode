@@ -94,7 +94,7 @@ public class InterpLUTAimAnalog extends OpMode {
 
     private AnalogInput turretEnc;
     public static double turretOffset;
-    public static double targetX = -144,
+    public static double targetX = 0,
             targetY = 144,
             yawMultiplier = 1;
     // This declares the motors needed
@@ -132,7 +132,7 @@ public class InterpLUTAimAnalog extends OpMode {
     double degreestravelled = 0,flywheelsignal;
     int rotations=0;
     Pose2D pose;
-    public static Pose2D bottom_right_pose = new Pose2D(DistanceUnit.INCH, 63, -64.5, AngleUnit.DEGREES, 90);
+    public static Pose2D bottom_right_pose = new Pose2D(DistanceUnit.INCH, 136, 8, AngleUnit.DEGREES, 90);
     PIDController turretPDFL;
     PIDController flywheel_PDFL;
     public static double flywheel_target = 270;
@@ -444,6 +444,7 @@ public class InterpLUTAimAnalog extends OpMode {
         telemetry.addData("angular velocity", flywheel1.getVelocity(AngleUnit.DEGREES));
         telemetry.addData("flywheel_current", flywheel_current);
         telemetry.addData("flywheel_target", flywheel_target);
+
     }
 
     private void getAprilTag() {
