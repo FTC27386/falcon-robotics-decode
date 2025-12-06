@@ -53,6 +53,10 @@ public class shooterSystem extends SubsystemBase
     {
         return speedControl;
     }
+    public double getFlywheelSignal()
+    {
+        return powerToSet;
+    }
     public double getCurrentSpeed()
     {
         return currentSpeed;
