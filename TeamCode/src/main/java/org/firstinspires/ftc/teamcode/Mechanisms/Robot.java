@@ -54,22 +54,26 @@ public class Robot {
         d.periodic();
         l.periodic();
     }
-    public void prepShooter(RobotConstants.robotState state)
+    public void prepShooter()
     {
-        currentState = state;
         double speed = 0;
         double dist = d.yoCalcDist();
         double hood_pos = 0;
-        if(state == RobotConstants.robotState.FAR_SHOOT)
-        {
-            hood_pos = ftable.lut.get(dist);
-            speed = RobotConstants.far_flywheel_speed * RobotConstants.rpm_conversion_factor;
+
+        if (dist >= 69.674 && dist < 82.260) {
+            hood_pos = 0.000114507 * Math.pow(dist, 2)
+                    - 0.0163 * dist
+                    + 0.596814;
+            speed = 225;
+        } else if (dist >= 82.260 && dist <= 116.262) {
+            hood_pos = -0.00000585763 * Math.pow(dist, 2)
+                    + 0.000692307 * dist
+                    + 0.0666877;
+            speed = 270;
+        } else {
+            speed = 0;
         }
-        if(state == RobotConstants.robotState.CLOSE_SHOOT)
-        {
-            hood_pos = ctable.lut.get(dist);
-            speed = RobotConstants.close_flywheel_speed * RobotConstants.rpm_conversion_factor;
-        }
+
         double ang = d.yoCalcAim();
         s.setSpeed(speed);
         s.setHoodPosition(hood_pos);

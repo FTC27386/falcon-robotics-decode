@@ -9,6 +9,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.defaultDrive;
+import org.firstinspires.ftc.teamcode.Mechanisms.Commands.oneShot;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.runIntakeTimed;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.toggleIntake;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.readyShooter;
@@ -20,10 +21,9 @@ import java.util.function.Supplier;
 @TeleOp(name = "TeleOp")
 public class teleOp extends CommandOpMode {
 
-    Button shootFar;
-    Button shootClose;
     Button intake;
     Button relocalize;
+    Button shoot;
     GamepadEx driverOp;
     private Robot r;
     @Override
@@ -38,16 +38,14 @@ public class teleOp extends CommandOpMode {
         Supplier<Double> rightX = driverOp::getRightX;
         r.getD().setDefaultCommand(new defaultDrive(r,leftY, leftX, rightX));
 
-        shootFar = driverOp.getGamepadButton(GamepadKeys.Button.X);
-        shootClose = driverOp.getGamepadButton(GamepadKeys.Button.CIRCLE);
         intake = driverOp.getGamepadButton(GamepadKeys.Button.SQUARE);
         relocalize = driverOp.getGamepadButton(GamepadKeys.Button.OPTIONS);
+        shoot = driverOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER);
 
-        shootFar.whenPressed(new readyShooter(r, RobotConstants.robotState.FAR_SHOOT));
-        shootClose.whenPressed(new readyShooter(r, RobotConstants.robotState.CLOSE_SHOOT));
         intake.whenPressed(new runIntakeTimed(r,2000));
         relocalize.whenPressed(new InstantCommand(()->r.getD().reloc(new Pose(8,8,Math.toRadians(90)))));
         schedule(new InstantCommand(()-> r.getD().follower.startTeleOpDrive()));
+        shoot.whenPressed(new oneShot(r));
 
     }
     @Override

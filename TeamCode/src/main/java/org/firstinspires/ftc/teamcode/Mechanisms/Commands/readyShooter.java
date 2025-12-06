@@ -9,19 +9,17 @@ import org.firstinspires.ftc.teamcode.Utility.RobotConstants;
 public class readyShooter extends CommandBase{
 
     private final Robot robot;
-    RobotConstants.robotState state;
 
 
-    public readyShooter(Robot robot, RobotConstants.robotState state)
+    public readyShooter(Robot robot)
     {
         this.robot = robot;
-        this.state = state;
         addRequirements(robot.getS());
     }
     @Override
     public void initialize()
     {
-        robot.prepShooter(state);
+        robot.prepShooter();
     }
     @Override
     public boolean isFinished()

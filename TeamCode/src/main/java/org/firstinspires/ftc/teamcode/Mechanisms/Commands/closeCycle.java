@@ -16,7 +16,7 @@ public class closeCycle extends SequentialCommandGroup {
         addRequirements(r.getI(),r.getS());
         addCommands(
                 new InstantCommand(()-> r.getI().close()),
-                new readyShooter(r, RobotConstants.robotState.FAR_SHOOT),
+                new readyShooter(r),
                 new InstantCommand(()->r.getI().open()),
                 new runIntakeTimed(r,900),
                 new stopIntake(r)
