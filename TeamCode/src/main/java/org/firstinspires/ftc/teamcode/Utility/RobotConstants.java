@@ -34,7 +34,7 @@ public class RobotConstants {
                 lift_kF = 0.0,
                 shooter_kP = 0.02,
                 shooter_kD = 0.000000002,
-                shooter_kFF = 0.25,
+                shooter_kFF = 0,
                 shooter_kL = 0.0, //"lower limit" power
                 turret_kP = 0.012,
                 turret_kD = 0.0,
