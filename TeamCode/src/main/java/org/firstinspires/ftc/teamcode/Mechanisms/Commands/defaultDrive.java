@@ -25,7 +25,7 @@ public class defaultDrive extends CommandBase {
         @Override
     public void execute()
         {
-            r.getD().teleOpDrive(axial.get(), lateral.get(),yaw.get());
+            r.getD().teleOpDrive(-axial.get(), lateral.get(),yaw.get());
         }
 
 }

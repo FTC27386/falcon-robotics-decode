@@ -4,7 +4,7 @@ import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 
 import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
-import org.firstinspires.ftc.teamcode.Misc.RobotConstants;
+import org.firstinspires.ftc.teamcode.Utility.RobotConstants;
 
 public class closeCycle extends SequentialCommandGroup {
 

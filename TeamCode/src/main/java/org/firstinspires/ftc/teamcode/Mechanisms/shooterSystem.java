@@ -2,21 +2,16 @@ package org.firstinspires.ftc.teamcode.Mechanisms;
 
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.seattlesolvers.solverslib.command.CommandScheduler;
-import com.seattlesolvers.solverslib.command.Subsystem;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDController;
-import com.seattlesolvers.solverslib.hardware.motors.Motor;
-import com.seattlesolvers.solverslib.hardware.motors.MotorGroup;
 
-import org.firstinspires.ftc.teamcode.Misc.RobotConstants;
-import org.firstinspires.ftc.teamcode.Misc.cachedMotor;
+import org.firstinspires.ftc.teamcode.Utility.RobotConstants;
+import org.firstinspires.ftc.teamcode.Utility.UtilMethods;
 
-public class turretShooter extends SubsystemBase
+public class shooterSystem extends SubsystemBase
 {
     boolean isWoundUp = false;
     AnalogInput turretEnc;
@@ -41,7 +36,7 @@ public class turretShooter extends SubsystemBase
     hoodPosition = 0,
     currentSpeed,
             nominalVoltage = 12.00; //voltage at which the shooter was tuned
-    public turretShooter(final HardwareMap hMap)
+    public shooterSystem(final HardwareMap hMap)
     {
         turretEnc = hMap.get(AnalogInput.class, RobotConstants.turret_encoder_name);
         shooter1 = hMap.get(DcMotorEx.class, RobotConstants.first_shooter_motor_name);

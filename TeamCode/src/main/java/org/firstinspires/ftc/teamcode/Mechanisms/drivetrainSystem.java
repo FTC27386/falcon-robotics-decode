@@ -8,17 +8,17 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
-import org.firstinspires.ftc.teamcode.Misc.RobotConstants;
+import org.firstinspires.ftc.teamcode.Utility.RobotConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.function.Supplier;
 
-public class drive extends SubsystemBase {
+public class drivetrainSystem extends SubsystemBase {
 public Follower follower;
 public static Pose
-        currentPose = new Pose(0,0,0),
+        currentPose = new Pose(0,0,Math.toRadians(90)),
         startPose,
-    targ = new Pose(0,0,0);
+    targ = new Pose(-67,67,0);
 boolean robotCentricDrive = false;
 public double
         x,
@@ -30,10 +30,10 @@ public double
 public Supplier<Pose> poseSupplier = this::getCurrentPose;
 
 
-public drive(HardwareMap hMap)
+public drivetrainSystem(HardwareMap hMap)
 {
     follower = Constants.createFollower(hMap);
-    follower.setStartingPose(RobotConstants.autoEndPose == null ? new Pose(0,0,0) : RobotConstants.autoEndPose);
+    follower.setStartingPose(RobotConstants.autoEndPose == null ? new Pose(0,0,Math.toRadians(90)) : RobotConstants.autoEndPose);
     follower.update();
 }
     @Override
@@ -61,11 +61,12 @@ public double yoCalcDist() //calculate distance in inch
 public double yoCalcAim()  //calculate adjusted turret angle in rad
 {
     double field_angle = (90 - Math.toDegrees(Math.atan2(distanceY,distanceX)));
-    return -heading - field_angle;
+    return -(Math.toDegrees(heading)-90) - field_angle;
 }
 
 public void teleOpDrive(double axial, double lateral, double yaw)
 {
+
     follower.setTeleOpDrive(
             -axial,
             -lateral,
@@ -80,6 +81,7 @@ public Pose getCurrentPose()
 {
     return currentPose;
 }
+
 
 
 

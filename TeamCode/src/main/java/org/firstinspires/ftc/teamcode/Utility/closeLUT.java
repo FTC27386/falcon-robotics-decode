@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Misc;
+package org.firstinspires.ftc.teamcode.Utility;
 
 import com.seattlesolvers.solverslib.util.InterpLUT;
 
@@ -7,10 +7,10 @@ public class closeLUT
 
     double[][] hoodData =
             {
-                    {0, 0},
-                    {1,1},
-                    {2,2},
-                    {300,3}
+                    {60.57, 0},
+                    {72.76,0.01},
+                    {92.92,0.04},
+                    {200,0.045}
             };
 
     public InterpLUT lut;

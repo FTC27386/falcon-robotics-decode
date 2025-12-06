@@ -5,18 +5,20 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
-import org.firstinspires.ftc.teamcode.Misc.RobotConstants;
+import org.firstinspires.ftc.teamcode.Utility.RobotConstants;
 
-public class IntakeNoSort extends  SubsystemBase{
+public class intakeSystem extends  SubsystemBase{
     DcMotor intakeMotor;
     Servo gate;
+    Servo pivot;
     double targetpower,
     gatePosition = RobotConstants.transfer_open_pos;
 
 
 
-    public IntakeNoSort(HardwareMap hMap)
+    public intakeSystem(HardwareMap hMap)
     {
+        pivot = hMap.get(Servo.class, RobotConstants.intake_servo_name);
         gate = hMap.get(Servo.class, RobotConstants.transfer_servo_name);
         intakeMotor = hMap.get(DcMotor.class, RobotConstants.intake_motor_name);
     }
@@ -31,7 +33,7 @@ public class IntakeNoSort extends  SubsystemBase{
     }
     public void intake()
     {
-        targetpower = 1;
+        targetpower = -1;
     }
     public void stopIntake()
     {
@@ -39,12 +41,16 @@ public class IntakeNoSort extends  SubsystemBase{
     }
     public void outtake()
     {
-        targetpower = -1;
+        targetpower = 1;
     }
     @Override
     public void periodic()
     {
         intakeMotor.setPower(targetpower);
         gate.setPosition(gatePosition);
+    }
+    public void stow()
+    {
+        pivot.setPosition(1);
     }
 }

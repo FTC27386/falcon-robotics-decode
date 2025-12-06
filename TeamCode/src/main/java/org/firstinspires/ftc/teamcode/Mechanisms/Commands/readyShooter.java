@@ -3,9 +3,9 @@ package org.firstinspires.ftc.teamcode.Mechanisms.Commands;
 import com.seattlesolvers.solverslib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
-import org.firstinspires.ftc.teamcode.Mechanisms.turretShooter;
-import org.firstinspires.ftc.teamcode.Misc.RobotConstants;
+import org.firstinspires.ftc.teamcode.Utility.RobotConstants;
 
+//This is a command
 public class readyShooter extends CommandBase{
 
     private final Robot robot;
