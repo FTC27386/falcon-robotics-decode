@@ -1,12 +1,16 @@
 package org.firstinspires.ftc.teamcode.opMode;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 
 import org.firstinspires.ftc.robotcore.external.Const;
+import org.firstinspires.ftc.teamcode.Mechanisms.Commands.followPath;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.oneShot;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.runIntake;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.stopIntake;
@@ -31,35 +35,43 @@ public class babysFirstAuto extends CommandOpMode {
         r = new Robot(hardwareMap);
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(Paths.startingPose);
+        follower.update();
+        PathChain pathChain = follower.pathBuilder()
+                .addPath(new BezierLine(
+                        new Pose(0, 0, Math.toRadians(0)),
+                        new Pose(16, 28, Math.toRadians(90)))
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(90))
+                .build();
         paths = new Paths(follower);
         register(r.getS(), r.getI());
-        schedule(new SequentialCommandGroup(
+        schedule(
+
+                new SequentialCommandGroup(
                 new oneShot(r, RobotConstants.robotState.CLOSE_SHOOT),
                 new runIntake(r),
-                new FollowPathCommand(follower, paths.Path1), //intake 1st line
+                new followPath(r, paths.Path1), //intake 1st line
                 new stopIntake(r),
-                new FollowPathCommand(follower, paths.Path2), //return to shoot point
+                new followPath(r, paths.Path2), //return to shoot point
                 new oneShot(r, RobotConstants.robotState.CLOSE_SHOOT),
-               new FollowPathCommand(follower, paths.Path3),
+             new followPath(r, paths.Path3),
                 new runIntake(r),
-               new FollowPathCommand(follower, paths.Path4),
+               new followPath(r, paths.Path4),
                 new stopIntake(r),
-                new FollowPathCommand(follower, paths.Path5),
+                new followPath(r, paths.Path5),
                 new oneShot(r, RobotConstants.robotState.CLOSE_SHOOT),
-                new FollowPathCommand(follower, paths.Path6),
+              new followPath(r, paths.Path6),
                 new runIntake(r),
-                new FollowPathCommand(follower, paths.Path7),
+               new followPath(r, paths.Path7),
                 new stopIntake(r),
-                new FollowPathCommand(follower, paths.Path8),
+               new followPath(r, paths.Path8),
                 new oneShot(r, RobotConstants.robotState.CLOSE_SHOOT),
-                new FollowPathCommand(follower, paths.Path9)));
+                        new followPath(r, paths.Path9)));
 
     }
     @Override
     public void run()
     {
-
         super.run();
-
+        telemetry.update();
     }
 }

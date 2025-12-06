@@ -57,7 +57,7 @@ public class Constants {
             .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .xVelocity(80.170481)
             .yVelocity(64.797);
-    public static PathConstraints pathConstraints = new PathConstraints(0.99, 50, 2, 1);
+    public static PathConstraints pathConstraints = new PathConstraints(0.99, 50, .6, 1);
 
     public static Follower createFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Mechanisms;
 
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -41,6 +42,7 @@ public class shooterSystem extends SubsystemBase
         turretEnc = hMap.get(AnalogInput.class, RobotConstants.turret_encoder_name);
         shooter1 = hMap.get(DcMotorEx.class, RobotConstants.first_shooter_motor_name);
         shooter2 = hMap.get(DcMotorEx.class, RobotConstants.second_shooter_motor_name);
+        shooter2.setDirection(DcMotor.Direction.REVERSE);
         turret1 = hMap.get(CRServo.class, RobotConstants.left_turret_servo_name);
         turret2 = hMap.get(CRServo.class, RobotConstants.right_turret_servo_name);
         hood = hMap.get(Servo.class, RobotConstants.hood_servo_name);
