@@ -46,7 +46,7 @@ public class teleOp extends CommandOpMode {
         shootFar.whenPressed(new readyShooter(r, RobotConstants.robotState.FAR_SHOOT));
         shootClose.whenPressed(new readyShooter(r, RobotConstants.robotState.CLOSE_SHOOT));
         intake.whenPressed(new runIntakeTimed(r,2000));
-        relocalize.whenPressed(new InstantCommand(()->r.getD().reloc(new Pose(0,0,Math.toRadians(90)))));
+        relocalize.whenPressed(new InstantCommand(()->r.getD().reloc(new Pose(8,8,Math.toRadians(90)))));
         schedule(new InstantCommand(()-> r.getD().follower.startTeleOpDrive()));
 
     }
