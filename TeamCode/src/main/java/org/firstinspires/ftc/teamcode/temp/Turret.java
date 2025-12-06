@@ -32,6 +32,7 @@ import static androidx.core.math.MathUtils.clamp;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
 
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -54,7 +55,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @TeleOp(name = "Turret", group = "Robot")
-
+@Disabled
 public class Turret extends OpMode {
     public static double increment = 0.001;
     public static int swayinterval = 1500;

@@ -33,6 +33,7 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
 
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -64,7 +65,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
  */
 
 @TeleOp(name = "InterpLUT Aim Solvers", group = "Robot")
-
+@Disabled
 public class InterpLUTAimSolvers extends OpMode {
 
     private InterpLUT lut;

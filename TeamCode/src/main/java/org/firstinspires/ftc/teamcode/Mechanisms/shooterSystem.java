@@ -22,7 +22,7 @@ public class shooterSystem extends SubsystemBase
     DcMotorEx shooter1;
     DcMotorEx shooter2;
     double rawCalcPower,
-    axonRead,
+    axonRead = 0,
     degreeRead,
     deltaRead,
     previousread,
@@ -64,9 +64,15 @@ public class shooterSystem extends SubsystemBase
     @Override
     public void periodic()
     {
+        // Get voltage and compare, hopefully should filter out drops.
         speedControl.setTolerance(RobotConstants.shooterTolerance);
         speedControl.setPID(RobotConstants.shooter_kP, 0, RobotConstants.shooter_kD);
         headingControl.setPID(RobotConstants.turret_kP, 0, RobotConstants.turret_kD);
+        /*
+        if (axonRead != 0 && Math.abs(axonRead - turretEnc.getVoltage()) < 0.5) {
+
+        }
+         */
         axonRead = turretEnc.getVoltage();
         degreeRead = axonRead * (360/3.3);
         deltaRead = degreeRead - previousread;

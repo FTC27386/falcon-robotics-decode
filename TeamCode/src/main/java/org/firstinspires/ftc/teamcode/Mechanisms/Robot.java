@@ -20,7 +20,6 @@ public class Robot {
     }
 
     public intakeSystem getI() {
-
         return i;
     }
 
@@ -54,6 +53,7 @@ public class Robot {
         double dist = d.yoCalcDist();
         double hood_pos = 0;
 
+        /*
         if (dist >= 69.674 && dist < 82.260) {
             hood_pos = 0.000114507 * Math.pow(dist, 2)
                     - 0.0163 * dist
@@ -68,6 +68,8 @@ public class Robot {
             speed = 0;
         }
         speed = 0;
+         */
+        speed = 1500;
 
         double ang = d.yoCalcAim();
         s.setSpeed(speed);

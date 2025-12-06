@@ -33,6 +33,7 @@ import static android.os.SystemClock.sleep;
 import android.util.Size;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -68,7 +69,7 @@ import java.util.concurrent.TimeUnit;
  *
  */
 @TeleOp(name = "Camera Teleop Goon Mode", group = "Robot")
-
+@Disabled
 public class CameraGrowingRobotTeleopMecanumFieldRelativeDrive extends OpMode {
 
 

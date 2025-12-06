@@ -33,6 +33,7 @@ import static android.os.SystemClock.sleep;
 import android.util.Size;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -66,7 +67,7 @@ import java.util.concurrent.TimeUnit;
  *
  */
 @TeleOp(name = "Camera Teleop", group = "Robot")
-
+@Disabled
 public class CameraRobotTeleopMecanumFieldRelativeDrive extends OpMode {
     private static final boolean USE_WEBCAM = true;
     private AprilTagProcessor aprilTag;
