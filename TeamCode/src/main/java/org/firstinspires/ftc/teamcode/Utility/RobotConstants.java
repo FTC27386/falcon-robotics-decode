@@ -32,7 +32,7 @@ public class RobotConstants {
                 lift_kP = 0.0,
                 lift_kD = 0.0,
                 lift_kF = 0.0,
-                shooter_kP = -0.02,
+                shooter_kP = 0.02,
                 shooter_kD = 0.000000002,
                 shooter_kFF = 0.25,
                 shooter_kL = 0.0, //"lower limit" power
