@@ -135,10 +135,11 @@ public class InterpLUTAimAnalog extends OpMode {
     public static Pose2D bottom_right_pose = new Pose2D(DistanceUnit.INCH, 63, -64.5, AngleUnit.DEGREES, 90);
     PIDController turretPDFL;
     PIDController flywheel_PDFL;
-    public static double flywheel_target = -270;
+    public static double flywheel_target = 270;
+    public static double flywheel_current;
 
     boolean block = true;
-    ElapsedTime shoot = new ElapsedTime();
+    ElapsedTime shoot1 = new ElapsedTime();
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
     public static AprilTagProcessor aprilTag;
     public static VisionPortal visionPortal;
@@ -187,6 +188,7 @@ public class InterpLUTAimAnalog extends OpMode {
         turretOffset = 0;
         flywheel_PDFL = new PIDController(flywheel_kP, 0, flywheel_kD);
         turretPDFL = new PIDController(kP, 0, kD);
+        flywheel_PDFL.setTolerance(20);
 
         turretEnc = hardwareMap.get(AnalogInput.class, "turret_encoder");
         localizer = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
@@ -224,8 +226,8 @@ public class InterpLUTAimAnalog extends OpMode {
         backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intake.setDirection(DcMotor.Direction.REVERSE);
-        flywheel1.setDirection(DcMotor.Direction.FORWARD);
-        flywheel2.setDirection(DcMotor.Direction.REVERSE);
+        flywheel1.setDirection(DcMotor.Direction.REVERSE);
+        flywheel2.setDirection(DcMotor.Direction.FORWARD);
         flywheel1.setZeroPowerBehavior(FLOAT); //Makes the flywheel1 not turn itself off
         flywheel2.setZeroPowerBehavior(FLOAT);
         intake.setZeroPowerBehavior(BRAKE);
@@ -264,8 +266,9 @@ public class InterpLUTAimAnalog extends OpMode {
         error = UtilMethods.AngleDifference(odo_turretservo_angle, turretDeg) ;
         if(gamepad1.right_trigger > 0)
         {
-         flywheelsignal = flywheel_PDFL.calculate(flywheel1.getVelocity(AngleUnit.DEGREES), flywheel_target);
-         flywheelsignal += Math.signum(flywheelsignal) * flywheelkF;
+            flywheel_current = flywheel1.getVelocity(AngleUnit.DEGREES);
+            flywheelsignal = flywheel_PDFL.calculate(flywheel_current, flywheel_target);
+            flywheelsignal += Math.signum(flywheelsignal) * flywheelkF;
         }
         else
         {
@@ -340,12 +343,40 @@ public class InterpLUTAimAnalog extends OpMode {
         HOOD_ANGLE = clamp(HOOD_ANGLE, MIN_ANGLE, MAX_ANGLE);
 
         if (gamepad1.aWasPressed()) {
+            block = false;
+            shoot1.reset();
+        }
+        if (shoot1.milliseconds() > 125 && shoot1.milliseconds() < 250) {
+            block = true;
+        }
+        if (shoot1.milliseconds() > 250 && shoot1.milliseconds() < 375) {
+            block = false;
+        }
+        if (shoot1.milliseconds() > 375 && shoot1.milliseconds() < 500) {
+            block = true;
+        }
+        if (shoot1.milliseconds() > 500) {
+            block = false;
+        }
+        if (shoot1.seconds() > 2) {
+            block = true;
+        }
+
+        /*
+        if (gamepad1.aWasPressed()) {
             shoot.reset();
             block = false;
         }
         if (shoot.milliseconds() > 125) {
             block = true;
         }
+         */
+
+        /*
+        if (gamepad1.triangleWasPressed()) {
+            block = !block;
+        }
+         */
 
         blocker.setPosition(block ? 0.5 : 0.25);
         // Clamp both values between MIN and MAX.
@@ -357,13 +388,13 @@ public class InterpLUTAimAnalog extends OpMode {
             HOOD_ANGLE = 0.000114507 * Math.pow(distanceVector, 2)
                        - 0.0163 * distanceVector
                        + 0.596814;
-            flywheel_target = -225;
+            flywheel_target = 225;
         } else if (distanceVector > lut2MIN && distanceVector < lut2MAX) {
             telemetry.addLine("Zone 2");
             HOOD_ANGLE = -0.00000585763 * Math.pow(distanceVector, 2)
                        + 0.000692307 * distanceVector
                        + 0.0666877;
-            flywheel_target = -270;
+            flywheel_target = 270;
         } else {
             flywheel_target = 300;
         }
@@ -427,6 +458,8 @@ public class InterpLUTAimAnalog extends OpMode {
         telemetry.addData("turretDeg", turretDeg);
         telemetry.addData("flywheel_power", flywheelsignal);
         telemetry.addData("angular velocity", flywheel1.getVelocity(AngleUnit.DEGREES));
+        telemetry.addData("flywheel_current", flywheel_current);
+        telemetry.addData("flywheel_target", flywheel_target);
     }
 
     private void getAprilTag() {
