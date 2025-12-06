@@ -53,6 +53,10 @@ public class shooterSystem extends SubsystemBase
     {
         return speedControl;
     }
+    public double getCurrentSpeed()
+    {
+        return currentSpeed;
+    }
     @Override
     public void periodic()
     {
@@ -86,7 +90,8 @@ public class shooterSystem extends SubsystemBase
         signal += Math.signum(signal) * RobotConstants.turret_kL;
         currentSpeed = shooter1.getVelocity();
         rawCalcPower = speedControl.calculate(currentSpeed);
-        powerToSet = rawCalcPower + (RobotConstants.shooter_kL) + RobotConstants.shooter_kFF;
+        //powerToSet = rawCalcPower + (RobotConstants.shooter_kL) + RobotConstants.shooter_kFF;
+        powerToSet = 0;
 
 
         shooter1.setPower(powerToSet);

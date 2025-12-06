@@ -57,7 +57,7 @@ public class teleOp extends CommandOpMode {
         telemetry.addData("adjustment",r.getD().yoCalcAim());
         telemetry.addData("flywheel target velocity", r.getS().getSpeedControl().getSetPoint());
         telemetry.addData("flywheel error", r.getS().getSpeedControl().getPositionError());
-
+        telemetry.addData("flywheel speed",r.getS().getCurrentSpeed());
         telemetry.update();
         super.run();
     }
