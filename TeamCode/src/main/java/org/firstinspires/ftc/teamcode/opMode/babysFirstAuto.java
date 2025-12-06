@@ -19,8 +19,6 @@ import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
 import org.firstinspires.ftc.teamcode.Utility.RobotConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
-
 @Autonomous(name="babysfirstauto")
 public class babysFirstAuto extends CommandOpMode {
     Follower follower;
@@ -45,28 +43,26 @@ public class babysFirstAuto extends CommandOpMode {
         paths = new Paths(follower);
         register(r.getS(), r.getI());
         schedule(
-
                 new SequentialCommandGroup(
-                new oneShot(r, RobotConstants.robotState.CLOSE_SHOOT),
+             //   new oneShot(r),
                 new runIntake(r),
                 new followPath(r, paths.Path1), //intake 1st line
                 new stopIntake(r),
                 new followPath(r, paths.Path2), //return to shoot point
-                new oneShot(r, RobotConstants.robotState.CLOSE_SHOOT),
-             new followPath(r, paths.Path3),
+                //new oneShot(r),
+                new followPath(r, paths.Path3),
                 new runIntake(r),
-               new followPath(r, paths.Path4),
+                new followPath(r, paths.Path4),
                 new stopIntake(r),
                 new followPath(r, paths.Path5),
-                new oneShot(r, RobotConstants.robotState.CLOSE_SHOOT),
-              new followPath(r, paths.Path6),
+               // new oneShot(r),
+                new followPath(r, paths.Path6),
                 new runIntake(r),
-               new followPath(r, paths.Path7),
+                new followPath(r, paths.Path7),
                 new stopIntake(r),
-               new followPath(r, paths.Path8),
-                new oneShot(r, RobotConstants.robotState.CLOSE_SHOOT),
-                        new followPath(r, paths.Path9)));
-
+                new followPath(r, paths.Path8),
+              //  new oneShot(r),
+                new followPath(r, paths.Path9)));
     }
     @Override
     public void run()

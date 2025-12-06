@@ -36,12 +36,12 @@ public class Constants {
             .useSecondaryTranslationalPIDF(true)
             .useSecondaryDrivePIDF(true)
             .useSecondaryHeadingPIDF(true)
-            .translationalPIDFCoefficients(new PIDFCoefficients(.9,0,0,0))
-            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.005, 0, .22, 0))
+            .translationalPIDFCoefficients(new PIDFCoefficients(.4,0,0,0))
+            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.003, 0, .022, 0))
             .headingPIDFCoefficients(new PIDFCoefficients(2.7, 0.0, .1, 0 ))
             .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(2,0,0.04,0))
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(2.0,0,0.0004,0.06,0.03))
-            .secondaryDrivePIDFCoefficients(new FilteredPIDFCoefficients(0.023,0,0.0002,0.4,0));
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(1.0,0,0.0004,0.06,0.03))
+            .secondaryDrivePIDFCoefficients(new FilteredPIDFCoefficients(0.023,0,0.0002,0.04,0));
 
 
 

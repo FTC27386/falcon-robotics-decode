@@ -15,8 +15,6 @@ public class Robot {
     intakeSystem i;
     drivetrainSystem d;
     liftSystem l;
-    closeLUT ctable;
-    farLUT ftable;
     RobotConstants.robotState currentState;
 
     public shooterSystem getS() {
@@ -39,8 +37,6 @@ public class Robot {
         i = new intakeSystem(hmap);
         d = new drivetrainSystem(hmap);
         l = new liftSystem(hmap);
-        ctable = new closeLUT();
-        ftable = new farLUT();
         currentState = RobotConstants.robotState.IDLE;
         for (LynxModule mod : hmap.getAll(LynxModule.class))
         {
@@ -73,6 +69,7 @@ public class Robot {
         } else {
             speed = 0;
         }
+        speed = 0;
 
         double ang = d.yoCalcAim();
         s.setSpeed(speed);

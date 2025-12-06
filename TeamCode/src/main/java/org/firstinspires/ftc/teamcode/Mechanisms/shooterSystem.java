@@ -41,7 +41,8 @@ public class shooterSystem extends SubsystemBase
         turretEnc = hMap.get(AnalogInput.class, RobotConstants.turret_encoder_name);
         shooter1 = hMap.get(DcMotorEx.class, RobotConstants.first_shooter_motor_name);
         shooter2 = hMap.get(DcMotorEx.class, RobotConstants.second_shooter_motor_name);
-        shooter2.setDirection(DcMotor.Direction.REVERSE);
+        shooter1.setDirection(DcMotorEx.Direction.REVERSE);
+        shooter2.setDirection(DcMotorEx.Direction.FORWARD);
         turret1 = hMap.get(CRServo.class, RobotConstants.left_turret_servo_name);
         turret2 = hMap.get(CRServo.class, RobotConstants.right_turret_servo_name);
         hood = hMap.get(Servo.class, RobotConstants.hood_servo_name);
@@ -81,7 +82,8 @@ public class shooterSystem extends SubsystemBase
         signal += Math.signum(signal) * RobotConstants.turret_kL;
         currentSpeed = shooter1.getVelocity();
         rawCalcPower = speedControl.calculate(currentSpeed);
-        powerToSet = rawCalcPower + (Math.signum(rawCalcPower) * RobotConstants.shooter_kL) + RobotConstants.shooter_kFF;
+        powerToSet = rawCalcPower + (RobotConstants.shooter_kL) + RobotConstants.shooter_kFF;
+
 
         shooter1.setPower(powerToSet);
         shooter2.setPower(powerToSet);

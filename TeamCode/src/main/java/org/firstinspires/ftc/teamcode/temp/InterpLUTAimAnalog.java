@@ -226,8 +226,8 @@ public class InterpLUTAimAnalog extends OpMode {
         backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intake.setDirection(DcMotor.Direction.REVERSE);
-        flywheel1.setDirection(DcMotor.Direction.REVERSE);
-        flywheel2.setDirection(DcMotor.Direction.FORWARD);
+        flywheel1.setDirection(DcMotor.Direction.FORWARD);
+        flywheel2.setDirection(DcMotor.Direction.REVERSE);
         flywheel1.setZeroPowerBehavior(FLOAT); //Makes the flywheel1 not turn itself off
         flywheel2.setZeroPowerBehavior(FLOAT);
         intake.setZeroPowerBehavior(BRAKE);
@@ -343,23 +343,7 @@ public class InterpLUTAimAnalog extends OpMode {
         HOOD_ANGLE = clamp(HOOD_ANGLE, MIN_ANGLE, MAX_ANGLE);
 
         if (gamepad1.aWasPressed()) {
-            block = false;
-            shoot1.reset();
-        }
-        if (shoot1.milliseconds() > 125 && shoot1.milliseconds() < 250) {
-            block = true;
-        }
-        if (shoot1.milliseconds() > 250 && shoot1.milliseconds() < 375) {
-            block = false;
-        }
-        if (shoot1.milliseconds() > 375 && shoot1.milliseconds() < 500) {
-            block = true;
-        }
-        if (shoot1.milliseconds() > 500) {
-            block = false;
-        }
-        if (shoot1.seconds() > 2) {
-            block = true;
+            block = !block;
         }
 
         /*
