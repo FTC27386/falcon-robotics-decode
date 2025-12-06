@@ -64,7 +64,7 @@ public class shooterSystem extends SubsystemBase
     @Override
     public void periodic()
     {
-
+        speedControl.setTolerance(RobotConstants.shooterTolerance);
         speedControl.setPID(RobotConstants.shooter_kP, 0, RobotConstants.shooter_kD);
         headingControl.setPID(RobotConstants.turret_kP, 0, RobotConstants.turret_kD);
         axonRead = turretEnc.getVoltage();
@@ -119,12 +119,6 @@ public class shooterSystem extends SubsystemBase
     public void setHoodPosition(double hoodPosition)
     {
         this.hoodPosition = hoodPosition;
-    }
-    public void primeShooter(double speed, double turretPosition, double hoodPosition)
-    {
-        setSpeed(speed);
-        setTurretPosition(turretPosition);
-        setHoodPosition(hoodPosition);
     }
 
 }

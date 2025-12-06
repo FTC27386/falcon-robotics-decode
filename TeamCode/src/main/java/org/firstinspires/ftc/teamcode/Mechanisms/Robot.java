@@ -5,8 +5,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.teamcode.Utility.RobotConstants;
-import org.firstinspires.ftc.teamcode.Utility.closeLUT;
-import org.firstinspires.ftc.teamcode.Utility.farLUT;
 
 public class Robot {
     GamepadEx gp;
@@ -50,7 +48,7 @@ public class Robot {
         d.periodic();
         l.periodic();
     }
-    public void prepShooter()
+    public void setShooterValues()
     {
         double speed = 0;
         double dist = d.yoCalcDist();

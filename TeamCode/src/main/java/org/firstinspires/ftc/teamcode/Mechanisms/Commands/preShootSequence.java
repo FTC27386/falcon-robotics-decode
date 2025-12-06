@@ -3,15 +3,14 @@ package org.firstinspires.ftc.teamcode.Mechanisms.Commands;
 import com.seattlesolvers.solverslib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
-import org.firstinspires.ftc.teamcode.Utility.RobotConstants;
 
 //This is a command
-public class readyShooter extends CommandBase{
+public class preShootSequence extends CommandBase{
 
     private final Robot robot;
 
 
-    public readyShooter(Robot robot)
+    public preShootSequence(Robot robot)
     {
         this.robot = robot;
         addRequirements(robot.getS());
@@ -19,7 +18,7 @@ public class readyShooter extends CommandBase{
     @Override
     public void initialize()
     {
-        robot.prepShooter();
+        robot.setShooterValues();
     }
     @Override
     public boolean isFinished()

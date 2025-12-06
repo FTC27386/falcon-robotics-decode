@@ -18,7 +18,7 @@ public Follower follower;
 public static Pose
         currentPose = new Pose(0,0,Math.toRadians(90)),
         startPose,
-    targ = new Pose(-67,67,0);
+    targ = new Pose(0,144,0);
 boolean robotCentricDrive = false;
 public double
         x,
@@ -33,7 +33,7 @@ public Supplier<Pose> poseSupplier = this::getCurrentPose;
 public drivetrainSystem(HardwareMap hMap)
 {
     follower = Constants.createFollower(hMap);
-    follower.setStartingPose(RobotConstants.autoEndPose == null ? new Pose(0,0,Math.toRadians(90)) : RobotConstants.autoEndPose);
+    follower.setStartingPose(RobotConstants.autoEndPose == null ? new Pose(8,8,Math.toRadians(90)) : RobotConstants.autoEndPose);
     follower.update();
 }
     @Override

@@ -11,10 +11,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.defaultDrive;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.oneShot;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.runIntakeTimed;
-import org.firstinspires.ftc.teamcode.Mechanisms.Commands.toggleIntake;
-import org.firstinspires.ftc.teamcode.Mechanisms.Commands.readyShooter;
 import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
-import org.firstinspires.ftc.teamcode.Utility.RobotConstants;
 
 import java.util.function.Supplier;
 
