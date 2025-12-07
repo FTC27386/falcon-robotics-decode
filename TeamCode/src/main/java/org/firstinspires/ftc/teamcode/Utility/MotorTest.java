@@ -31,11 +31,13 @@ package org.firstinspires.ftc.teamcode.Utility;
 import static androidx.core.math.MathUtils.clamp;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.seattlesolvers.solverslib.command.Robot;
 
 /*
  * This OpMode illustrates how to program your robot to drive field relative.  This means
@@ -51,7 +53,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  */
-//@Config
+@Config
 @TeleOp(name = "MotorTest", group = "Robot")
 
 public class MotorTest extends OpMode {
@@ -72,21 +74,22 @@ public class MotorTest extends OpMode {
 
     int blockerServo = 0;
     int pivotServo = 1;
+    public static double turretTicks = 0.5;
 
     @Override
     public void init() {
-        leftTurretServo = hardwareMap.get(Servo.class, "turretServo1");
-        rightTurretServo = hardwareMap.get(Servo.class, "turretServo2");
-        pivot = hardwareMap.get(Servo.class, "pivot");
+        leftTurretServo = hardwareMap.get(Servo.class, RobotConstants.left_turret_servo_name);
+        rightTurretServo = hardwareMap.get(Servo.class, RobotConstants.right_turret_servo_name);
+
         blocker = hardwareMap.get(Servo.class, "blocker");
         leftTurretServo.setDirection(Servo.Direction.FORWARD);
         rightTurretServo.setDirection(Servo.Direction.FORWARD);
         blocker.setDirection(Servo.Direction.FORWARD);
-        pivot.setDirection(Servo.Direction.FORWARD);
+
         intake = hardwareMap.get(DcMotor.class, "intake");
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
-        flywheel1 = hardwareMap.get(DcMotor.class, "flywheel1");
-        flywheel2 = hardwareMap.get(DcMotor.class, "flywheel2");
+        flywheel1 = hardwareMap.get(DcMotor.class, RobotConstants.first_shooter_motor_name);
+        flywheel2 = hardwareMap.get(DcMotor.class, RobotConstants.second_shooter_motor_name);
         frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
         frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
         backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
@@ -123,20 +126,16 @@ public class MotorTest extends OpMode {
     public void loop() {
          if(gamepad1.dpadUpWasPressed()) pos[blockerServo]   += 0.1;
          if(gamepad1.dpadDownWasPressed()) pos[blockerServo] -= 0.1;
-
-         if(gamepad1.dpadRightWasPressed()) pos[pivotServo] += 0.1;
-         if(gamepad1.dpadLeftWasPressed()) pos[pivotServo]  -= 0.1;
-
+         leftTurretServo.setPosition(turretTicks);
+            rightTurretServo.setPosition(turretTicks);
          for(int i = 0; i < num; i++) {
              clamp(pos[i], MIN[i], MAX[i]);
          }
 
          blocker.setPosition(pos[blockerServo]);
-         pivot.setPosition(pos[pivotServo]);
-
         telemetry.addData("Blocker Set", pos[blockerServo]);
         telemetry.addData("Blocker Current", blocker.getPosition());
         telemetry.addData("Pivot Set", pos[pivotServo]);
-        telemetry.addData("Pivot Current", pivot.getPosition());
+
     }
 }

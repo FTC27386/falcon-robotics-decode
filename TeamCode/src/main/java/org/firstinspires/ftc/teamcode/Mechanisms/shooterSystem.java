@@ -16,8 +16,8 @@ public class shooterSystem extends SubsystemBase
     boolean isWoundUp = false;
     AnalogInput turretEnc;
     PIDController headingControl,speedControl;
-    CRServo turret1;
-    CRServo turret2;
+    Servo turret1;
+    Servo turret2;
     Servo hood;
     DcMotorEx shooter1;
     DcMotorEx shooter2;
@@ -43,8 +43,8 @@ public class shooterSystem extends SubsystemBase
         shooter2 = hMap.get(DcMotorEx.class, RobotConstants.second_shooter_motor_name);
         shooter1.setDirection(DcMotorEx.Direction.REVERSE);
         shooter2.setDirection(DcMotorEx.Direction.FORWARD);
-        turret1 = hMap.get(CRServo.class, RobotConstants.left_turret_servo_name);
-        turret2 = hMap.get(CRServo.class, RobotConstants.right_turret_servo_name);
+        turret1 = hMap.get(Servo.class, RobotConstants.left_turret_servo_name);
+        turret2 = hMap.get(Servo.class, RobotConstants.right_turret_servo_name);
         hood = hMap.get(Servo.class, RobotConstants.hood_servo_name);
         speedControl = new PIDController(RobotConstants.shooter_kP, 0, RobotConstants.shooter_kD);
         headingControl = new PIDController(RobotConstants.turret_kP, 0, RobotConstants.turret_kD);
@@ -68,36 +68,7 @@ public class shooterSystem extends SubsystemBase
         speedControl.setTolerance(RobotConstants.shooterTolerance);
         speedControl.setPID(RobotConstants.shooter_kP, 0, RobotConstants.shooter_kD);
         headingControl.setPID(RobotConstants.turret_kP, 0, RobotConstants.turret_kD);
-        /*
-        if (axonRead != 0 && Math.abs(axonRead - turretEnc.getVoltage()) < 0.5) {
 
-        }
-         */
-        axonRead = turretEnc.getVoltage();
-        degreeRead = axonRead * (360/3.3);
-        deltaRead = degreeRead - previousread;
-        if (deltaRead > 180)
-        {
-            rotations -= 1;
-        }
-        if (deltaRead < -180)
-        {
-            rotations += 1;
-        }
-        degreestravelled = rotations*360.0 + degreeRead;
-        turretDeg = degreestravelled*(5.0)*(60/170.0);
-        error = UtilMethods.AngleDifference(turretPosition, turretDeg);
-        if(turretDeg + degreestravelled > 310)
-        {
-            isWoundUp = true;
-        }
-        else
-        {
-            isWoundUp = false;
-        }
-
-        signal = isWoundUp? 0 : headingControl.calculate(-error, 0);
-        signal += Math.signum(signal) * RobotConstants.turret_kL;
         currentSpeed = shooter1.getVelocity();
         rawCalcPower = speedControl.calculate(-currentSpeed);
         powerToSet = rawCalcPower + (RobotConstants.shooter_kL) + RobotConstants.shooter_kFF;
@@ -105,8 +76,8 @@ public class shooterSystem extends SubsystemBase
 
         shooter1.setPower(powerToSet);
         shooter2.setPower(powerToSet);
-        turret1.setPower(signal);
-        turret2.setPower(signal);
+        turret1.setPosition(turretPosition);
+        turret2.setPosition(turretPosition);
         hood.setPosition(hoodPosition);
         previousread = degreeRead;
     }

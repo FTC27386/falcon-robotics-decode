@@ -40,7 +40,7 @@ public class RobotConstants {
                 turret_kD = 0.0,
                 turret_kL = 0.025,
                 offset_between_servos = 0,
-                turret_conversion_factor_DEGREES = (double)(1/5) * (double)(170/60) * (double)(1/355),
+                turret_conversion_factor_DEGREES = (0.0015962441314554),
                 turret_conversion_factor_RADIANS = (double)(1/5) * (double)(170/60) * (double)(1/355) * (double)(360/(2*Math.PI)), // for mason's weird ahh
                 rpm_conversion_factor = (double)(Math.PI * 2) * (double)(1/60),
                 far_flywheel_speed = -310,
