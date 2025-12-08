@@ -38,8 +38,6 @@ public class shooterSystem extends SubsystemBase {
         turretEnc = hMap.get(AnalogInput.class, RobotConstants.turret_encoder_name);
         shooter1 = hMap.get(DcMotorEx.class, RobotConstants.first_shooter_motor_name);
         shooter2 = hMap.get(DcMotorEx.class, RobotConstants.second_shooter_motor_name);
-
-
         shooter1.setDirection(DcMotorEx.Direction.REVERSE);
         shooter2.setDirection(DcMotorEx.Direction.FORWARD);
         turret1 = hMap.get(Servo.class, RobotConstants.left_turret_servo_name);

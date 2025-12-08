@@ -58,8 +58,6 @@ public class teleOp extends CommandOpMode {
         schedule(new InstantCommand(()-> r.getD().follower.startTeleOpDrive()));
         schedule(new RunCommand(()->r.getS().setTurretPosition(r.getD().yoCalcAim())));
         shoot.whenPressed(new magDump(r));
-        dpadup.whenPressed(new InstantCommand(() -> r.getL().unlatch()));
-        dpaddown.whenPressed(new InstantCommand(() -> r.getL().latch()));
     }
     @Override
     public void run()

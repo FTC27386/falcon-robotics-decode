@@ -26,7 +26,7 @@ public class RobotConstants {
     right_lift_servo_name = "right_lift_servo";
 
         public static double
-                shooterTolerance = 45,
+                shooterTolerance = 67,
                 vera_coefficient = .4167,
 
                 lift_kP = 0.001, //0.0003
