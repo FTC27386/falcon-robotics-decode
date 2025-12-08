@@ -1,5 +1,6 @@
-package org.firstinspires.ftc.teamcode.opMode;
+package org.firstinspires.ftc.teamcode.Utility;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
@@ -16,9 +17,9 @@ import org.firstinspires.ftc.teamcode.Mechanisms.Commands.runIntakeTimed;
 import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
 
 import java.util.function.Supplier;
-
-@TeleOp(name = "TeleOp")
-public class teleOp extends CommandOpMode {
+@Config
+@TeleOp(name = "TeleOp Test")
+public class teleOpTest extends CommandOpMode {
 
     Button intake;
     Button relocalize;
