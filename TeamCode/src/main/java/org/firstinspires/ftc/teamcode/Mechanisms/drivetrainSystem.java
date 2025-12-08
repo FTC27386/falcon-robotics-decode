@@ -74,6 +74,7 @@ public class drivetrainSystem extends SubsystemBase {
 
     public double yoCalcHood() {
         dist = yoCalcDist();
+        /*
         if (dist >= 69.674 && dist < 82.260) {
             return 0.000114507 * Math.pow(dist, 2)
                     - 0.0163 * dist
@@ -85,6 +86,8 @@ public class drivetrainSystem extends SubsystemBase {
         } else {
             return 0;
         }
+         */
+        return 0;
     }
 
     public double yoCalcSpeed() {
