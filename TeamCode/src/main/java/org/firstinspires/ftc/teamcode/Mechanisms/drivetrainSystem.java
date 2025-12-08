@@ -26,8 +26,9 @@ public double
         distanceX,
         y,
         distanceY,
-    heading,
-    unnormalizedHeading;
+        heading,
+        unnormalizedHeading,
+        zoneBuffer = 7.5;
 
 public Supplier<Pose> poseSupplier = this::getCurrentPose;
 
@@ -98,6 +99,9 @@ public Pose getTarg()
 public void relocTarget(Pose reloc)
 {
     targ = reloc;
+}
+public boolean inZone() {
+        return (y > Math.abs(x - 72) + 72 - zoneBuffer) || (y < -Math.abs(x - 72) + 24 + zoneBuffer);
 }
 
 
