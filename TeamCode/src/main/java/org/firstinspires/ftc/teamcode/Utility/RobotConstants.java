@@ -48,7 +48,9 @@ public class RobotConstants {
                 transfer_closed_pos = 0.5,
                 transfer_open_pos = .25,
                 latch_close_pos = 0,
-                latch_open_pos = 1;
+                latch_open_pos = 1,
+                pivot_up_pos = 0,
+                pivot_down_pos = 0;
         public static Pose autoEndPose;
         public enum robotState
         {

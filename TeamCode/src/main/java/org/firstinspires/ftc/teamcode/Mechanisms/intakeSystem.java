@@ -12,7 +12,8 @@ public class intakeSystem extends SubsystemBase {
     Servo gate;
     Servo pivot;
     double targetpower,
-            gatePosition = RobotConstants.transfer_open_pos;
+            gatePosition = RobotConstants.transfer_open_pos,
+            pivotPosition = RobotConstants.pivot_down_pos;
 
     public intakeSystem(HardwareMap hMap) {
         pivot = hMap.get(Servo.class, RobotConstants.intake_servo_name);
@@ -44,9 +45,10 @@ public class intakeSystem extends SubsystemBase {
     public void periodic() {
         intakeMotor.setPower(targetpower);
         gate.setPosition(gatePosition);
+        pivot.setPosition(pivotPosition);
     }
 
     public void stow() {
-        pivot.setPosition(1);
+        pivotPosition = (RobotConstants.pivot_up_pos);
     }
 }
