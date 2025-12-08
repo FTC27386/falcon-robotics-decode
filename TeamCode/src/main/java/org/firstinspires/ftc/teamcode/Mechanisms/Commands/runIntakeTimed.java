@@ -10,8 +10,7 @@ public class runIntakeTimed extends SequentialCommandGroup {
 
     public ElapsedTime timer;
 
-    public runIntakeTimed(Robot robot, int time)
-    {
+    public runIntakeTimed(Robot robot, int time) {
         addCommands(
                 new runIntake(robot),
                 new WaitCommand(time),

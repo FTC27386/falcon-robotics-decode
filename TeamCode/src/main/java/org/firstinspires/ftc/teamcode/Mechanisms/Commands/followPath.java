@@ -10,20 +10,18 @@ public class followPath extends CommandBase {
     Robot r;
     PathChain path;
 
-    public followPath(Robot r, PathChain path)
-    {
+    public followPath(Robot r, PathChain path) {
         this.r = r;
         this.path = path;
     }
 
     @Override
-    public void initialize()
-    {
+    public void initialize() {
         r.getD().follower.followPath(path);
     }
+
     @Override
-    public boolean isFinished()
-    {
+    public boolean isFinished() {
         return r.getD().follower.atParametricEnd();
     }
 }

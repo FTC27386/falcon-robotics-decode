@@ -10,8 +10,7 @@ public class pulseGate extends SequentialCommandGroup {
     Robot r;
     int delay;
 
-    public pulseGate(Robot r, int delay)
-    {
+    public pulseGate(Robot r, int delay) {
         this.r = r;
         this.delay = delay;
         addRequirements(r.getI());

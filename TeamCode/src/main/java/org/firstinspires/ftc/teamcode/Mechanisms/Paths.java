@@ -8,7 +8,7 @@ import com.pedropathing.paths.PathChain;
 
 public class Paths {
 
-    public static Pose startingPose = new Pose(8,8,Math.toRadians(90));
+    public static Pose startingPose = new Pose(8, 8, Math.toRadians(90));
     public PathChain Path1;
     public PathChain Path2;
     public PathChain Path3;
@@ -110,7 +110,7 @@ public class Paths {
                 .setLinearHeadingInterpolation(Math.toRadians(225), Math.toRadians(180))
                 .build();
 
-        park= follower
+        park = follower
                 .pathBuilder()
                 .addPath(
                         new BezierLine(new Pose(12, 12, Math.toRadians(90)), new Pose(39, 39, Math.toRadians(90)))

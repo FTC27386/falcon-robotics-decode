@@ -9,15 +9,14 @@ public class closeCycle extends SequentialCommandGroup {
 
     Robot r;
 
-    public closeCycle(Robot r)
-    {
-        this.r=r;
-        addRequirements(r.getI(),r.getS());
+    public closeCycle(Robot r) {
+        this.r = r;
+        addRequirements(r.getI(), r.getS());
         addCommands(
-                new InstantCommand(()-> r.getI().close()),
+                new InstantCommand(() -> r.getI().close()),
                 new preShootSequence(r),
-                new InstantCommand(()->r.getI().open()),
-                new runIntakeTimed(r,900),
+                new InstantCommand(() -> r.getI().open()),
+                new runIntakeTimed(r, 900),
                 new stopIntake(r)
         );
     }

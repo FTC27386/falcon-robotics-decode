@@ -23,33 +23,33 @@ public class Robot {
         return i;
     }
 
-    public drivetrainSystem getD()
-    {
+    public drivetrainSystem getD() {
         return d;
     }
-    public liftSystem getL() {return l;}
 
-    public Robot(final HardwareMap hmap)
-    {
+    public liftSystem getL() {
+        return l;
+    }
+
+    public Robot(final HardwareMap hmap) {
         s = new shooterSystem(hmap);
         i = new intakeSystem(hmap);
         d = new drivetrainSystem(hmap);
         l = new liftSystem(hmap);
         currentState = RobotConstants.robotState.IDLE;
-        for (LynxModule mod : hmap.getAll(LynxModule.class))
-        {
+        for (LynxModule mod : hmap.getAll(LynxModule.class)) {
             mod.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
     }
-    public void periodic()
-    {
+
+    public void periodic() {
         i.periodic();
         s.periodic();
         d.periodic();
         l.periodic();
     }
-    public void setShooterValues()
-    {
+
+    public void setShooterValues() {
         s.setSpeed(d.yoCalcSpeed());
         s.setHoodPosition(d.yoCalcHood());
         s.setTurretPosition(d.yoCalcAim());

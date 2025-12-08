@@ -8,20 +8,19 @@ public class runIntake extends CommandBase {
 
     private final Robot robot;
 
-    public runIntake(Robot robot)
-    {
+    public runIntake(Robot robot) {
         this.robot = robot;
     }
+
     @Override
-    public void initialize()
-    {
+    public void initialize() {
         robot.getI().close();
         robot.getI().intake();
         addRequirements(robot.getI());
     }
+
     @Override
-    public boolean isFinished()
-    {
+    public boolean isFinished() {
         return true;
     }
 }
