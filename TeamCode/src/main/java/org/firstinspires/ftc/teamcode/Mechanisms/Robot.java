@@ -27,6 +27,7 @@ public class Robot {
     {
         return d;
     }
+    public liftSystem getL() {return l;}
 
     public Robot(final HardwareMap hmap)
     {
@@ -69,17 +70,12 @@ public class Robot {
         }
         speed = 0;
          */
-        speed = 1500;
+        speed = -2200;
 
         double ang = d.yoCalcAim();
         s.setSpeed(speed);
         s.setHoodPosition(hood_pos);
         s.setTurretPosition(ang);
-    }
-    public void climb()
-    {
-        l.down();
-        l.unlatch();
     }
 
 }

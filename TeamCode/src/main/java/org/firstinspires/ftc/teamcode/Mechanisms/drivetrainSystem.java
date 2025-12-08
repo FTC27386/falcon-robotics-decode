@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 import org.firstinspires.ftc.teamcode.Utility.RobotConstants;
+import org.firstinspires.ftc.teamcode.Utility.UtilMethods;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.function.Supplier;
@@ -25,7 +26,8 @@ public double
         distanceX,
         y,
         distanceY,
-    heading;
+    heading,
+    unnormalizedHeading;
 
 public Supplier<Pose> poseSupplier = this::getCurrentPose;
 
@@ -43,8 +45,11 @@ public void periodic(){
     x = currentPose.getX();
     y = currentPose.getY();
     heading = currentPose.getHeading();
-    distanceX = x - targ.getX();
-    distanceY = y - targ.getY();
+    distanceX = targ.getX()-x;
+    distanceY = targ.getY() - y;
+    unnormalizedHeading = follower.getTotalHeading();
+    
+    
 }
 
 
@@ -58,10 +63,15 @@ public double yoCalcDist() //calculate distance in inch
      return sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
 }
 
-public double yoCalcAim()  //calculate adjusted turret angle in rad
+public double yoCalcAim()  //calculate adjusted turret angle in degrees
 {
     double field_angle = (90 - Math.toDegrees(Math.atan2(distanceY,distanceX)));
-    return -(Math.toDegrees(heading)-90) - field_angle;
+   // return Math.toDegrees((heading)-Math.PI/2) + field_angle;
+    return -UtilMethods.AngleDifference(Math.toDegrees(unnormalizedHeading),0) + field_angle;
+
+    //equivalent: Math.toDegrees(currentpose.getHeading() - Math.PI/2)
+
+    //(90 - Math.toDegrees(Math.atan2(distanceY,distanceX)))
 }
 
 public void teleOpDrive(double axial, double lateral, double yaw)
@@ -80,6 +90,14 @@ public void reloc(Pose reloc)
 public Pose getCurrentPose()
 {
     return currentPose;
+}
+public Pose getTarg()
+{
+    return targ;
+}
+public void relocTarget(Pose reloc)
+{
+    targ = reloc;
 }
 
 

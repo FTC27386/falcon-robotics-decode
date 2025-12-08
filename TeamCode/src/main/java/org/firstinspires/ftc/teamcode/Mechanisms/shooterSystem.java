@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Mechanisms;
 
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -32,7 +33,7 @@ public class shooterSystem extends SubsystemBase
     error,
     signal,
     powerToSet,
-    turretPosition = 0,
+    turretPosition,
     hoodPosition = 0,
     currentSpeed,
             nominalVoltage = 12.00; //voltage at which the shooter was tuned
@@ -41,6 +42,8 @@ public class shooterSystem extends SubsystemBase
         turretEnc = hMap.get(AnalogInput.class, RobotConstants.turret_encoder_name);
         shooter1 = hMap.get(DcMotorEx.class, RobotConstants.first_shooter_motor_name);
         shooter2 = hMap.get(DcMotorEx.class, RobotConstants.second_shooter_motor_name);
+
+
         shooter1.setDirection(DcMotorEx.Direction.REVERSE);
         shooter2.setDirection(DcMotorEx.Direction.FORWARD);
         turret1 = hMap.get(Servo.class, RobotConstants.left_turret_servo_name);
@@ -48,6 +51,7 @@ public class shooterSystem extends SubsystemBase
         hood = hMap.get(Servo.class, RobotConstants.hood_servo_name);
         speedControl = new PIDController(RobotConstants.shooter_kP, 0, RobotConstants.shooter_kD);
         headingControl = new PIDController(RobotConstants.turret_kP, 0, RobotConstants.turret_kD);
+        turretPosition = 0.5;
     }
     public PIDController getSpeedControl()
     {
@@ -74,8 +78,19 @@ public class shooterSystem extends SubsystemBase
         powerToSet = rawCalcPower + (RobotConstants.shooter_kL) + RobotConstants.shooter_kFF;
 
 
-        shooter1.setPower(powerToSet);
-        shooter2.setPower(powerToSet);
+        if(Math.abs(speedControl.getPositionError()) > 67)
+        {
+            shooter1.setPower(powerToSet);
+            shooter2.setPower(powerToSet);
+        }
+        else
+        {
+            shooter1.setPower(0);
+            shooter2.setPower(0);
+        }
+
+
+
         turret1.setPosition(turretPosition);
         turret2.setPosition(turretPosition);
         hood.setPosition(hoodPosition);
@@ -89,13 +104,19 @@ public class shooterSystem extends SubsystemBase
     {
         return speedControl.atSetPoint();
     }
-    public void setTurretPosition(double turretPosition)
+    public void setTurretPosition(double turretPositionAngle) //this will take an angle
     {
-        this.turretPosition = turretPosition;
+        double turretTicks = 0.5;
+        turretTicks += turretPositionAngle * RobotConstants.turret_conversion_factor_DEGREES;
+        this.turretPosition = turretTicks;
     }
     public void setHoodPosition(double hoodPosition)
     {
         this.hoodPosition = hoodPosition;
+    }
+    public double getTurretPosition()
+    {
+        return turretPosition;
     }
 
 }

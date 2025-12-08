@@ -7,12 +7,12 @@ import com.seattlesolvers.solverslib.command.WaitCommand;
 import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
 import org.firstinspires.ftc.teamcode.Utility.RobotConstants;
 
-public class oneShot extends SequentialCommandGroup {
+public class magDump extends SequentialCommandGroup {
     private Robot r;
     private RobotConstants.robotState shootingZone;
 
 
-    public oneShot(Robot r)
+    public magDump(Robot r)
     {
         this.r = r;
         addRequirements(r.getI(),r.getS());
@@ -20,7 +20,7 @@ public class oneShot extends SequentialCommandGroup {
                 new InstantCommand(() -> r.getI().close()),
                 new preShootSequence(r),
                 new runIntake(r),
-                new pulseGate(r, 125),
+                new pulseGate(r, 1200),
                 new WaitCommand(200),
                 new stopIntake(r),
                 new InstantCommand(()->r.getS().setSpeed(0))

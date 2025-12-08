@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Mechanisms;
 
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -11,19 +12,26 @@ import org.firstinspires.ftc.teamcode.Utility.RobotConstants;
 public class liftSystem extends SubsystemBase {
 
     DcMotor lift_motor;
-    Servo latch_left, latch_right;
+    Servo latch;
     PIDController motor_controller;
     double power;
     int currentPos;
-    boolean activated;
+    boolean activated = false;
 
     public liftSystem(HardwareMap hmap)
     {
         motor_controller = new PIDController(RobotConstants.lift_kP, 0, RobotConstants.lift_kD);
         motor_controller.setSetPoint(0);
         lift_motor = hmap.get(DcMotor.class, RobotConstants.lift_motor_name);
-        latch_left = hmap.get(Servo.class, RobotConstants.left_lift_servo_name);
-        latch_right = hmap.get(Servo.class,RobotConstants.right_lift_servo_name);
+        latch = hmap.get(Servo.class, RobotConstants.lift_servo_name);
+        latch.setDirection(Servo.Direction.REVERSE);
+        lift_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift_motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+    }
+    public double getLiftPose()
+    {
+        return currentPos;
     }
     @Override
     public void periodic() {
@@ -32,22 +40,28 @@ public class liftSystem extends SubsystemBase {
             currentPos = lift_motor.getCurrentPosition();
             power = activated?
                     motor_controller.calculate(currentPos, RobotConstants.top_climb_position): 0;
-            lift_motor.setPower(power);
+            lift_motor.setPower(power + RobotConstants.lift_kF);
         }
+    }
+    public void setActivated(boolean activated)
+    {
+        this.activated = activated;
     }
     public void unlatch()
     {
-        latch_left.setPosition(RobotConstants.latch_open_pos);
-        latch_right.setPosition(RobotConstants.latch_open_pos);
+        latch.setPosition(RobotConstants.latch_open_pos);
     }
     public void latch()
     {
-        latch_right.setPosition(RobotConstants.latch_close_pos);
-        latch_left.setPosition(RobotConstants.latch_close_pos);
+        latch.setPosition(RobotConstants.latch_close_pos);
     }
     public void down()
     {
         motor_controller.setSetPoint(RobotConstants.top_climb_position);
+    }
+    public double getPIDResponse()
+    {
+        return motor_controller.calculate();
     }
 
 

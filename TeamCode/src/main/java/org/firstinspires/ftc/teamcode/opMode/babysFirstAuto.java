@@ -7,10 +7,12 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 
 import org.firstinspires.ftc.robotcore.external.Const;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.followPath;
+import org.firstinspires.ftc.teamcode.Mechanisms.Commands.magDump;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.oneShot;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.runIntake;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.stopIntake;
@@ -25,6 +27,7 @@ public class babysFirstAuto extends CommandOpMode {
     private Robot r;
     Paths paths;
 
+
     @Override
     public void initialize()
     {
@@ -34,40 +37,42 @@ public class babysFirstAuto extends CommandOpMode {
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(Paths.startingPose);
         follower.update();
-        PathChain pathChain = follower.pathBuilder()
-                .addPath(new BezierLine(
-                        new Pose(0, 0, Math.toRadians(0)),
-                        new Pose(16, 28, Math.toRadians(90)))
-                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(90))
-                .build();
         paths = new Paths(follower);
         register(r.getS(), r.getI());
+        schedule(new RunCommand(()->r.getS().setTurretPosition(r.getD().yoCalcAim())));
         schedule(
                 new SequentialCommandGroup(
-             //   new oneShot(r),
+               new magDump(r),
                 new runIntake(r),
                 new followPath(r, paths.Path1), //intake 1st line
                 new stopIntake(r),
                 new followPath(r, paths.Path2), //return to shoot point
-                //new oneShot(r),
+                new magDump(r),
                 new followPath(r, paths.Path3),
-                new runIntake(r),
+               new runIntake(r),
                 new followPath(r, paths.Path4),
-                new stopIntake(r),
+              new stopIntake(r),
                 new followPath(r, paths.Path5),
-               // new oneShot(r),
+                new magDump(r),
                 new followPath(r, paths.Path6),
-                new runIntake(r),
+               new runIntake(r),
                 new followPath(r, paths.Path7),
-                new stopIntake(r),
+               new stopIntake(r),
                 new followPath(r, paths.Path8),
-              //  new oneShot(r),
+              new magDump(r),
                 new followPath(r, paths.Path9)));
     }
     @Override
     public void run()
     {
         super.run();
+        telemetry.addData("turretPose",r.getS().getTurretPosition());
+        telemetry.addData("robot X", r.getD().getCurrentPose().getX());
+        telemetry.addData("robot Y", r.getD().getCurrentPose().getY());
+        telemetry.addData("robot heading", Math.toDegrees(r.getD().getCurrentPose().getHeading()) );
+        telemetry.addData("target X",r.getD().getTarg().getX());
+        telemetry.addData("target Y",r.getD().getTarg().getY());
+
         telemetry.update();
     }
 }

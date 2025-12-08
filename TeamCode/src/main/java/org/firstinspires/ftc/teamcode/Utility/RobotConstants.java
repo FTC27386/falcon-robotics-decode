@@ -22,23 +22,23 @@ public class RobotConstants {
                 camera = "Webcam 1",
                 turret_encoder_name = "turret_encoder",
     lift_motor_name = "lift_motor",
-    left_lift_servo_name = "left_lift_servo",
+    lift_servo_name = "latch_servo",
     right_lift_servo_name = "right_lift_servo";
 
         public static double
                 shooterTolerance = 45,
                 vera_coefficient = .4167,
 
-                lift_kP = 0.0,
+                lift_kP = 0.001, //0.0003
                 lift_kD = 0.0,
-                lift_kF = 0.0,
-                shooter_kP = 0.02,
+                lift_kF = 0.3,
+                shooter_kP = -0.02,
                 shooter_kD = 0.00000000,
                 shooter_kFF = 0,
                 shooter_kL = 0.0, //"lower limit" power
-                turret_kP = 0.012,
+                turret_kP = 0,
                 turret_kD = 0.0,
-                turret_kL = 0.025,
+                turret_kL = 0,
                 offset_between_servos = 0,
                 turret_conversion_factor_DEGREES = (0.0015962441314554),
                 turret_conversion_factor_RADIANS = (double)(1/5) * (double)(170/60) * (double)(1/355) * (double)(360/(2*Math.PI)), // for mason's weird ahh
@@ -47,8 +47,8 @@ public class RobotConstants {
                 close_flywheel_speed = -250,
         transfer_closed_pos = 0.5,
         transfer_open_pos = .25,
-        latch_close_pos = 0, // temp
-    latch_open_pos = .25; //temp
+        latch_close_pos = 0,
+    latch_open_pos = 1;
         public static Pose autoEndPose;
         public enum robotState
         {
@@ -57,7 +57,7 @@ public class RobotConstants {
                 INTAKING,
                 IDLE
         }
-        public static int top_climb_position = 34000;
+        public static int top_climb_position = 12300;
 
 
 

@@ -25,11 +25,11 @@ public class intakeSystem extends  SubsystemBase{
 
     public void close()
     {
-        gate.setPosition(RobotConstants.transfer_closed_pos);
+        gatePosition = (RobotConstants.transfer_closed_pos);
     }
     public void open()
     {
-        gate.setPosition(RobotConstants.transfer_open_pos);
+        gatePosition = (RobotConstants.transfer_open_pos);
     }
     public void intake()
     {
