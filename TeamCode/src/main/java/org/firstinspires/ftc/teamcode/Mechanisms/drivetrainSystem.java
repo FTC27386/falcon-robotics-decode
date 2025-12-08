@@ -48,17 +48,13 @@ public class drivetrainSystem extends SubsystemBase {
         heading = currentPose.getHeading();
         distanceX = targ.getX() - x;
         distanceY = targ.getY() - y;
+        dist = sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
         unnormalizedHeading = follower.getTotalHeading();
     }
 
 
     public Pose getPose() {
         return currentPose;
-    }
-
-    public double yoCalcDist() //calculate distance in inch
-    {
-        return sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
     }
 
     public double yoCalcAim()  //calculate adjusted turret angle in degrees
@@ -73,7 +69,6 @@ public class drivetrainSystem extends SubsystemBase {
     }
 
     public double yoCalcHood() {
-        dist = yoCalcDist();
         /*
         if (dist >= 69.674 && dist < 82.260) {
             return 0.000114507 * Math.pow(dist, 2)
@@ -91,7 +86,6 @@ public class drivetrainSystem extends SubsystemBase {
     }
 
     public double yoCalcSpeed() {
-        dist = yoCalcDist();
         if (dist >= 69.674 && dist < 82.260) {
             return 225;
         } else if (dist >= 82.260 && dist <= 116.262) {
