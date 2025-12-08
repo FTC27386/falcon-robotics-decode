@@ -26,8 +26,10 @@ public double
         distanceX,
         y,
         distanceY,
+        dist,
         heading,
         unnormalizedHeading,
+        field_angle,
         zoneBuffer = 7.5*Math.sqrt(2);
 
 public Supplier<Pose> poseSupplier = this::getCurrentPose;
@@ -66,13 +68,43 @@ public double yoCalcDist() //calculate distance in inch
 
 public double yoCalcAim()  //calculate adjusted turret angle in degrees
 {
-    double field_angle = (90 - Math.toDegrees(Math.atan2(distanceY,distanceX)));
-   // return Math.toDegrees((heading)-Math.PI/2) + field_angle;
+    field_angle = (90 - Math.toDegrees(Math.atan2(distanceY,distanceX)));
+    // return Math.toDegrees((heading)-Math.PI/2) + field_angle;
     return -UtilMethods.AngleDifference(Math.toDegrees(unnormalizedHeading),0) + field_angle;
 
     //equivalent: Math.toDegrees(currentpose.getHeading() - Math.PI/2)
 
     //(90 - Math.toDegrees(Math.atan2(distanceY,distanceX)))
+}
+
+public double yoCalcHood() {
+     dist = yoCalcDist();
+     if (dist >= 69.674 && dist < 82.260) {
+         return 0.000114507 * Math.pow(dist, 2)
+                 - 0.0163 * dist
+                 + 0.596814;
+        }
+     else if (dist >= 82.260 && dist <= 116.262) {
+         return -0.00000585763 * Math.pow(dist, 2)
+                 + 0.000692307 * dist
+                 + 0.0666877;
+        }
+     else {
+         return 0;
+     }
+}
+
+public double yoCalcSpeed() {
+    dist = yoCalcDist();
+    if (dist >= 69.674 && dist < 82.260) {
+        return 225;
+    }
+    else if (dist >= 82.260 && dist <= 116.262) {
+        return 270;
+    }
+    else {
+        return 0;
+    }
 }
 
 public void teleOpDrive(double axial, double lateral, double yaw)

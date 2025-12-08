@@ -50,32 +50,9 @@ public class Robot {
     }
     public void setShooterValues()
     {
-        double speed = 0;
-        double dist = d.yoCalcDist();
-        double hood_pos = 0;
-
-        /*
-        if (dist >= 69.674 && dist < 82.260) {
-            hood_pos = 0.000114507 * Math.pow(dist, 2)
-                    - 0.0163 * dist
-                    + 0.596814;
-            speed = 225;
-        } else if (dist >= 82.260 && dist <= 116.262) {
-            hood_pos = -0.00000585763 * Math.pow(dist, 2)
-                    + 0.000692307 * dist
-                    + 0.0666877;
-            speed = 270;
-        } else {
-            speed = 0;
-        }
-        speed = 0;
-         */
-        speed = -2200;
-
-        double ang = d.yoCalcAim();
-        s.setSpeed(speed);
-        s.setHoodPosition(hood_pos);
-        s.setTurretPosition(ang);
+        s.setSpeed(d.yoCalcSpeed());
+        s.setHoodPosition(d.yoCalcHood());
+        s.setTurretPosition(d.yoCalcAim());
     }
 
 }
