@@ -28,7 +28,7 @@ public double
         distanceY,
         heading,
         unnormalizedHeading,
-        zoneBuffer = 7.5;
+        zoneBuffer = 7.5*Math.sqrt(2);
 
 public Supplier<Pose> poseSupplier = this::getCurrentPose;
 
