@@ -115,7 +115,7 @@ public class MotorTest extends OpMode {
         if (gamepad1.dpadUpWasPressed()) x+= 0.1;
         if (gamepad1.dpadDownWasPressed()) x-= 0.1;
         x = clamp(x, 0, 1);
-        pivot.setPosition(x);
+        hood.setPosition(x);
         telemetry.addData("x", x);
     }
 }
