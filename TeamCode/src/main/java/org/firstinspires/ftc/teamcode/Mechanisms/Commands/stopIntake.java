@@ -8,19 +8,18 @@ public class stopIntake extends CommandBase {
 
     private final Robot robot;
 
-    public stopIntake(Robot robot)
-    {
+    public stopIntake(Robot robot) {
         this.robot = robot;
         addRequirements(robot.getI());
     }
+
     @Override
-    public void initialize()
-    {
+    public void initialize() {
         robot.getI().stopIntake();
     }
+
     @Override
-    public boolean isFinished()
-    {
+    public boolean isFinished() {
         return true;
     }
 }

@@ -37,7 +37,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.seattlesolvers.solverslib.command.Robot;
 
 /*
  * This OpMode illustrates how to program your robot to drive field relative.  This means
@@ -67,39 +66,41 @@ public class MotorTest extends OpMode {
     Servo hood,
             blocker,
             pivot;
-    int num = 10;
-    double[] pos = new double[num];
-    double[] MIN = new double[num];
-    double[] MAX = new double[num];
-
-    int blockerServo = 0;
-    int pivotServo = 1;
-    public static double turretTicks = 0.5;
+    public static double x;
 
     @Override
     public void init() {
         leftTurretServo = hardwareMap.get(Servo.class, RobotConstants.left_turret_servo_name);
         rightTurretServo = hardwareMap.get(Servo.class, RobotConstants.right_turret_servo_name);
+        blocker = hardwareMap.get(Servo.class, RobotConstants.transfer_servo_name);
+        hood = hardwareMap.get(Servo.class, RobotConstants.hood_servo_name);
 
-        blocker = hardwareMap.get(Servo.class, "blocker");
         leftTurretServo.setDirection(Servo.Direction.FORWARD);
         rightTurretServo.setDirection(Servo.Direction.FORWARD);
         blocker.setDirection(Servo.Direction.FORWARD);
+        hood.setDirection(Servo.Direction.FORWARD);
 
-        intake = hardwareMap.get(DcMotor.class, "intake");
+        intake = hardwareMap.get(DcMotor.class, RobotConstants.intake_motor_name);
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
+
         flywheel1 = hardwareMap.get(DcMotor.class, RobotConstants.first_shooter_motor_name);
         flywheel2 = hardwareMap.get(DcMotor.class, RobotConstants.second_shooter_motor_name);
-        frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
-        frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
-        backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
-        backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
-        hood = hardwareMap.get(Servo.class, "hood");
+        flywheel1.setDirection(DcMotor.Direction.REVERSE);
+        flywheel2.setDirection(DcMotor.Direction.FORWARD);
+        flywheel1.setZeroPowerBehavior(FLOAT); //Makes the flywheel1 not turn itself off
+        flywheel2.setZeroPowerBehavior(FLOAT);
+
+        frontLeftDrive = hardwareMap.get(DcMotor.class, RobotConstants.left_front_drive_motor_name);
+        frontRightDrive = hardwareMap.get(DcMotor.class, RobotConstants.right_front_drive_motor_name);
+        backLeftDrive = hardwareMap.get(DcMotor.class, RobotConstants.left_back_drive_motor_name);
+        backRightDrive = hardwareMap.get(DcMotor.class, RobotConstants.right_back_drive_motor_name);
 
         // We set the left motors in reverse which is needed for drive trains where the left
         // motors are opposite to the right ones.
-        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
+        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
         // This uses RUN_USING_ENCODER to be more accurate.   If you don't have the encoder
         // wires, you should remove these
@@ -107,35 +108,14 @@ public class MotorTest extends OpMode {
         frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        intake.setDirection(DcMotor.Direction.REVERSE);
-        flywheel1.setDirection(DcMotor.Direction.REVERSE);
-        flywheel2.setDirection(DcMotor.Direction.FORWARD);
-        flywheel1.setZeroPowerBehavior(FLOAT); //Makes the flywheel1 not turn itself off
-        flywheel2.setZeroPowerBehavior(FLOAT);
-
-        pos[blockerServo] = 0;
-        MIN[blockerServo] = 0;
-        MAX[blockerServo] = 1;
-
-        pos[pivotServo] = 0;
-        MIN[pivotServo] = 0;
-        MAX[pivotServo] = 1;
     }
 
     @Override
     public void loop() {
-         if(gamepad1.dpadUpWasPressed()) pos[blockerServo]   += 0.1;
-         if(gamepad1.dpadDownWasPressed()) pos[blockerServo] -= 0.1;
-         leftTurretServo.setPosition(turretTicks);
-            rightTurretServo.setPosition(turretTicks);
-         for(int i = 0; i < num; i++) {
-             clamp(pos[i], MIN[i], MAX[i]);
-         }
-
-         blocker.setPosition(pos[blockerServo]);
-        telemetry.addData("Blocker Set", pos[blockerServo]);
-        telemetry.addData("Blocker Current", blocker.getPosition());
-        telemetry.addData("Pivot Set", pos[pivotServo]);
-
+        if (gamepad1.dpadUpWasPressed()) x+= 0.1;
+        if (gamepad1.dpadDownWasPressed()) x-= 0.1;
+        x = clamp(x, 0, 1);
+        hood.setPosition(x);
+        telemetry.addData("x", x);
     }
 }

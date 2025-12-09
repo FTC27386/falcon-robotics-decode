@@ -12,16 +12,16 @@ public class climb extends SequentialCommandGroup {
     Robot r;
 
     Paths paths;
-    public climb(Robot r)
-    {
+
+    public climb(Robot r) {
         paths = new Paths(r.getD().follower);
         this.r = r;
         addCommands(
-                new followPath(r,paths.park),
-                new InstantCommand(()->r.getL().setActivated(true)),
-                new InstantCommand(()->r.getL().unlatch()),
+                new followPath(r, paths.park),
+                new InstantCommand(() -> r.getL().setActivated(true)),
+                new InstantCommand(() -> r.getL().unlatch()),
                 new WaitCommand(300),
-                new InstantCommand(()->r.getL().down())
+                new InstantCommand(() -> r.getL().down())
         );
     }
 

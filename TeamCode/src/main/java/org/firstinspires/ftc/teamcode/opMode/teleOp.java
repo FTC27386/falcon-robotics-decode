@@ -12,7 +12,6 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.climb;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.defaultDrive;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.magDump;
-import org.firstinspires.ftc.teamcode.Mechanisms.Commands.oneShot;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.runIntakeTimed;
 import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
 
@@ -31,9 +30,9 @@ public class teleOp extends CommandOpMode {
     Button dpaddown;
 
     private Robot r;
+
     @Override
-    public void initialize()
-    {
+    public void initialize() {
         super.reset();
         r = new Robot(hardwareMap);
         register(r.getS(), r.getD(), r.getI(), r.getL());
@@ -41,7 +40,7 @@ public class teleOp extends CommandOpMode {
         Supplier<Double> leftX = driverOp::getLeftX;
         Supplier<Double> leftY = driverOp::getLeftY;
         Supplier<Double> rightX = driverOp::getRightX;
-        r.getD().setDefaultCommand(new defaultDrive(r,leftY, leftX, rightX));
+        r.getD().setDefaultCommand(new defaultDrive(r, leftY, leftX, rightX));
 
         intake = driverOp.getGamepadButton(GamepadKeys.Button.SQUARE);
         relocalize = driverOp.getGamepadButton(GamepadKeys.Button.OPTIONS);
@@ -52,29 +51,27 @@ public class teleOp extends CommandOpMode {
         dpaddown = driverOp.getGamepadButton(GamepadKeys.Button.DPAD_DOWN);
 
         climb.whenPressed(new climb(r));
-        intake.whenPressed(new runIntakeTimed(r,2000));
-        relocalize.whenPressed(new InstantCommand(()->r.getD().reloc(new Pose(8,8,Math.toRadians(90)))));
-        changeTarget.whenPressed(new InstantCommand(()->r.getD().relocTarget(r.getD().getCurrentPose())));
-        schedule(new InstantCommand(()-> r.getD().follower.startTeleOpDrive()));
-        schedule(new RunCommand(()->r.getS().setTurretPosition(r.getD().yoCalcAim())));
+        intake.whenPressed(new runIntakeTimed(r, 2000));
+        relocalize.whenPressed(new InstantCommand(() -> r.getD().reloc(new Pose(8, 8, Math.toRadians(90)))));
+        changeTarget.whenPressed(new InstantCommand(() -> r.getD().relocTarget(r.getD().getCurrentPose())));
+        schedule(new InstantCommand(() -> r.getD().follower.startTeleOpDrive()));
+        schedule(new RunCommand(() -> r.getS().setTurretPosition(r.getD().yoCalcAim())));
         shoot.whenPressed(new magDump(r));
-        dpadup.whenPressed(new InstantCommand(() -> r.getL().unlatch()));
-        dpaddown.whenPressed(new InstantCommand(() -> r.getL().latch()));
     }
+
     @Override
-    public void run()
-    {
+    public void run() {
         telemetry.addData("x:", r.getD().x);
         telemetry.addData("y:", r.getD().y);
-        telemetry.addData("heading",r.getD().getCurrentPose().getHeading());
-        telemetry.addData("adjustment",r.getD().yoCalcAim());
+        telemetry.addData("heading", r.getD().getCurrentPose().getHeading());
+        telemetry.addData("adjustment", r.getD().yoCalcAim());
         telemetry.addData("flywheel target velocity", r.getS().getSpeedControl().getSetPoint());
         telemetry.addData("flywheel error", r.getS().getSpeedControl().getPositionError());
-        telemetry.addData("flywheel speed",r.getS().getCurrentSpeed());
+        telemetry.addData("flywheel speed", r.getS().getCurrentSpeed());
         telemetry.addData("flywheel response", r.getS().getFlywheelSignal());
         telemetry.addData("turret ticks", r.getS().getTurretPosition());
-        telemetry.addData("liftpower", r.getL().getPIDResponse());
-        telemetry.addData("liftPose", r.getL().getLiftPose());
+        telemetry.addData("lift power", r.getL().getPIDResponse());
+        telemetry.addData("lift pose", r.getL().getLiftPose());
         telemetry.update();
         super.run();
     }

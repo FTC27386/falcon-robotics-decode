@@ -9,12 +9,11 @@ public class toggleIntake extends ParallelCommandGroup {
 
     Robot r;
 
-    public toggleIntake(Robot r)
-    {
+    public toggleIntake(Robot r) {
         this.r = r;
         addRequirements(r.getI(), r.getS());
         addCommands(
-                new InstantCommand(()->r.getS().setSpeed(0)),
+                new InstantCommand(() -> r.getS().setSpeed(0)),
                 new runIntake((r))
         );
     }

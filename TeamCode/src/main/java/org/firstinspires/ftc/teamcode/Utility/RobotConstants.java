@@ -26,7 +26,7 @@ public class RobotConstants {
     right_lift_servo_name = "right_lift_servo";
 
         public static double
-                shooterTolerance = 45,
+                shooterTolerance = 67,
                 vera_coefficient = .4167,
 
                 lift_kP = 0.001, //0.0003
@@ -45,15 +45,15 @@ public class RobotConstants {
                 rpm_conversion_factor = (double)(Math.PI * 2) * (double)(1/60),
                 far_flywheel_speed = -310,
                 close_flywheel_speed = -250,
-        transfer_closed_pos = 0.5,
-        transfer_open_pos = .25,
-        latch_close_pos = 0,
-    latch_open_pos = 1;
+                transfer_closed_pos = 0.5,
+                transfer_open_pos = .25,
+                latch_close_pos = 0,
+                latch_open_pos = 1,
+                pivot_up_pos = 0,
+                pivot_down_pos = 0;
         public static Pose autoEndPose;
         public enum robotState
         {
-                FAR_SHOOT,
-                CLOSE_SHOOT,
                 INTAKING,
                 IDLE
         }

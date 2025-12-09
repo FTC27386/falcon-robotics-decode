@@ -8,14 +8,13 @@ import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
 import org.firstinspires.ftc.teamcode.Utility.RobotConstants;
 
 public class oneShot extends SequentialCommandGroup {
-    private Robot r;
+    private final Robot r;
     private RobotConstants.robotState shootingZone;
 
 
-    public oneShot(Robot r)
-    {
+    public oneShot(Robot r) {
         this.r = r;
-        addRequirements(r.getI(),r.getS());
+        addRequirements(r.getI(), r.getS());
         addCommands(
                 new InstantCommand(() -> r.getI().close()),
                 new preShootSequence(r),
@@ -23,7 +22,7 @@ public class oneShot extends SequentialCommandGroup {
                 new pulseGate(r, 125),
                 new WaitCommand(200),
                 new stopIntake(r),
-                new InstantCommand(()->r.getS().setSpeed(0))
+                new InstantCommand(() -> r.getS().setSpeed(0))
         );
     }
 }

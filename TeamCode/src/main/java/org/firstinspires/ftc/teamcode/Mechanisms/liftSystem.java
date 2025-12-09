@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Mechanisms;
 
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -18,8 +17,7 @@ public class liftSystem extends SubsystemBase {
     int currentPos;
     boolean activated = false;
 
-    public liftSystem(HardwareMap hmap)
-    {
+    public liftSystem(HardwareMap hmap) {
         motor_controller = new PIDController(RobotConstants.lift_kP, 0, RobotConstants.lift_kD);
         motor_controller.setSetPoint(0);
         lift_motor = hmap.get(DcMotor.class, RobotConstants.lift_motor_name);
@@ -29,42 +27,40 @@ public class liftSystem extends SubsystemBase {
         lift_motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
     }
-    public double getLiftPose()
-    {
+
+    public double getLiftPose() {
         return currentPos;
     }
+
     @Override
     public void periodic() {
-        if(activated)
-        {
+        if (activated) {
             currentPos = lift_motor.getCurrentPosition();
-            power = activated?
-                    motor_controller.calculate(currentPos, RobotConstants.top_climb_position): 0;
+            power = activated ?
+                    motor_controller.calculate(currentPos, RobotConstants.top_climb_position) : 0;
             lift_motor.setPower(power + RobotConstants.lift_kF);
         }
     }
-    public void setActivated(boolean activated)
-    {
+
+    public void setActivated(boolean activated) {
         this.activated = activated;
     }
-    public void unlatch()
-    {
+
+    public void unlatch() {
         latch.setPosition(RobotConstants.latch_open_pos);
     }
-    public void latch()
-    {
+
+    public void latch() {
         latch.setPosition(RobotConstants.latch_close_pos);
     }
-    public void down()
-    {
+
+    public void down() {
         motor_controller.setSetPoint(RobotConstants.top_climb_position);
     }
-    public double getPIDResponse()
-    {
+
+    public double getPIDResponse() {
         return motor_controller.calculate();
     }
-
-
 
 
 }

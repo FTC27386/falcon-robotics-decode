@@ -8,19 +8,18 @@ public class runIntakeReverse extends CommandBase {
 
     private final Robot r;
 
-    public runIntakeReverse(Robot r)
-    {
+    public runIntakeReverse(Robot r) {
         this.r = r;
         addRequirements(r.getI());
     }
+
     @Override
-    public void initialize()
-    {
+    public void initialize() {
         r.getI().outtake();
     }
+
     @Override
-    public boolean isFinished()
-    {
+    public boolean isFinished() {
         return true;
     }
 }
