@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Mechanisms;
 
 
+import static org.firstinspires.ftc.teamcode.opMode.teleOp.flywheel_speed;
+import static org.firstinspires.ftc.teamcode.opMode.teleOp.hood_pos;
 import static java.lang.Math.sqrt;
 
 import com.pedropathing.follower.Follower;
@@ -57,6 +59,9 @@ public class drivetrainSystem extends SubsystemBase {
         return currentPose;
     }
 
+    public double yoCalcDist() {
+        return sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
+    }
     public double yoCalcAim()  //calculate adjusted turret angle in degrees
     {
         field_angle = (90 - Math.toDegrees(Math.atan2(distanceY, distanceX)));
@@ -69,30 +74,13 @@ public class drivetrainSystem extends SubsystemBase {
     }
 
     public double yoCalcHood() {
-        /*
-        if (dist >= 69.674 && dist < 82.260) {
-            return 0.000114507 * Math.pow(dist, 2)
-                    - 0.0163 * dist
-                    + 0.596814;
-        } else if (dist >= 82.260 && dist <= 116.262) {
-            return -0.00000585763 * Math.pow(dist, 2)
-                    + 0.000692307 * dist
-                    + 0.0666877;
-        } else {
-            return 0;
-        }
-         */
-        return 0;
+        return -0.0000167505 * Math.pow(dist, 3)
+                    + 0.0030833 * Math.pow(dist, 2)
+                    -0.185176 * dist + 4.12003;
     }
 
     public double yoCalcSpeed() {
-        if (dist >= 69.674 && dist < 82.260) {
-            return 225;
-        } else if (dist >= 82.260 && dist <= 116.262) {
-            return 270;
-        } else {
-            return 0;
-        }
+            return -1700;
     }
 
     public void teleOpDrive(double axial, double lateral, double yaw) {

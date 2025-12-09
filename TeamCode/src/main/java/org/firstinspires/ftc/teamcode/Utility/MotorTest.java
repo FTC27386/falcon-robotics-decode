@@ -112,8 +112,8 @@ public class MotorTest extends OpMode {
 
     @Override
     public void loop() {
-        if (gamepad1.dpadUpWasPressed()) x+= 0.1;
-        if (gamepad1.dpadDownWasPressed()) x-= 0.1;
+        if (gamepad1.dpadUpWasPressed()) x+= 0.01;
+        if (gamepad1.dpadDownWasPressed()) x-= 0.01;
         x = clamp(x, 0, 1);
         hood.setPosition(x);
         telemetry.addData("x", x);
