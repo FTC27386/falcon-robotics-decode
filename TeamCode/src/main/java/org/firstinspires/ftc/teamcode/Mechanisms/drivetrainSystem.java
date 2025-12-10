@@ -81,6 +81,7 @@ public class drivetrainSystem extends SubsystemBase {
         } else {
             return 0;
         }
+        //return hood_pos;
     }
 
     public double yoCalcSpeed() {
@@ -90,6 +91,7 @@ public class drivetrainSystem extends SubsystemBase {
         else {
             return 0;
         }
+        //return flywheel_speed;
     }
 
     public void teleOpDrive(double axial, double lateral, double yaw) {

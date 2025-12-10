@@ -19,7 +19,7 @@ public class autoShot extends SequentialCommandGroup {
                 new InstantCommand(() -> r.getI().close()),
                 new autoShootSequence(r),
                 new runIntake(r),
-                new pulseGate(r, 125),
+                new pulseGate(r, 1200),
                 new WaitCommand(200),
                 new stopIntake(r),
                 new InstantCommand(() -> r.getS().setSpeed(0))
