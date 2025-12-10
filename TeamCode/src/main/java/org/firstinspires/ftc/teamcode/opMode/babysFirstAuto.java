@@ -8,7 +8,7 @@ import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.followPath;
-import org.firstinspires.ftc.teamcode.Mechanisms.Commands.magDump;
+import org.firstinspires.ftc.teamcode.Mechanisms.Commands.autoShot;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.runIntake;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.stopIntake;
 import org.firstinspires.ftc.teamcode.Mechanisms.Paths;
@@ -20,8 +20,8 @@ public class babysFirstAuto extends CommandOpMode {
     Follower follower;
     private Robot r;
     Paths paths;
-public static double speed_value = -2000;
-public static double hood_angle = 0.5;
+public static double speed_value = -1900;
+public static double hood_angle = 1;
 
     @Override
     public void initialize()
@@ -41,27 +41,27 @@ public static double hood_angle = 0.5;
                         new InstantCommand(()-> r.getI().close()),
 
                         new followPath(r, paths.Path0),
-               new magDump(r),
+               new autoShot(r),
                 new runIntake(r),
                         new InstantCommand(()-> r.setShooterValues()),
                 new followPath(r, paths.Path1), //intake 1st line
                 new stopIntake(r),
                 new followPath(r, paths.Path2), //return to shoot point
-                new magDump(r),
+                new autoShot(r),
                 new followPath(r, paths.Path3),
                new runIntake(r),
                         new InstantCommand(()-> r.setShooterValues()),
                 new followPath(r, paths.Path4),
               new stopIntake(r),
                 new followPath(r, paths.Path5),
-                new magDump(r),
+                new autoShot(r),
                 new followPath(r, paths.Path6),
                new runIntake(r),
                         new InstantCommand(()-> r.setShooterValues()),
                 new followPath(r, paths.Path7),
                new stopIntake(r),
                 new followPath(r, paths.Path8),
-              new magDump(r),
+              new autoShot(r),
                 new followPath(r, paths.Path9)));
     }
     @Override

@@ -74,6 +74,7 @@ public class drivetrainSystem extends SubsystemBase {
     }
 
     public double yoCalcHood() {
+        /*
         if (dist >= 50.2778 && dist <= 80.2022) {
             return -0.0000167505 * Math.pow(dist, 3)
                     + 0.0030833 * Math.pow(dist, 2)
@@ -81,17 +82,20 @@ public class drivetrainSystem extends SubsystemBase {
         } else {
             return 0;
         }
-        //return hood_pos;
+         */
+        return hood_pos;
     }
 
     public double yoCalcSpeed() {
+        /*
         if (dist >= 50.2778 && dist <= 80.2022) {
             return -1700;
         }
         else {
             return 0;
         }
-        //return flywheel_speed;
+         */
+        return flywheel_speed;
     }
 
     public void teleOpDrive(double axial, double lateral, double yaw) {
