@@ -56,7 +56,7 @@ public class Paths {
         Path3 = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(59.1, 79.0), new Pose(41.400, 60.000))
+                        new BezierLine(new Pose(59.1, 79.0), new Pose(44, 60.000))
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
@@ -64,7 +64,7 @@ public class Paths {
         Path4 = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(41.400, 60.000), new Pose(10, 60.000))
+                        new BezierLine(new Pose(44, 60.000), new Pose(10, 60.000))
                 )
                 .setTangentHeadingInterpolation()
                 .build();
@@ -85,7 +85,7 @@ public class Paths {
         Path6 = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(59.100, 79.000), new Pose(41.400, 36.000))
+                        new BezierLine(new Pose(59.100, 79.000), new Pose(44, 36.000))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(225), Math.toRadians(180))
                 .build();
@@ -93,7 +93,7 @@ public class Paths {
         Path7 = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(41.400, 36.000), new Pose(10, 36.000))
+                        new BezierLine(new Pose(44, 36.000), new Pose(10, 36.000))
                 )
                 .setTangentHeadingInterpolation()
                 .build();
