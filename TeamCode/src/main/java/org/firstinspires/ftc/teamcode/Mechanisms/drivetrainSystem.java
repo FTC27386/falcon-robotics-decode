@@ -74,13 +74,22 @@ public class drivetrainSystem extends SubsystemBase {
     }
 
     public double yoCalcHood() {
-        return -0.0000167505 * Math.pow(dist, 3)
+        if (dist >= 50.2778 && dist <= 80.2022) {
+            return -0.0000167505 * Math.pow(dist, 3)
                     + 0.0030833 * Math.pow(dist, 2)
                     -0.185176 * dist + 4.12003;
+        } else {
+            return 0;
+        }
     }
 
     public double yoCalcSpeed() {
+        if (dist >= 50.2778 && dist <= 80.2022) {
             return -1700;
+        }
+        else {
+            return 0;
+        }
     }
 
     public void teleOpDrive(double axial, double lateral, double yaw) {
@@ -111,6 +120,5 @@ public class drivetrainSystem extends SubsystemBase {
     public boolean inZone() {
         return (y > Math.abs(x - 72) + 72 - zoneBuffer) || (y < -Math.abs(x - 72) + 24 + zoneBuffer);
     }
-
 
 }

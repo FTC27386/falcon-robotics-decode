@@ -29,6 +29,15 @@ public class intakeSystem extends SubsystemBase {
         gatePosition = (RobotConstants.transfer_open_pos);
     }
 
+    public void toggle(boolean x) {
+        if (x) {
+            open();
+        }
+        else {
+            close();
+        }
+    }
+
     public void intake() {
         targetpower = -1;
     }
