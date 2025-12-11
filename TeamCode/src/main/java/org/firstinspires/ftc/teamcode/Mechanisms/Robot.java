@@ -61,7 +61,7 @@ public class Robot {
     public void setAutoValues() {
         s.setSpeed(speed_value);
         s.setHoodPosition(hood_angle);
-        s.setTurretPosition(d.yoCalcAim());
+        s.setTurretPosition(49.1227252);
     }
 
 }

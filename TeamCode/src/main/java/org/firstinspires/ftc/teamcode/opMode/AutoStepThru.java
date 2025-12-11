@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opMode;
 
+import static androidx.core.math.MathUtils.clamp;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -40,39 +42,10 @@ public class AutoStepThru extends CommandOpMode {
     public static double flywheel_speed = -1500;
     private Robot r;
     Paths paths;
-    public Command[] AutoCommands =
-            {
-                    new InstantCommand(()-> r.setShooterValues()),
-                    new InstantCommand(()-> r.getI().close()),
-
-                    new followPath(r, paths.Path0),
-                    new magDump(r),
-                    new runIntake(r),
-                    new InstantCommand(()-> r.setShooterValues()),
-                    new followPath(r, paths.Path1), //intake 1st line
-                    new stopIntake(r),
-                    new followPath(r, paths.Path2), //return to shoot point
-                    new magDump(r),
-                    new followPath(r, paths.Path3),
-                    new runIntake(r),
-                    new InstantCommand(()-> r.setShooterValues()),
-                    new followPath(r, paths.Path4),
-                    new stopIntake(r),
-                    new followPath(r, paths.Path5),
-                    new magDump(r),
-                    new followPath(r, paths.Path6),
-                    new runIntake(r),
-                    new InstantCommand(()-> r.setShooterValues()),
-                    new followPath(r, paths.Path7),
-                    new stopIntake(r),
-                    new followPath(r, paths.Path8),
-                    new magDump(r),
-                    new followPath(r, paths.Path9)
-            };
+    public Command[] AutoCommands;
 
     @Override
     public void initialize() {
-
         super.reset();
         r = new Robot(hardwareMap);
         register(r.getS(), r.getD(), r.getI(), r.getL());
@@ -93,16 +66,44 @@ public class AutoStepThru extends CommandOpMode {
         intake.whenPressed(new runIntakeTimed(r, 2000));
         relocalize.whenPressed(new InstantCommand(() -> r.getD().reloc(new Pose(8, 8, Math.toRadians(90)))));
         changeTarget.whenPressed(new InstantCommand(() -> r.getD().relocTarget(
-               new Pose(
-                       r.getD().getCurrentPose().getX() - 12
-                       ,r.getD().getCurrentPose().getY() + 12
-                       ,Math.toRadians(90)
-               ))));
+                new Pose(
+                        r.getD().getCurrentPose().getX() - 12
+                        , r.getD().getCurrentPose().getY() + 12
+                        , Math.toRadians(90)
+                ))));
         schedule(new InstantCommand(() -> r.getD().follower.startTeleOpDrive()));
         schedule(new RunCommand(() -> r.getS().setTurretPosition(r.getD().yoCalcAim())));
         shoot.whenPressed(new magDump(r));
-    }
+        AutoCommands = new Command[]{
+                new InstantCommand(() -> r.setShooterValues()),
+                new InstantCommand(() -> r.getI().close()),
+                new followPath(r, paths.Path0),
+                new magDump(r),
+                new runIntake(r),
+                new InstantCommand(() -> r.setShooterValues()),
+                new followPath( r, paths.Path1), //intake 1st line
+                new stopIntake(r),
+                new followPath(r, paths.Path2), //return to shoot point
+                new magDump(r),
+                new followPath(r, paths.Path3),
+                new runIntake(r),
+                new InstantCommand(() -> r.setShooterValues()),
+                new followPath(r, paths.Path4),
+                new stopIntake(r),
+                new followPath(r, paths.Path5),
+                new magDump(r),
+                new followPath(r, paths.Path6),
+                new runIntake(r),
+                new InstantCommand(() -> r.setShooterValues()),
+                new followPath(r, paths.Path7),
+                new stopIntake(r),
+                new followPath(r, paths.Path8),
+                new magDump(r),
+                new followPath(r, paths.Path9)
+        };
 
+
+    }
     @Override
     public void run() {
 
@@ -118,6 +119,7 @@ public class AutoStepThru extends CommandOpMode {
         {
             index +=1;
         }
+        index = clamp(index, 0, AutoCommands.length);
 
 
         telemetry.addData("x:", r.getD().x);
@@ -133,6 +135,7 @@ public class AutoStepThru extends CommandOpMode {
         telemetry.addData("lift power", r.getL().getPIDResponse());
         telemetry.addData("lift pose", r.getL().getLiftPose());
         telemetry.addData("Distance", r.getD().yoCalcDist());
+        telemetry.addData("current step", index);
 
         telemetry.update();
         super.run();
