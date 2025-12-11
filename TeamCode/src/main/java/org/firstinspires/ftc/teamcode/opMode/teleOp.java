@@ -13,6 +13,8 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.climb;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.defaultDrive;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.magDump;
+import org.firstinspires.ftc.teamcode.Mechanisms.Commands.runIntakeReverse;
+import org.firstinspires.ftc.teamcode.Mechanisms.Commands.runIntakeReverseTimed;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.runIntakeTimed;
 import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
 
@@ -25,11 +27,10 @@ public class teleOp extends CommandOpMode {
     Button intake;
     Button relocalize;
     Button shoot;
+    Button outtake;
     Button changeTarget;
     GamepadEx driverOp;
     Button climb;
-    Button dpadup;
-    Button dpaddown;
     public static double hood_pos = 0;
     public static double flywheel_speed = -1500;
     private Robot r;
@@ -46,15 +47,15 @@ public class teleOp extends CommandOpMode {
         r.getD().setDefaultCommand(new defaultDrive(r, leftY, leftX, rightX));
 
         intake = driverOp.getGamepadButton(GamepadKeys.Button.SQUARE);
+        outtake = driverOp.getGamepadButton(GamepadKeys.Button.CIRCLE);
         relocalize = driverOp.getGamepadButton(GamepadKeys.Button.OPTIONS);
         changeTarget = driverOp.getGamepadButton(GamepadKeys.Button.SHARE);
         shoot = driverOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER);
         climb = driverOp.getGamepadButton(GamepadKeys.Button.TOUCHPAD);
-        dpadup = driverOp.getGamepadButton(GamepadKeys.Button.DPAD_UP);
-        dpaddown = driverOp.getGamepadButton(GamepadKeys.Button.DPAD_DOWN);
 
         climb.whenPressed(new climb(r));
         intake.whenPressed(new runIntakeTimed(r, 2000));
+        outtake.whenPressed(new runIntakeReverseTimed(r, 2000));
         relocalize.whenPressed(new InstantCommand(() -> r.getD().reloc(new Pose(8, 8, Math.toRadians(90)))));
         changeTarget.whenPressed(new InstantCommand(() -> r.getD().relocTarget(
                new Pose(

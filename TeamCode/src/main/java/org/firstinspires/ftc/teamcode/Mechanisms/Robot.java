@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.Mechanisms;
 
-import static org.firstinspires.ftc.teamcode.opMode.babysFirstAuto.hood_angle;
-import static org.firstinspires.ftc.teamcode.opMode.babysFirstAuto.speed_value;
-
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
@@ -59,8 +56,8 @@ public class Robot {
     }
 
     public void setAutoValues() {
-        s.setSpeed(speed_value);
-        s.setHoodPosition(hood_angle);
+        s.setSpeed(-1900);
+        s.setHoodPosition(0.8);
         s.setTurretPosition(49.1227252);
     }
 

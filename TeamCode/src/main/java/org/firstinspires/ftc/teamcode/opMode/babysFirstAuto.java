@@ -21,8 +21,6 @@ public class babysFirstAuto extends CommandOpMode {
     Follower follower;
     private Robot r;
     PathsFaulty paths;
-public static double speed_value = -1900;
-public static double hood_angle = 0.8;
 
     @Override
     public void initialize()
