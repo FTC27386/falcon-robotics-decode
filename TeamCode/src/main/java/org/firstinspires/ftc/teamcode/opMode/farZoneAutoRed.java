@@ -61,6 +61,7 @@ public class farZoneAutoRed extends CommandOpMode {
     public void run()
     {
         super.run();
+        RobotConstants.setCurrent_color(RobotConstants.ALLIANCE_COLOR.RED);
         RobotConstants.setAutoEndPose(r.getD().getCurrentPose());
         telemetry.addData("turretPose",r.getS().getTurretPosition());
         telemetry.addData("robot X", r.getD().getCurrentPose().getX());

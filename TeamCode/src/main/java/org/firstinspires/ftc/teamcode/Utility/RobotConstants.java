@@ -7,9 +7,20 @@ import com.pedropathing.geometry.Pose;
 @Configurable
 public class RobotConstants {
 
+        public enum ALLIANCE_COLOR
+        {
+                BLUE, RED
+        }
+
+        public static ALLIANCE_COLOR current_color;
+
         public static void setAutoEndPose(Pose endPose)
         {
                 autoEndPose = endPose;
+        }
+        public static void setCurrent_color(ALLIANCE_COLOR color)
+        {
+                current_color = color;
         }
 
         public static String first_shooter_motor_name = "flywheel_top",

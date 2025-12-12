@@ -13,7 +13,7 @@ public class Robot {
     intakeSystem i;
     drivetrainSystem d;
     liftSystem l;
-    RobotConstants.robotState currentState;
+
 
     public shooterSystem getS() {
         return s;
@@ -36,7 +36,6 @@ public class Robot {
         i = new intakeSystem(hmap);
         d = new drivetrainSystem(hmap);
         l = new liftSystem(hmap);
-        currentState = RobotConstants.robotState.IDLE;
         for (LynxModule mod : hmap.getAll(LynxModule.class)) {
             mod.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }

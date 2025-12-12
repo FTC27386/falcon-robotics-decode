@@ -20,7 +20,7 @@ public class drivetrainSystem extends SubsystemBase {
     public static Pose
             currentPose = new Pose(0, 0, Math.toRadians(90)),
             startPose,
-            targ = new Pose(0, 144, 0);
+            targ;
     public Follower follower;
     public double
             x,
@@ -39,6 +39,14 @@ public class drivetrainSystem extends SubsystemBase {
         follower = Constants.createFollower(hMap);
         follower.setStartingPose(RobotConstants.autoEndPose == null ? new Pose(8, 8, Math.toRadians(90)) : RobotConstants.autoEndPose);
         follower.update();
+        if (RobotConstants.current_color == null|| RobotConstants.current_color == RobotConstants.ALLIANCE_COLOR.BLUE)
+        {
+            targ = new Pose(0, 144);
+        }
+        else
+        {
+            targ = new Pose(144, 144);
+        }
     }
 
     @Override
@@ -55,9 +63,6 @@ public class drivetrainSystem extends SubsystemBase {
     }
 
 
-    public Pose getPose() {
-        return currentPose;
-    }
 
     public double yoCalcDist() {
         return sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));

@@ -85,6 +85,7 @@ public class closeZoneAuto extends CommandOpMode {
     {
         super.run();
         RobotConstants.setAutoEndPose(r.getD().getCurrentPose());
+        RobotConstants.setCurrent_color(RobotConstants.ALLIANCE_COLOR.BLUE);
         telemetry.addData("turretPose",r.getS().getTurretPosition());
         telemetry.addData("robot X", r.getD().getCurrentPose().getX());
         telemetry.addData("robot Y", r.getD().getCurrentPose().getY());
