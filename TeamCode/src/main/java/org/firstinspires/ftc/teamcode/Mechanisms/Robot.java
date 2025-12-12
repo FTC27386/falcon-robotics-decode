@@ -56,8 +56,13 @@ public class Robot {
 
     public void setAutoValues() {
         s.setSpeed(-1900);
-        s.setHoodPosition(0.8);
+        s.setHoodPosition(0.7);
         s.setTurretPosition(49.1227252);
+    }
+    public void setAutoValuesRed() {
+        s.setSpeed(-1900);
+        s.setHoodPosition(0.7);
+        s.setTurretPosition(-49.1227252);
     }
 
 }

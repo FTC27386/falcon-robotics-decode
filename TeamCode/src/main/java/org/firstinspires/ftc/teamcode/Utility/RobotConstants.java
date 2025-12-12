@@ -42,6 +42,7 @@ public class RobotConstants {
     right_lift_servo_name = "right_lift_servo";
 
         public static double
+                servo_offset = 0,
                 shooterTolerance = 67,
                 vera_coefficient = .4167,
 
@@ -77,7 +78,7 @@ public class RobotConstants {
                 AIMING,
                 ENDGAME,
         }
-        public static int top_climb_position = 12300;
+        public static int top_climb_position = 13400;
 
 
 

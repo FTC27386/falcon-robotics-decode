@@ -30,6 +30,7 @@ package org.firstinspires.ftc.teamcode.Utility;
 
 import static androidx.core.math.MathUtils.clamp;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
+import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.valueOf;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -67,6 +68,8 @@ public class MotorTest extends OpMode {
             blocker,
             pivot;
     public static double x;
+    public static double turretPosition = 0.5;
+    public static double servoOffset = 0;
 
     @Override
     public void init() {
@@ -116,6 +119,8 @@ public class MotorTest extends OpMode {
         if (gamepad1.dpadDownWasPressed()) x-= 0.01;
         x = clamp(x, 0, 1);
         hood.setPosition(x);
+        leftTurretServo.setPosition(turretPosition);
+        rightTurretServo.setPosition(turretPosition + servoOffset);
         telemetry.addData("x", x);
     }
 }

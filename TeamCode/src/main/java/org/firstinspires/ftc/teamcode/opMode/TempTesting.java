@@ -10,9 +10,9 @@ import com.seattlesolvers.solverslib.command.button.Button;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
-import org.firstinspires.ftc.teamcode.Mechanisms.Commands.followPath;
-import org.firstinspires.ftc.teamcode.Mechanisms.Commands.goToClimbPose;
+import org.firstinspires.ftc.teamcode.Mechanisms.Commands.autoCloseShot;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.defaultDrive;
+import org.firstinspires.ftc.teamcode.Mechanisms.Commands.followPath;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.liftoff;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.magDump;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.runIntakeReverseTimed;
@@ -25,22 +25,23 @@ import org.firstinspires.ftc.teamcode.Utility.RobotConstants;
 import java.util.function.Supplier;
 
 @Config
-@TeleOp(name = "TeleOp")
-public class teleOp extends CommandOpMode {
+@TeleOp(name = "TeleOp Test Ver.")
+public class TempTesting extends CommandOpMode {
 
-    Button intake;
-    Button relocalize;
-    Button shoot;
-    Button outtake;
-    Button changeTarget;
-    GamepadEx driverOp;
-    Button climb;
-    Button park;
+    Button Triangle;
+    Button Square;
+    Button Circle;
+    Button Cross;
+    Button dpad_up;
+    GamepadEx dpad_down;
+    Button dpad_left;
+    Button dpad_right;
     public static double hood_pos = 0;
     public static double flywheel_speed = -1500;
     private Robot r;
     Paths paths;
     PathsMirrored paths_mirrored;
+    GamepadEx driverOp;
 
     @Override
     public void initialize() {
@@ -57,30 +58,22 @@ public class teleOp extends CommandOpMode {
         PathsMirrored mirroredPaths = new PathsMirrored(r.getD().follower);
 
 
-        intake = driverOp.getGamepadButton(GamepadKeys.Button.SQUARE);
-        outtake = driverOp.getGamepadButton(GamepadKeys.Button.CIRCLE);
-        relocalize = driverOp.getGamepadButton(GamepadKeys.Button.OPTIONS);
-        changeTarget = driverOp.getGamepadButton(GamepadKeys.Button.SHARE);
-        shoot = driverOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER);
-        climb = driverOp.getGamepadButton(GamepadKeys.Button.TOUCHPAD);
-        park = driverOp.getGamepadButton(GamepadKeys.Button.DPAD_UP);
+        Square = driverOp.getGamepadButton(GamepadKeys.Button.SQUARE);
+        Circle = driverOp.getGamepadButton(GamepadKeys.Button.CIRCLE);
+        Triangle = driverOp.getGamepadButton(GamepadKeys.Button.TRIANGLE);
+        Cross = driverOp.getGamepadButton(GamepadKeys.Button.CROSS);
+        dpad_up = driverOp.getGamepadButton(GamepadKeys.Button.DPAD_UP);
+        dpad_left = driverOp.getGamepadButton(GamepadKeys.Button.DPAD_LEFT);
+        dpad_right = driverOp.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT);
 
-        climb.whenPressed(new followPath(r,
-                RobotConstants.current_color == null || RobotConstants.current_color == RobotConstants.ALLIANCE_COLOR.RED?
-                        paths.park : mirroredPaths.park));
-        intake.whenPressed(new runIntakeTimed(r, 2000));
-        outtake.whenPressed(new runIntakeReverseTimed(r, 2000));
-        relocalize.whenPressed(new InstantCommand(() -> r.getD().reloc(new Pose(8, 8, Math.toRadians(90)))));
-        changeTarget.whenPressed(new InstantCommand(() -> r.getD().relocTarget(
-               new Pose(
-                       r.getD().getCurrentPose().getX() - 12
-                       ,r.getD().getCurrentPose().getY() + 12
-                       ,Math.toRadians(90)
-               ))));
+        dpad_right.whenPressed(new autoCloseShot(r));
+        Square.whenPressed(new InstantCommand(()->r.getD().reloc(new Pose(
+                8,8,Math.toRadians(90)
+        ))));
+
         schedule(new InstantCommand(() -> r.getD().follower.startTeleOpDrive()));
         schedule(new RunCommand(() -> r.getS().setTurretPosition(r.getD().yoCalcAim())));
-        shoot.whenPressed(new magDump(r));
-        park.whenPressed(new liftoff(r));
+
     }
 
     @Override
@@ -98,9 +91,6 @@ public class teleOp extends CommandOpMode {
         telemetry.addData("lift power", r.getL().getPIDResponse());
         telemetry.addData("lift pose", r.getL().getLiftPose());
         telemetry.addData("Distance", r.getD().yoCalcDist());
-        telemetry.addData("target X", r.getD().getTarg().getX());
-        telemetry.addData("target Y", r.getD().getTarg().getY());
-        telemetry.addData("alliance color?", RobotConstants.current_color);
 
         telemetry.update();
         super.run();

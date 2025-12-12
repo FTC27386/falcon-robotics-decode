@@ -122,7 +122,7 @@ public class PathsFaulty {
                 .addPath(
                         new BezierLine(new Pose(12, 12, Math.toRadians(90)), new Pose(39, 39, Math.toRadians(90)))
                 )
-                .setTangentHeadingInterpolation()
+                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
     }

@@ -9,6 +9,7 @@ import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.autoCloseShot;
+import org.firstinspires.ftc.teamcode.Mechanisms.Commands.autoCloseShotRed;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.followPath;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.runIntake;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.stopIntake;
@@ -44,7 +45,7 @@ public class closeZoneAutoRed extends CommandOpMode {
                         new InstantCommand(()-> r.setShooterValues()),
                         new InstantCommand(()-> r.getI().close()),
                         new followPath(r, paths.closeAutoStartPath),
-                         new autoCloseShot(r),
+                         new autoCloseShotRed(r),
                         new runIntake(r),
                         new InstantCommand(()-> r.setShooterValues()),
                 new followPath(r, paths.intakeFirstRowPath), //intake 1st line
@@ -56,7 +57,7 @@ public class closeZoneAutoRed extends CommandOpMode {
                                                 new stopIntake(r))
 
                 ),
-                new autoCloseShot(r),
+                new autoCloseShotRed(r),
                 new followPath(r, paths.prepareIntakeMiddleRowPath),
                new runIntake(r),
                         new InstantCommand(()-> r.setShooterValues()),
@@ -67,7 +68,7 @@ public class closeZoneAutoRed extends CommandOpMode {
                                 new WaitCommand(1000),
                                 new stopIntake(r))
                 ),
-                new autoCloseShot(r),
+                new autoCloseShotRed(r),
                 new followPath(r, paths.prepareIntakeBottomRowPath),
                new runIntake(r),
                         new InstantCommand(()-> r.setShooterValues()),
@@ -78,7 +79,7 @@ public class closeZoneAutoRed extends CommandOpMode {
                                 new WaitCommand(1000),
                                 new stopIntake(r))
                 ),
-              new autoCloseShot(r),
+              new autoCloseShotRed(r),
                 new followPath(r, paths.goToGatePath)));
     }
     @Override

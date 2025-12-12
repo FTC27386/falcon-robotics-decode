@@ -61,13 +61,12 @@ public class PathsMirrored {
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
-                .setReversed()
                 .build();
 
         prepareIntakeMiddleRowPath = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(flipSide(59.244), 79.027), new Pose(flipSide(44.000), 60.000))
+                        new BezierLine(new Pose(flipSide(59.244), 79.027), new Pose(flipSide(44.000), 56))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build();
@@ -75,7 +74,7 @@ public class PathsMirrored {
         intakeMiddleRowPath = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(flipSide(44.000), 60.000), new Pose(flipSide(8.000), 60.000))
+                        new BezierLine(new Pose(flipSide(44.000), 56), new Pose(flipSide(8.000), 56))
                 )
                 .setTangentHeadingInterpolation()
                 .build();
@@ -84,7 +83,7 @@ public class PathsMirrored {
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(flipSide(8.000), 60.000),
+                                new Pose(flipSide(8.000), 56),
                                 new Pose(flipSide(47.300), 60.000),
                                 new Pose(flipSide(59.100), 79.000)
                         )
@@ -119,7 +118,6 @@ public class PathsMirrored {
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
-                .setReversed()
                 .build();
 
         goToGatePath = follower
@@ -127,12 +125,12 @@ public class PathsMirrored {
                 .addPath(
                         new BezierLine(new Pose(flipSide(59.100), 79.000), new Pose(flipSide(29.960), 71.181))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(90))
                 .build();
         park= follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(flipSide(12), 12), new Pose(flipSide(39), 39))
+                        new BezierLine(new Pose(12, 12), new Pose(flipSide(39), 39))
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(135))
                 .build();
@@ -168,7 +166,7 @@ public class PathsMirrored {
         farLeavePath = follower
                 .pathBuilder()
                 .addPath(new BezierLine(new Pose(flipSide(56.666), 8.500), new Pose(flipSide(34.809), 8.455)))
-                .setTangentHeadingInterpolation()
+                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
     }
