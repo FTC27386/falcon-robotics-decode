@@ -13,7 +13,7 @@ import com.seattlesolvers.solverslib.command.button.Button;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
-import org.firstinspires.ftc.teamcode.Mechanisms.Commands.climb;
+import org.firstinspires.ftc.teamcode.Mechanisms.Commands.goToClimbPose;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.defaultDrive;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.followPath;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.magDump;
@@ -61,7 +61,7 @@ public class AutoStepThru extends CommandOpMode {
         climb = driverOp.getGamepadButton(GamepadKeys.Button.TOUCHPAD);
         paths = new Paths(r.getD().follower);
 
-        climb.whenPressed(new climb(r));
+        climb.whenPressed(new goToClimbPose(r, paths.park));
         intake.whenPressed(new runIntakeTimed(r, 2000));
         relocalize.whenPressed(new InstantCommand(() -> r.getD().reloc(new Pose(8, 8, Math.toRadians(90)))));
         changeTarget.whenPressed(new InstantCommand(() -> r.getD().relocTarget(

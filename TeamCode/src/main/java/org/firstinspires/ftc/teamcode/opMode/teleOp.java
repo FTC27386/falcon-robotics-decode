@@ -10,12 +10,13 @@ import com.seattlesolvers.solverslib.command.button.Button;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
-import org.firstinspires.ftc.teamcode.Mechanisms.Commands.climb;
+import org.firstinspires.ftc.teamcode.Mechanisms.Commands.goToClimbPose;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.defaultDrive;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.magDump;
-import org.firstinspires.ftc.teamcode.Mechanisms.Commands.runIntakeReverse;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.runIntakeReverseTimed;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.runIntakeTimed;
+import org.firstinspires.ftc.teamcode.Mechanisms.Paths;
+import org.firstinspires.ftc.teamcode.Mechanisms.PathsMirrored;
 import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
 
 import java.util.function.Supplier;
@@ -34,9 +35,12 @@ public class teleOp extends CommandOpMode {
     public static double hood_pos = 0;
     public static double flywheel_speed = -1500;
     private Robot r;
+    Paths paths;
+    PathsMirrored paths_mirrored;
 
     @Override
     public void initialize() {
+
         super.reset();
         r = new Robot(hardwareMap);
         register(r.getS(), r.getD(), r.getI(), r.getL());
@@ -45,6 +49,8 @@ public class teleOp extends CommandOpMode {
         Supplier<Double> leftY = driverOp::getLeftY;
         Supplier<Double> rightX = driverOp::getRightX;
         r.getD().setDefaultCommand(new defaultDrive(r, leftY, leftX, rightX));
+        Paths paths = new Paths(r.getD().follower);
+
 
         intake = driverOp.getGamepadButton(GamepadKeys.Button.SQUARE);
         outtake = driverOp.getGamepadButton(GamepadKeys.Button.CIRCLE);
@@ -53,7 +59,7 @@ public class teleOp extends CommandOpMode {
         shoot = driverOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER);
         climb = driverOp.getGamepadButton(GamepadKeys.Button.TOUCHPAD);
 
-        climb.whenPressed(new climb(r));
+        climb.whenPressed(new goToClimbPose(r, paths.park));
         intake.whenPressed(new runIntakeTimed(r, 2000));
         outtake.whenPressed(new runIntakeReverseTimed(r, 2000));
         relocalize.whenPressed(new InstantCommand(() -> r.getD().reloc(new Pose(8, 8, Math.toRadians(90)))));
