@@ -61,9 +61,7 @@ public class drivetrainSystem extends SubsystemBase {
         dist = sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
         unnormalizedHeading = follower.getTotalHeading();
     }
-
-
-
+    
     public double yoCalcDist() {
         return sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
     }
@@ -79,28 +77,34 @@ public class drivetrainSystem extends SubsystemBase {
     }
 
     public double yoCalcHood() {
-        /*
-        if (dist >= 50.2778 && dist <= 80.2022) {
-            return -0.0000167505 * Math.pow(dist, 3)
-                    + 0.0030833 * Math.pow(dist, 2)
-                    -0.185176 * dist + 4.12003;
-        } else {
-            return 0;
+        if (dist >= 50.2778 && dist <= 89.5204) {
+            return (0.00000106851 * Math.pow(dist, 4))
+                    - (0.000298793 * Math.pow(dist, 3))
+                    + (0.0307389 * Math.pow(dist, 2))
+                    - (1.37843 * dist)
+                    + 23.22303;
         }
-         */
-        return hood_pos;
+        else if (dist > 89.5204 && dist <= 110.2215) {
+            return (-0.0000318774 * Math.pow(dist, 3))
+                    + (0.00925592 * Math.pow(dist, 2))
+                    - (0.876897   * dist)
+                    + 27.89043;
+        }
+        else {
+            return 0.5;
+        }
     }
 
     public double yoCalcSpeed() {
-        /*
-        if (dist >= 50.2778 && dist <= 80.2022) {
+        if (dist >= 50.2778 && dist <= 89.5204) {
             return -1700;
+        }
+        else if (dist > 89.5204 && dist <= 110.2215) {
+            return -2000;
         }
         else {
             return 0;
         }
-         */
-        return flywheel_speed;
     }
 
     public void teleOpDrive(double axial, double lateral, double yaw) {
