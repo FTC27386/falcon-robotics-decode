@@ -54,8 +54,12 @@ public class RobotConstants {
         public static Pose autoEndPose;
         public enum robotState
         {
+                IDLE,
                 INTAKING,
-                IDLE
+                SHOOTING,
+                TRANSFER,
+                AIMING,
+                ENDGAME,
         }
         public static int top_climb_position = 12300;
 
