@@ -9,7 +9,6 @@ import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.RunCommand;
-import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.button.Button;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
@@ -77,29 +76,29 @@ public class AutoStepThru extends CommandOpMode {
         AutoCommands = new Command[]{
                 new InstantCommand(() -> r.setShooterValues()),
                 new InstantCommand(() -> r.getI().close()),
-                new followPath(r, paths.Path0),
+                new followPath(r, paths.closeAutoStartPath),
                 new magDump(r),
                 new runIntake(r),
                 new InstantCommand(() -> r.setShooterValues()),
-                new followPath( r, paths.Path1), //intake 1st line
+                new followPath( r, paths.intakeFirstRowPath), //intake 1st line
                 new stopIntake(r),
-                new followPath(r, paths.Path2), //return to shoot point
+                new followPath(r, paths.returnFromTopRowPath), //return to shoot point
                 new magDump(r),
-                new followPath(r, paths.Path3),
+                new followPath(r, paths.prepareIntakeMiddleRowPath),
                 new runIntake(r),
                 new InstantCommand(() -> r.setShooterValues()),
-                new followPath(r, paths.Path4),
+                new followPath(r, paths.intakeMiddleRowPath),
                 new stopIntake(r),
-                new followPath(r, paths.Path5),
+                new followPath(r, paths.returnFromMiddleRowPath),
                 new magDump(r),
-                new followPath(r, paths.Path6),
+                new followPath(r, paths.prepareIntakeBottomRowPath),
                 new runIntake(r),
                 new InstantCommand(() -> r.setShooterValues()),
-                new followPath(r, paths.Path7),
+                new followPath(r, paths.intakeBottomRowPath),
                 new stopIntake(r),
-                new followPath(r, paths.Path8),
+                new followPath(r, paths.returnFromBottomRowPath),
                 new magDump(r),
-                new followPath(r, paths.Path9)
+                new followPath(r, paths.goToGatePath)
         };
 
 

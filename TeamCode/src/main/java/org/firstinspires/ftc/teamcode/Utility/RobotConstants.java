@@ -7,6 +7,11 @@ import com.pedropathing.geometry.Pose;
 @Configurable
 public class RobotConstants {
 
+        public static void setAutoEndPose(Pose endPose)
+        {
+                autoEndPose = endPose;
+        }
+
         public static String first_shooter_motor_name = "flywheel_top",
                 second_shooter_motor_name = "flywheel_bottom",
                 left_turret_servo_name = "left_turret_servo",

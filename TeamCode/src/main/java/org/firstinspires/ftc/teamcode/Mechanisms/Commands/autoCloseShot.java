@@ -7,12 +7,12 @@ import com.seattlesolvers.solverslib.command.WaitCommand;
 import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
 import org.firstinspires.ftc.teamcode.Utility.RobotConstants;
 
-public class autoShot extends SequentialCommandGroup {
+public class autoCloseShot extends SequentialCommandGroup {
     private final Robot r;
     private RobotConstants.robotState shootingZone;
 
 
-    public autoShot(Robot r) {
+    public autoCloseShot(Robot r) {
         this.r = r;
         addRequirements(r.getI(), r.getS());
         addCommands(
