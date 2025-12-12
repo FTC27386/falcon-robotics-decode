@@ -79,6 +79,7 @@ public class teleOp extends CommandOpMode {
                ))));
         schedule(new InstantCommand(() -> r.getD().follower.startTeleOpDrive()));
         schedule(new RunCommand(() -> r.getS().setTurretPosition(r.getD().yoCalcAim())));
+        schedule(new RunCommand(() -> r.getS().setHoodPosition(r.getD().yoCalcHood())));
         shoot.whenPressed(new magDump(r));
         park.whenPressed(new liftoff(r));
     }
@@ -100,6 +101,7 @@ public class teleOp extends CommandOpMode {
         telemetry.addData("Distance", r.getD().yoCalcDist());
         telemetry.addData("target X", r.getD().getTarg().getX());
         telemetry.addData("target Y", r.getD().getTarg().getY());
+        telemetry.addData("In zone", r.getD().inZone());
         telemetry.addData("alliance color?", RobotConstants.current_color);
 
         telemetry.update();
