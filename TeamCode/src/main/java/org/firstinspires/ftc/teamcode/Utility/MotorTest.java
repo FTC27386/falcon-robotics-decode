@@ -58,7 +58,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class MotorTest extends OpMode {
     DcMotor flywheel1, flywheel2;
-    Servo leftTurretServo, rightTurretServo;
+    Servo leftTurretServo, rightTurretServo, intake_raiser;
     DcMotor frontLeftDrive,
             frontRightDrive,
             backLeftDrive,
@@ -70,6 +70,7 @@ public class MotorTest extends OpMode {
     public static double x;
     public static double turretPosition = 0.5;
     public static double servoOffset = 0;
+    public static double intakePos = 0;
 
     @Override
     public void init() {
@@ -77,6 +78,7 @@ public class MotorTest extends OpMode {
         rightTurretServo = hardwareMap.get(Servo.class, RobotConstants.right_turret_servo_name);
         blocker = hardwareMap.get(Servo.class, RobotConstants.transfer_servo_name);
         hood = hardwareMap.get(Servo.class, RobotConstants.hood_servo_name);
+        intake_raiser = hardwareMap.get(Servo.class,RobotConstants.intake_servo_name);
 
         leftTurretServo.setDirection(Servo.Direction.FORWARD);
         rightTurretServo.setDirection(Servo.Direction.FORWARD);
@@ -119,6 +121,7 @@ public class MotorTest extends OpMode {
         if (gamepad1.dpadDownWasPressed()) x-= 0.01;
         x = clamp(x, 0, 1);
         hood.setPosition(x);
+        intake_raiser.setPosition(intakePos);
         leftTurretServo.setPosition(turretPosition);
         rightTurretServo.setPosition(turretPosition + servoOffset);
         telemetry.addData("x", x);

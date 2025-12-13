@@ -9,7 +9,7 @@ import com.pedropathing.paths.PathChain;
 public class Paths {
 
     public static Pose startingPose = new Pose(64.1883,132.5852,0);
-    public static Pose startingPoseFarZone = new Pose((12),8.2,Math.toRadians(0));
+    public static Pose startingPoseFarZone = new Pose((54),7,Math.toRadians(0));
     public PathChain closeAutoStartPath;
     public PathChain intakeFirstRowPath;
     public PathChain returnFromTopRowPath;
@@ -27,6 +27,10 @@ public class Paths {
     public PathChain farAutoStartPath;
     public PathChain farLeavePath;
 
+
+
+
+
     public Paths(Follower follower) {
         closeAutoStartPath = follower
                 .pathBuilder()
@@ -41,19 +45,19 @@ public class Paths {
                         new BezierCurve(
                                 new Pose(59.100, 79.000),
                                 new Pose(49.349, 85.797),
-                                new Pose(14.000, 84.000)
+                                new Pose(14.000, 80.000)
                         )
                 )
-                .setTangentHeadingInterpolation()
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         returnFromTopRowPath = follower
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(14.000, 84.000),
+                                new Pose(14.000, 80.000),
                                 new Pose(48.958, 85.407),
-                                new Pose(59.244, 79.027)
+                                new Pose(59.1, 79.000)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
@@ -62,7 +66,7 @@ public class Paths {
         prepareIntakeMiddleRowPath = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(59.244, 79.027), new Pose(44.000, 56))
+                        new BezierLine(new Pose(59.1, 79.000), new Pose(44.000, 57))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .build();
@@ -70,7 +74,7 @@ public class Paths {
         intakeMiddleRowPath = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(44.000, 56), new Pose(8.000, 56))
+                        new BezierLine(new Pose(44.000, 57), new Pose(8.000, 57))
                 )
                 .setTangentHeadingInterpolation()
                 .build();
@@ -79,7 +83,7 @@ public class Paths {
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(8.000, 56),
+                                new Pose(8.000, 57),
                                 new Pose(47.300, 60.000),
                                 new Pose(59.100, 79.000)
                         )

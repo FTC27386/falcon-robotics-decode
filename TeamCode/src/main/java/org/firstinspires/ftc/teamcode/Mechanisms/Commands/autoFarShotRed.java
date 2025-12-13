@@ -17,11 +17,11 @@ public class autoFarShotRed extends SequentialCommandGroup {
         addRequirements(r.getI(), r.getS());
         addCommands(
                 new InstantCommand(() -> r.getI().close()),
-                new autoShootSequenceRed(r),
+                new autoShootSequenceRedFar(r),
                 new runIntake(r),
                 new pulseGate(r, 1200),
                 new WaitCommand(200),
-                new stopIntake(r)
+                new idleIntake(r)
         );
     }
 }

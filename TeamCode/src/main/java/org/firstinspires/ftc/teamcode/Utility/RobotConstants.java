@@ -43,16 +43,16 @@ public class RobotConstants {
 
         public static double
                 servo_offset = 0,
-                shooterTolerance = 67,
+                shooterTolerance = 30,
                 vera_coefficient = .4167,
 
                 lift_kP = 0.001, //0.0003
                 lift_kD = 0.0,
                 lift_kF = 0.3,
-                shooter_kP = -0.02,
+                shooter_kP = -0.002,
                 shooter_kD = 0.00000000,
-                shooter_kFF = 0,
-                shooter_kL = 0.0, //"lower limit" power
+                shooter_kV = -0.00039,
+                shooter_kS = -0.07, //"lower limit" power
                 turret_kP = 0,
                 turret_kD = 0.0,
                 turret_kL = 0,
@@ -66,7 +66,7 @@ public class RobotConstants {
                 transfer_open_pos = .25,
                 latch_close_pos = 0,
                 latch_open_pos = 1,
-                pivot_up_pos = 0,
+                pivot_up_pos = 1,
                 pivot_down_pos = 0;
         public static Pose autoEndPose;
         public enum robotState
@@ -78,7 +78,7 @@ public class RobotConstants {
                 AIMING,
                 ENDGAME,
         }
-        public static int top_climb_position = 13400;
+        public static int top_climb_position = 13000; // 13400 is the real maximum
 
 
 

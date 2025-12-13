@@ -4,25 +4,22 @@ import com.seattlesolvers.solverslib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
 
-
-public class preShootSequence extends CommandBase {
+public class idleIntake extends CommandBase {
 
     private final Robot robot;
 
-
-    public preShootSequence(Robot robot) {
+    public idleIntake(Robot robot) {
         this.robot = robot;
-        addRequirements(robot.getS());
+        addRequirements(robot.getI());
     }
 
     @Override
     public void initialize() {
-        robot.setShooterValues();
+        robot.getI().idleIntake();
     }
 
     @Override
     public boolean isFinished() {
-        return robot.getS().atSpeed();
+        return true;
     }
-
 }

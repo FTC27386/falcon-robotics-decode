@@ -12,8 +12,10 @@ public class liftoff extends SequentialCommandGroup {
     {
         this.r = r;
         addCommands(
+                new InstantCommand(()->r.getS().setSpeed(0)),
+                new InstantCommand(()->r.getI().stopIntake()),
                 new InstantCommand(()->r.getL().unlatch()),
-                new WaitCommand(500),
+                new WaitCommand(1000),
         new InstantCommand(()->r.getL().setActivated(true)),
         new InstantCommand(()->r.getL().down())
         );

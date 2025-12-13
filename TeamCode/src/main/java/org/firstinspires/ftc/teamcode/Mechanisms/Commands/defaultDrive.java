@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Mechanisms.Commands;
 
+import static org.firstinspires.ftc.teamcode.Utility.UtilMethods.squareMagnitude;
+
 import com.seattlesolvers.solverslib.command.CommandBase;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 
@@ -22,7 +24,7 @@ public class defaultDrive extends CommandBase {
 
     @Override
     public void execute() {
-        r.getD().teleOpDrive(-axial.get(), lateral.get(), yaw.get());
+        r.getD().teleOpDrive(squareMagnitude(-axial.get()), squareMagnitude(lateral.get()), squareMagnitude(yaw.get()));
     }
 
 }

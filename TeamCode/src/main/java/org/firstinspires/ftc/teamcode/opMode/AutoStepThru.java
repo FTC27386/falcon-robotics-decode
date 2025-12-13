@@ -13,13 +13,13 @@ import com.seattlesolvers.solverslib.command.button.Button;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
-import org.firstinspires.ftc.teamcode.Mechanisms.Commands.goToClimbPose;
+import org.firstinspires.ftc.teamcode.Mechanisms.Commands.goToLiftPose;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.defaultDrive;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.followPath;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.magDump;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.runIntake;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.runIntakeTimed;
-import org.firstinspires.ftc.teamcode.Mechanisms.Commands.stopIntake;
+import org.firstinspires.ftc.teamcode.Mechanisms.Commands.idleIntake;
 import org.firstinspires.ftc.teamcode.Mechanisms.Paths;
 import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
 
@@ -61,7 +61,7 @@ public class AutoStepThru extends CommandOpMode {
         climb = driverOp.getGamepadButton(GamepadKeys.Button.TOUCHPAD);
         paths = new Paths(r.getD().follower);
 
-        climb.whenPressed(new goToClimbPose(r, paths.park));
+        climb.whenPressed(new goToLiftPose(r, paths.park));
         intake.whenPressed(new runIntakeTimed(r, 2000));
         relocalize.whenPressed(new InstantCommand(() -> r.getD().reloc(new Pose(8, 8, Math.toRadians(90)))));
         changeTarget.whenPressed(new InstantCommand(() -> r.getD().relocTarget(
@@ -81,21 +81,21 @@ public class AutoStepThru extends CommandOpMode {
                 new runIntake(r),
                 new InstantCommand(() -> r.setShooterValues()),
                 new followPath( r, paths.intakeFirstRowPath), //intake 1st line
-                new stopIntake(r),
+                new idleIntake(r),
                 new followPath(r, paths.returnFromTopRowPath), //return to shoot point
                 new magDump(r),
                 new followPath(r, paths.prepareIntakeMiddleRowPath),
                 new runIntake(r),
                 new InstantCommand(() -> r.setShooterValues()),
                 new followPath(r, paths.intakeMiddleRowPath),
-                new stopIntake(r),
+                new idleIntake(r),
                 new followPath(r, paths.returnFromMiddleRowPath),
                 new magDump(r),
                 new followPath(r, paths.prepareIntakeBottomRowPath),
                 new runIntake(r),
                 new InstantCommand(() -> r.setShooterValues()),
                 new followPath(r, paths.intakeBottomRowPath),
-                new stopIntake(r),
+                new idleIntake(r),
                 new followPath(r, paths.returnFromBottomRowPath),
                 new magDump(r),
                 new followPath(r, paths.goToGatePath)

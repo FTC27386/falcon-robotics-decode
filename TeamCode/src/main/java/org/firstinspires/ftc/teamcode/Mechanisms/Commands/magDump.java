@@ -21,8 +21,8 @@ public class magDump extends SequentialCommandGroup {
                 new runIntake(r),
                 new pulseGate(r, 1200),
                 new WaitCommand(200),
-                new stopIntake(r),
-                new InstantCommand(() -> r.getS().setSpeed(0))
+                new idleIntake(r),
+                new InstantCommand(() -> r.getS().setSpeed(-1600))
         );
     }
 }

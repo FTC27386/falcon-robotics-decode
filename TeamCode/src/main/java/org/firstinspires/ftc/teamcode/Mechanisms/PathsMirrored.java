@@ -45,19 +45,19 @@ public class PathsMirrored {
                         new BezierCurve(
                                 new Pose(flipSide(59.100), 79.000),
                                 new Pose(flipSide(49.349), 85.797),
-                                new Pose(flipSide(14.000), 84.000)
+                                new Pose(flipSide(14.000), 80.000)
                         )
                 )
-                .setTangentHeadingInterpolation()
+                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
         returnFromTopRowPath = follower
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(flipSide(14.000), 84.000),
+                                new Pose(flipSide(14.000), 80.000),
                                 new Pose(flipSide(48.958), 85.407),
-                                new Pose(flipSide(59.244), 79.027)
+                                new Pose(flipSide(59.1), 79.000)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
@@ -66,7 +66,7 @@ public class PathsMirrored {
         prepareIntakeMiddleRowPath = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(flipSide(59.244), 79.027), new Pose(flipSide(44.000), 56))
+                        new BezierLine(new Pose(flipSide(59.000), 79.000), new Pose(flipSide(44.000), 57))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build();
@@ -74,7 +74,7 @@ public class PathsMirrored {
         intakeMiddleRowPath = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(flipSide(44.000), 56), new Pose(flipSide(8.000), 56))
+                        new BezierLine(new Pose(flipSide(44.000), 56), new Pose(flipSide(8.000), 57))
                 )
                 .setTangentHeadingInterpolation()
                 .build();
@@ -83,7 +83,7 @@ public class PathsMirrored {
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(flipSide(8.000), 56),
+                                new Pose(flipSide(8.000), 57),
                                 new Pose(flipSide(47.300), 60.000),
                                 new Pose(flipSide(59.100), 79.000)
                         )

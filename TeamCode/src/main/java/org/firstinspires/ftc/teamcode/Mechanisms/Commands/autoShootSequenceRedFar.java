@@ -5,19 +5,19 @@ import com.seattlesolvers.solverslib.command.CommandBase;
 import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
 
 //This is a command
-public class autoShootSequence extends CommandBase {
+public class autoShootSequenceRedFar extends CommandBase {
 
     private final Robot robot;
 
 
-    public autoShootSequence(Robot robot) {
+    public autoShootSequenceRedFar(Robot robot) {
         this.robot = robot;
         addRequirements(robot.getS());
     }
 
     @Override
     public void initialize() {
-        robot.setAutoValues();
+        robot.setAutoValuesFarZoneRed();
     }
 
     @Override

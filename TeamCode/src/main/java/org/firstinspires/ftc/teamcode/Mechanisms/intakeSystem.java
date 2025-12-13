@@ -19,6 +19,7 @@ public class intakeSystem extends SubsystemBase {
         pivot = hMap.get(Servo.class, RobotConstants.intake_servo_name);
         gate = hMap.get(Servo.class, RobotConstants.transfer_servo_name);
         intakeMotor = hMap.get(DcMotor.class, RobotConstants.intake_motor_name);
+        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public void close() {
@@ -42,9 +43,14 @@ public class intakeSystem extends SubsystemBase {
         targetpower = -1;
     }
 
-    public void stopIntake() {
+    public void idleIntake() {
+        targetpower = -0.2;
+    } //will passively run intake a little bit
+    public void stopIntake()
+    {
         targetpower = 0;
     }
+
 
     public void outtake() {
         targetpower = 1;

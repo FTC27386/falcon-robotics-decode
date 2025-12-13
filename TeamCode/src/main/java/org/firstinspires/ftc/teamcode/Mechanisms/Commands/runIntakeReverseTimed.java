@@ -14,7 +14,7 @@ public class runIntakeReverseTimed extends SequentialCommandGroup {
         addCommands(
                 new runIntakeReverse(robot),
                 new WaitCommand(time),
-                new stopIntake(robot)
+                new idleIntake(robot)
         );
         addRequirements(robot.getI());
     }

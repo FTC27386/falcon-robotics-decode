@@ -19,6 +19,7 @@ public class shooterSystem extends SubsystemBase {
     DcMotorEx shooter1;
     DcMotorEx shooter2;
     double rawCalcPower,
+    angleOffset = 0,
             axonRead = 0,
             degreeRead,
             deltaRead,
@@ -59,6 +60,12 @@ public class shooterSystem extends SubsystemBase {
     public double getCurrentSpeed() {
         return currentSpeed;
     }
+    public void nudgeOffset(double increment){
+        angleOffset += increment;
+    }
+    public void zeroOffset(){
+        angleOffset = 0;
+    }
 
     @Override
     public void periodic() {
@@ -69,17 +76,12 @@ public class shooterSystem extends SubsystemBase {
 
         currentSpeed = shooter1.getVelocity();
         rawCalcPower = speedControl.calculate(-currentSpeed);
-        powerToSet = rawCalcPower + (RobotConstants.shooter_kL) + RobotConstants.shooter_kFF;
+        powerToSet = rawCalcPower + (RobotConstants.shooter_kS) + (speedControl.getSetPoint() * RobotConstants.shooter_kV);
 
 
-        if (Math.abs(speedControl.getPositionError()) > 67) {
+
             shooter1.setPower(powerToSet);
             shooter2.setPower(powerToSet);
-        } else {
-            shooter1.setPower(0);
-            shooter2.setPower(0);
-        }
-
 
         turret1.setPosition(turretPosition);
         turret2.setPosition(turretPosition);
@@ -98,7 +100,7 @@ public class shooterSystem extends SubsystemBase {
     public void setTurretPosition(double turretPositionAngle) //this will take an angle
     {
         double turretTicks = 0.5;
-        turretTicks += turretPositionAngle * RobotConstants.turret_conversion_factor_DEGREES;
+        turretTicks += (turretPositionAngle+angleOffset) * RobotConstants.turret_conversion_factor_DEGREES;
         this.turretPosition = turretTicks;
     }
 

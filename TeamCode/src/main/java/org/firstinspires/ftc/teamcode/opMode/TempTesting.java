@@ -10,17 +10,11 @@ import com.seattlesolvers.solverslib.command.button.Button;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
-import org.firstinspires.ftc.teamcode.Mechanisms.Commands.autoCloseShot;
+import org.firstinspires.ftc.teamcode.Mechanisms.Commands.autoCloseShotBlue;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.defaultDrive;
-import org.firstinspires.ftc.teamcode.Mechanisms.Commands.followPath;
-import org.firstinspires.ftc.teamcode.Mechanisms.Commands.liftoff;
-import org.firstinspires.ftc.teamcode.Mechanisms.Commands.magDump;
-import org.firstinspires.ftc.teamcode.Mechanisms.Commands.runIntakeReverseTimed;
-import org.firstinspires.ftc.teamcode.Mechanisms.Commands.runIntakeTimed;
 import org.firstinspires.ftc.teamcode.Mechanisms.Paths;
 import org.firstinspires.ftc.teamcode.Mechanisms.PathsMirrored;
 import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
-import org.firstinspires.ftc.teamcode.Utility.RobotConstants;
 
 import java.util.function.Supplier;
 
@@ -66,10 +60,13 @@ public class TempTesting extends CommandOpMode {
         dpad_left = driverOp.getGamepadButton(GamepadKeys.Button.DPAD_LEFT);
         dpad_right = driverOp.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT);
 
-        dpad_right.whenPressed(new autoCloseShot(r));
+        dpad_right.whenPressed(new autoCloseShotBlue(r));
         Square.whenPressed(new InstantCommand(()->r.getD().reloc(new Pose(
                 8,8,Math.toRadians(90)
         ))));
+
+        Circle.whenPressed(new InstantCommand(()->r.getL().latch()));
+        Cross.whenPressed(new InstantCommand(()->r.getL().unlatch()));
 
         schedule(new InstantCommand(() -> r.getD().follower.startTeleOpDrive()));
         schedule(new RunCommand(() -> r.getS().setTurretPosition(r.getD().yoCalcAim())));

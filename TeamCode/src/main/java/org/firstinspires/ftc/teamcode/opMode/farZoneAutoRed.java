@@ -8,12 +8,11 @@ import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 
-import org.firstinspires.ftc.teamcode.Mechanisms.Commands.autoFarShot;
+import org.firstinspires.ftc.teamcode.Mechanisms.Commands.autoFarShotRed;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.followPath;
+import org.firstinspires.ftc.teamcode.Mechanisms.Commands.followPathSlow;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.runIntake;
-import org.firstinspires.ftc.teamcode.Mechanisms.Commands.stopIntake;
-import org.firstinspires.ftc.teamcode.Mechanisms.Paths;
-import org.firstinspires.ftc.teamcode.Mechanisms.PathsFaulty;
+import org.firstinspires.ftc.teamcode.Mechanisms.Commands.idleIntake;
 import org.firstinspires.ftc.teamcode.Mechanisms.PathsMirrored;
 import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
 import org.firstinspires.ftc.teamcode.Utility.RobotConstants;
@@ -23,37 +22,37 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 public class farZoneAutoRed extends CommandOpMode {
     Follower follower;
     private Robot r;
-    PathsMirrored paths;
+    PathsMirrored mirroredPaths;
 
     @Override
     public void initialize()
     {
         super.reset();
 
-        r= new Robot(hardwareMap);
+        r = new Robot(hardwareMap);
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(PathsMirrored.startingPoseFarZone);
         follower.update();
-        paths = new PathsMirrored(follower);
+        mirroredPaths = new PathsMirrored(follower);
         register(r.getS(), r.getI());
 
         schedule(
                 new SequentialCommandGroup(
-                        new InstantCommand(()-> r.setShooterValues()),
-                        new followPath(r, paths.farAutoStartPath),
-                        new autoFarShot(r),
+                        new InstantCommand(()-> r.setAutoValuesRed()),
+                        new followPath(r, mirroredPaths.farAutoStartPath),
+                        new autoFarShotRed(r),
                         new runIntake(r),
-                        new followPath(r, paths.prepareIntakeHPZonePath),
-                        new followPath(r, paths.intakeHPZonePath),
+                        new followPath(r, mirroredPaths.prepareIntakeHPZonePath),
+                        new followPathSlow(r, mirroredPaths.intakeHPZonePath),
                         new ParallelCommandGroup(
-                                new followPath(r, paths.returnFromHPZonePath),
+                                new followPath(r, mirroredPaths.returnFromHPZonePath),
                                 new SequentialCommandGroup(
                                         new WaitCommand(1000),
-                                        new stopIntake(r)
+                                        new idleIntake(r)
                                 )
                         ),
-                        new autoFarShot(r),
-                        new followPath(r, paths.farLeavePath)
+                        new autoFarShotRed(r),
+                        new followPath(r, mirroredPaths.farLeavePath)
                 )
         );
     }

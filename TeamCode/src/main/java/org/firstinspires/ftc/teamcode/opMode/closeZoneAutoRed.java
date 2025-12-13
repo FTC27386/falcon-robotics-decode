@@ -5,16 +5,16 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
+import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 
-import org.firstinspires.ftc.teamcode.Mechanisms.Commands.autoCloseShot;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.autoCloseShotRed;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.followPath;
+import org.firstinspires.ftc.teamcode.Mechanisms.Commands.followPathSlow;
 import org.firstinspires.ftc.teamcode.Mechanisms.Commands.runIntake;
-import org.firstinspires.ftc.teamcode.Mechanisms.Commands.stopIntake;
-import org.firstinspires.ftc.teamcode.Mechanisms.Paths;
-import org.firstinspires.ftc.teamcode.Mechanisms.PathsFaulty;
+import org.firstinspires.ftc.teamcode.Mechanisms.Commands.runIntakeReverseTimed;
+import org.firstinspires.ftc.teamcode.Mechanisms.Commands.idleIntake;
 import org.firstinspires.ftc.teamcode.Mechanisms.PathsMirrored;
 import org.firstinspires.ftc.teamcode.Mechanisms.Robot;
 import org.firstinspires.ftc.teamcode.Utility.RobotConstants;
@@ -37,49 +37,46 @@ public class closeZoneAutoRed extends CommandOpMode {
         follower.update();
         paths = new PathsMirrored(follower);
         register(r.getS(), r.getI());
-
+        schedule(new RunCommand(()->r.setAutoValuesRed()));
         schedule(
                 new SequentialCommandGroup(
-                        new InstantCommand(()->r.setShooterValues()),
-
-                        new InstantCommand(()-> r.setShooterValues()),
                         new InstantCommand(()-> r.getI().close()),
                         new followPath(r, paths.closeAutoStartPath),
-                         new autoCloseShotRed(r),
+                        new autoCloseShotRed(r),
+                        new runIntakeReverseTimed(r, 100),
                         new runIntake(r),
-                        new InstantCommand(()-> r.setShooterValues()),
-                new followPath(r, paths.intakeFirstRowPath), //intake 1st line
-
+                new followPathSlow(r, paths.intakeFirstRowPath), //intake 1st line
                 new ParallelCommandGroup(
                                 new followPath(r,paths.returnFromTopRowPath),
                                 new SequentialCommandGroup(
                                         new WaitCommand(1000),
-                                                new stopIntake(r))
+                                                new idleIntake(r))
 
                 ),
                 new autoCloseShotRed(r),
+                new runIntakeReverseTimed(r, 100),
                 new followPath(r, paths.prepareIntakeMiddleRowPath),
-               new runIntake(r),
-                        new InstantCommand(()-> r.setShooterValues()),
-                new followPath(r, paths.intakeMiddleRowPath),
+                new runIntake(r),
+                new followPathSlow(r, paths.intakeMiddleRowPath),
                 new ParallelCommandGroup(
                         new followPath(r,paths.returnFromMiddleRowPath),
                         new SequentialCommandGroup(
                                 new WaitCommand(1000),
-                                new stopIntake(r))
+                                new idleIntake(r))
                 ),
                 new autoCloseShotRed(r),
+                new runIntakeReverseTimed(r, 100),
                 new followPath(r, paths.prepareIntakeBottomRowPath),
-               new runIntake(r),
-                        new InstantCommand(()-> r.setShooterValues()),
-                new followPath(r, paths.intakeBottomRowPath),
+                new runIntake(r),
+                new followPathSlow(r, paths.intakeBottomRowPath),
                 new ParallelCommandGroup(
                         new followPath(r,paths.returnFromBottomRowPath),
                         new SequentialCommandGroup(
                                 new WaitCommand(1000),
-                                new stopIntake(r))
+                                new idleIntake(r))
                 ),
-              new autoCloseShotRed(r),
+                new autoCloseShotRed(r),
+                new runIntakeReverseTimed(r, 100),
                 new followPath(r, paths.goToGatePath)));
     }
     @Override

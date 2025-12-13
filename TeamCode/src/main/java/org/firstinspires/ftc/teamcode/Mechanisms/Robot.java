@@ -4,8 +4,6 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 
-import org.firstinspires.ftc.teamcode.Utility.RobotConstants;
-
 public class Robot {
     GamepadEx gp;
 
@@ -54,15 +52,24 @@ public class Robot {
         s.setTurretPosition(d.yoCalcAim());
     }
 
-    public void setAutoValues() {
+    public void setAutoValuesBlue() {
         s.setSpeed(-1900);
-        s.setHoodPosition(0.7);
-        s.setTurretPosition(49.1227252);
+        s.setHoodPosition(0.65);
+        s.setTurretPosition(50.5);
     }
     public void setAutoValuesRed() {
         s.setSpeed(-1900);
-        s.setHoodPosition(0.7);
-        s.setTurretPosition(-49.1227252);
+        s.setHoodPosition(0.65);
+        s.setTurretPosition(-50.5);
     }
-
+    public void setAutoValuesFarZoneBlue() {
+        s.setSpeed(-2200);
+        s.setHoodPosition(.95);
+        s.setTurretPosition(67.3);
+    }
+    public void setAutoValuesFarZoneRed() {
+        s.setSpeed(-2200);
+        s.setHoodPosition(.95);
+        s.setTurretPosition(-67.3);
+    }
 }

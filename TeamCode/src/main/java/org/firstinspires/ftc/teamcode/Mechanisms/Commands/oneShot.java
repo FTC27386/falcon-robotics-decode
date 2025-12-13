@@ -21,7 +21,7 @@ public class oneShot extends SequentialCommandGroup {
                 new runIntake(r),
                 new pulseGate(r, 125),
                 new WaitCommand(200),
-                new stopIntake(r),
+                new idleIntake(r),
                 new InstantCommand(() -> r.getS().setSpeed(0))
         );
     }
