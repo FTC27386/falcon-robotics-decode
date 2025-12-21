@@ -29,7 +29,8 @@ import java.util.function.Supplier;
 public class teleOp extends CommandOpMode {
     Button revShooter;
     Button intake;
-    Button relocalize;
+    Button relocalizeBlue;
+    Button relocalizeRed;
     Button shoot;
     Button outtake;
     Button changeTarget;
@@ -44,6 +45,8 @@ public class teleOp extends CommandOpMode {
     Button addOffsetLift;
     Button subtractOffsetLift;
     Button defaultOffsetLift;
+    Button stowIntake;
+    Button deployIntake;
 
     public static double hood_pos = 0;
     public static double flywheel_speed = -1500;
@@ -69,7 +72,8 @@ public class teleOp extends CommandOpMode {
         //button binds
         intake = driverOp.getGamepadButton(GamepadKeys.Button.SQUARE);
         outtake = driverOp.getGamepadButton(GamepadKeys.Button.CIRCLE);
-        relocalize = driverOp.getGamepadButton(GamepadKeys.Button.OPTIONS);
+        relocalizeBlue = driverOp.getGamepadButton(GamepadKeys.Button.OPTIONS);
+        relocalizeRed = secondDriverOp.getGamepadButton(GamepadKeys.Button.OPTIONS);
         changeTarget = driverOp.getGamepadButton(GamepadKeys.Button.SHARE);
         goToClimb = driverOp.getGamepadButton(GamepadKeys.Button.TOUCHPAD);
         park = driverOp.getGamepadButton(GamepadKeys.Button.DPAD_UP);
@@ -83,6 +87,8 @@ public class teleOp extends CommandOpMode {
         addOffsetLift = secondDriverOp.getGamepadButton(GamepadKeys.Button.TRIANGLE);
         subtractOffsetLift = secondDriverOp.getGamepadButton(GamepadKeys.Button.CROSS);
         defaultOffsetLift = secondDriverOp.getGamepadButton(GamepadKeys.Button.DPAD_LEFT);
+        stowIntake = secondDriverOp.getGamepadButton(GamepadKeys.Button.SQUARE);
+        deployIntake = secondDriverOp.getGamepadButton(GamepadKeys.Button.CIRCLE);
 
 
 
@@ -94,7 +100,8 @@ public class teleOp extends CommandOpMode {
                 new InstantCommand(()->r.getD().follower.startTeleOpDrive())));
         intake.whenPressed(new runIntakeTimed(r, 2000));
         outtake.whenPressed(new runIntakeReverseTimed(r, 100));
-        relocalize.whenPressed(new InstantCommand(() -> r.getD().reloc(new Pose(8, 8, Math.toRadians(90)))));
+        relocalizeBlue.whenPressed(new InstantCommand(() -> r.getD().reloc(new Pose(8, 8, Math.toRadians(90)))));
+        relocalizeRed.whenPressed(new InstantCommand(() -> r.getD().reloc(new Pose(136, 8, Math.toRadians(90)))));
         changeTarget.whenPressed(new InstantCommand(() -> r.getD().relocTarget(
                new Pose(
                        r.getD().getCurrentPose().getX() + Math.cos(r.getD().getCurrentPose().getHeading() * 12)
@@ -114,6 +121,8 @@ public class teleOp extends CommandOpMode {
         addOffsetLift.whenPressed(new InstantCommand(()->r.getL().nudgeLift(50)));
         subtractOffsetLift.whenPressed(new InstantCommand(()->r.getL().nudgeLift(-50)));
         defaultOffsetLift.whenPressed(new InstantCommand(()->r.getL().resetOffset()));
+        stowIntake.whenPressed(new InstantCommand(()->r.getI().stow()));
+        deployIntake.whenPressed(new InstantCommand(()->r.getI().deploy()));
 
         schedule(new InstantCommand(() -> r.getD().follower.startTeleOpDrive()));
         schedule(new RunCommand(() -> r.getS().setTurretPosition(r.getD().yoCalcAim())));

@@ -16,6 +16,7 @@ public class goToLiftPose extends SequentialCommandGroup {
         this.r = r;
         addCommands(
                 new followPath(r, parkpath)
+
         );
     }
 

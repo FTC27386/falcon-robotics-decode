@@ -24,6 +24,7 @@ public class PathsMirrored {
     public PathChain prepareIntakeHPZonePath;
     public PathChain intakeHPZonePath;
     public PathChain returnFromHPZonePath;
+    public static Pose startingPoseAlternate = new Pose(144-53.5946, 7.587, Math.toRadians(90));
     public PathChain farAutoStartPath;
     public PathChain farLeavePath;
     public static double flipSide(double xVal)
@@ -35,7 +36,7 @@ public class PathsMirrored {
         closeAutoStartPath = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(flipSide(0), 144), new Pose(flipSide(59.1), 79.0))
+                        new BezierLine(startingPoseAlternate, new Pose(flipSide(59.1), 79.0))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build();
@@ -72,6 +73,7 @@ public class PathsMirrored {
                 .build();
 
         intakeMiddleRowPath = follower
+                // Y IS 56 INSTEAD OF 57
                 .pathBuilder()
                 .addPath(
                         new BezierLine(new Pose(flipSide(44.000), 56), new Pose(flipSide(8.000), 57))
@@ -128,6 +130,7 @@ public class PathsMirrored {
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(90))
                 .build();
         park= follower
+                //DIFFERENT
                 .pathBuilder()
                 .addPath(
                         new BezierLine(new Pose(12, 12), new Pose(flipSide(39), 39))
@@ -165,7 +168,8 @@ public class PathsMirrored {
                 .build();
         farLeavePath = follower
                 .pathBuilder()
-                .addPath(new BezierLine(new Pose(flipSide(56.666), 8.500), new Pose(flipSide(34.809), 8.455)))
+                //DIFFERENCE
+                .addPath(new BezierLine(new Pose(flipSide(56.666), 8.500), new Pose(105.6, 8.6)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 

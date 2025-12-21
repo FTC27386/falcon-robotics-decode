@@ -52,7 +52,7 @@ public class RobotConstants {
                 shooter_kP = -0.002,
                 shooter_kD = 0.00000000,
                 shooter_kV = -0.00039,
-                shooter_kS = -0.07, //"lower limit" power
+                shooter_kS = 0.07, //"lower limit" power
                 turret_kP = 0,
                 turret_kD = 0.0,
                 turret_kL = 0,
@@ -66,8 +66,8 @@ public class RobotConstants {
                 transfer_open_pos = .25,
                 latch_close_pos = 0,
                 latch_open_pos = 1,
-                pivot_up_pos = 1,
-                pivot_down_pos = 0;
+                pivot_up_pos = 0,
+                pivot_down_pos = 1;
         public static Pose autoEndPose;
         public enum robotState
         {

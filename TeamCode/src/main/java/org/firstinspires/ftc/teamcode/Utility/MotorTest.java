@@ -67,10 +67,11 @@ public class MotorTest extends OpMode {
     Servo hood,
             blocker,
             pivot;
-    public static double x;
+    public static double x = 0;
     public static double turretPosition = 0.5;
     public static double servoOffset = 0;
     public static double intakePos = 0;
+    public static double hoodPos = 0;
 
     @Override
     public void init() {

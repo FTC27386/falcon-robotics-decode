@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Mechanisms;
 
+import static androidx.core.math.MathUtils.clamp;
+
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -101,6 +103,7 @@ public class shooterSystem extends SubsystemBase {
     {
         double turretTicks = 0.5;
         turretTicks += (turretPositionAngle+angleOffset) * RobotConstants.turret_conversion_factor_DEGREES;
+        turretTicks = clamp(turretTicks, .3, .6);
         this.turretPosition = turretTicks;
     }
 

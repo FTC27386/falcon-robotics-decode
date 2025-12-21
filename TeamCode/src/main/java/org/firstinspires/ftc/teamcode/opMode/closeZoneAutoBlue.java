@@ -33,7 +33,7 @@ public class closeZoneAutoBlue extends CommandOpMode {
 
         r = new Robot(hardwareMap);
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(Paths.startingPose);
+        follower.setStartingPose(Paths.startingPoseAlternate);
         follower.update();
         paths = new Paths(follower);
         register(r.getS(), r.getI());
@@ -91,6 +91,7 @@ public class closeZoneAutoBlue extends CommandOpMode {
         telemetry.addData("robot heading", Math.toDegrees(r.getD().getCurrentPose().getHeading()));
         telemetry.addData("target X",r.getD().getTarg().getX());
         telemetry.addData("target Y",r.getD().getTarg().getY());
+        telemetry.addData("in zone?", r.getD().inZone());
         telemetry.update();
     }
 }

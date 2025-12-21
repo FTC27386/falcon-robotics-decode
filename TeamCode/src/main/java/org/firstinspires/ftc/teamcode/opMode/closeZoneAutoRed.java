@@ -33,7 +33,7 @@ public class closeZoneAutoRed extends CommandOpMode {
 
         r = new Robot(hardwareMap);
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(PathsMirrored.startingPose);
+        follower.setStartingPose(PathsMirrored.startingPoseAlternate);
         follower.update();
         paths = new PathsMirrored(follower);
         register(r.getS(), r.getI());
@@ -91,6 +91,7 @@ public class closeZoneAutoRed extends CommandOpMode {
         telemetry.addData("robot heading", Math.toDegrees(r.getD().getCurrentPose().getHeading()));
         telemetry.addData("target X",r.getD().getTarg().getX());
         telemetry.addData("target Y",r.getD().getTarg().getY());
+        telemetry.addData("in zone?", r.getD().inZone());
         telemetry.update();
     }
 }

@@ -9,6 +9,7 @@ import com.pedropathing.paths.PathChain;
 public class Paths {
 
     public static Pose startingPose = new Pose(64.1883,132.5852,0);
+    public static Pose startingPoseAlternate = new Pose(53.5946, 7.587, Math.toRadians(90));
     public static Pose startingPoseFarZone = new Pose((54),7,Math.toRadians(0));
     public PathChain closeAutoStartPath;
     public PathChain intakeFirstRowPath;
@@ -35,7 +36,7 @@ public class Paths {
         closeAutoStartPath = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(0, 144), new Pose(59.1, 79.0))
+                        new BezierLine(startingPoseAlternate, new Pose(59.1, 79.0))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .build();
@@ -165,7 +166,7 @@ public class Paths {
                 .build();
         farLeavePath = follower
                 .pathBuilder()
-                .addPath(new BezierLine(new Pose(56.666, 8.500), new Pose(34.809, 8.455)))
+                .addPath(new BezierLine(new Pose(56.666, 8.500), new Pose(38.4, 8.6)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 

@@ -66,4 +66,5 @@ public class intakeSystem extends SubsystemBase {
     public void stow() {
         pivotPosition = (RobotConstants.pivot_up_pos);
     }
+    public void deploy() {pivotPosition=(RobotConstants.pivot_down_pos);}
 }
