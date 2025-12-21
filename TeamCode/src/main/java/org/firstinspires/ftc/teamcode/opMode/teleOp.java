@@ -69,7 +69,7 @@ public class teleOp extends CommandOpMode {
                 RobotConstants.current_color == null || RobotConstants.current_color == RobotConstants.ALLIANCE_COLOR.RED?
                         paths.park : mirroredPaths.park));
         intake.whenPressed(new runIntakeTimed(r, 2000));
-        outtake.whenPressed(new runIntakeReverseTimed(r, 2000));
+        //outtake.whenPressed(new runIntakeReverseTimed(r, 2000));
         relocalize.whenPressed(new InstantCommand(() -> r.getD().reloc(new Pose(8, 8, Math.toRadians(90)))));
         changeTarget.whenPressed(new InstantCommand(() -> r.getD().relocTarget(
                new Pose(
